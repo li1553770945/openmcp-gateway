@@ -2,7 +2,7 @@
 
 ## QuickStart
 
-如果你不想参与开发，只是想要部署和使用本项目，请直接参考[QuickStart](./docs/QuickStart.md)
+如果你不想参与开发，只是想要部署和使用本项目，请直接参考[QuickStart](./docs/quickstart.md)
 
 ## API 文档
 
@@ -22,4 +22,4 @@ code含义如下：
 
 ## 开发指南
 
-我们欢迎任何形式的贡献。如果你想参与开发，请参考[开发指南](./docs/DevelopmentGuide.md)了解更多信息。
+我们欢迎任何形式的贡献。如果你想参与开发，请参考[开发指南](./docs/development.md)了解更多信息。

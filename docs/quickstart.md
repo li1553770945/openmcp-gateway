@@ -30,7 +30,7 @@ go mod tidy
 
 本地开发环境重命名为 `deployment.yml`，生产环境重命名为 `production.yml`，这将根据`ENV`环境变量来决定加载哪个配置文件。
 
-有关配置文件的详细信息，请参考[配置说明](./docs/Configuration.md)。
+有关配置文件的详细信息，请参考[配置说明](./docs/configuration.md)。
 
 4. 运行
 
