@@ -161,8 +161,14 @@ func GetMCPServer(ctx context.Context, c *app.RequestContext) {
 	c.JSON(consts.StatusOK, resp)
 }
 
-// DeleteMCPServer .
-// @router /api/mcpservers/:id [DELETE]
+// DeleteMCPServer
+// @Summary 删除 MCPServer
+// @Description 删除指定的 MCPServer
+// @Tags MCPServer管理
+// @Produce json
+// @Param id path string true "MCPServer ID"
+// @Success 200 {object} mcpserver.DeleteMCPServerResp "请求响应 (Code=0 成功)"
+// @Router /api/mcpservers/:id [DELETE]
 func DeleteMCPServer(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req mcpserver.DeleteMCPServerReq
@@ -179,8 +185,14 @@ func DeleteMCPServer(ctx context.Context, c *app.RequestContext) {
 	c.JSON(consts.StatusOK, resp)
 }
 
-// DeleteToken .
-// @router /api/mcpservers/token/:id [DELETE]
+// DeleteToken
+// @Summary 删除 Token
+// @Description 删除指定的 Token
+// @Tags MCPServer管理
+// @Produce json
+// @Param id path string true "Token ID"
+// @Success 200 {object} mcpserver.DeleteTokenResp "请求响应 (Code=0 成功)"
+// @Router /api/mcpservers/token/:id [DELETE]
 func DeleteToken(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req mcpserver.DeleteTokenReq

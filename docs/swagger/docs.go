@@ -189,6 +189,33 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "删除指定的 MCPServer",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MCPServer管理"
+                ],
+                "summary": "删除 MCPServer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "MCPServer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求响应 (Code=0 成功)",
+                        "schema": {
+                            "$ref": "#/definitions/mcpserver.DeleteMCPServerResp"
+                        }
+                    }
+                }
             }
         },
         "/api/mcpservers/generate-token": {
@@ -288,6 +315,35 @@ const docTemplate = `{
                         "description": "请求响应 (Code=0 成功)",
                         "schema": {
                             "$ref": "#/definitions/mcpserver.GetMCPServerListResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/mcpservers/token/:id": {
+            "delete": {
+                "description": "删除指定的 Token",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MCPServer管理"
+                ],
+                "summary": "删除 Token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求响应 (Code=0 成功)",
+                        "schema": {
+                            "$ref": "#/definitions/mcpserver.DeleteTokenResp"
                         }
                     }
                 }
@@ -482,6 +538,32 @@ const docTemplate = `{
                 }
             }
         },
+        "mcpserver.DeleteMCPServerResp": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer"
+                },
+                "message": {
+                    "description": "消息",
+                    "type": "string"
+                }
+            }
+        },
+        "mcpserver.DeleteTokenResp": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer"
+                },
+                "message": {
+                    "description": "消息",
+                    "type": "string"
+                }
+            }
+        },
         "mcpserver.GenerateTokenReq": {
             "type": "object",
             "properties": {
@@ -548,6 +630,10 @@ const docTemplate = `{
         "mcpserver.GetMCPServerListRespData": {
             "type": "object",
             "properties": {
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
                 "description": {
                     "description": "描述",
                     "type": "string"
@@ -567,6 +653,10 @@ const docTemplate = `{
                 "openProxy": {
                     "description": "是否开启代理",
                     "type": "boolean"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
                 },
                 "url": {
                     "description": "URL",
@@ -598,6 +688,10 @@ const docTemplate = `{
         "mcpserver.GetMCPServerRespData": {
             "type": "object",
             "properties": {
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
                 "description": {
                     "description": "描述",
                     "type": "string"
@@ -625,6 +719,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/mcpserver.TokenData"
                     }
                 },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
                 "url": {
                     "description": "URL",
                     "type": "string"
@@ -637,6 +735,10 @@ const docTemplate = `{
                 "description": {
                     "description": "描述",
                     "type": "string"
+                },
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
                 },
                 "token": {
                     "description": "Token",

@@ -76,6 +76,24 @@ definitions:
         description: 消息
         type: string
     type: object
+  mcpserver.DeleteMCPServerResp:
+    properties:
+      code:
+        description: 状态码
+        type: integer
+      message:
+        description: 消息
+        type: string
+    type: object
+  mcpserver.DeleteTokenResp:
+    properties:
+      code:
+        description: 状态码
+        type: integer
+      message:
+        description: 消息
+        type: string
+    type: object
   mcpserver.GenerateTokenReq:
     properties:
       description:
@@ -120,6 +138,9 @@ definitions:
     type: object
   mcpserver.GetMCPServerListRespData:
     properties:
+      createdAt:
+        description: 创建时间
+        type: string
       description:
         description: 描述
         type: string
@@ -135,6 +156,9 @@ definitions:
       openProxy:
         description: 是否开启代理
         type: boolean
+      updatedAt:
+        description: 更新时间
+        type: string
       url:
         description: URL
         type: string
@@ -154,6 +178,9 @@ definitions:
     type: object
   mcpserver.GetMCPServerRespData:
     properties:
+      createdAt:
+        description: 创建时间
+        type: string
       description:
         description: 描述
         type: string
@@ -174,6 +201,9 @@ definitions:
         items:
           $ref: '#/definitions/mcpserver.TokenData'
         type: array
+      updatedAt:
+        description: 更新时间
+        type: string
       url:
         description: URL
         type: string
@@ -183,6 +213,9 @@ definitions:
       description:
         description: 描述
         type: string
+      id:
+        description: ID
+        type: integer
       token:
         description: Token
         type: string
@@ -315,6 +348,24 @@ paths:
       tags:
       - MCPServer管理
   /api/mcpservers/:id:
+    delete:
+      description: 删除指定的 MCPServer
+      parameters:
+      - description: MCPServer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/mcpserver.DeleteMCPServerResp'
+      summary: 删除 MCPServer
+      tags:
+      - MCPServer管理
     get:
       description: 根据 ID 获取指定的 MCPServer 详情
       parameters:
@@ -427,6 +478,25 @@ paths:
           schema:
             $ref: '#/definitions/mcpserver.GetMCPServerListResp'
       summary: 获取我的 MCPServer 列表
+      tags:
+      - MCPServer管理
+  /api/mcpservers/token/:id:
+    delete:
+      description: 删除指定的 Token
+      parameters:
+      - description: Token ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/mcpserver.DeleteTokenResp'
+      summary: 删除 Token
       tags:
       - MCPServer管理
   /api/users/me:
