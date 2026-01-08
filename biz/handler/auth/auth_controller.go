@@ -25,3 +25,19 @@ func Login(ctx context.Context, c *app.RequestContext) {
 
 	c.JSON(consts.StatusOK, resp)
 }
+
+// Register .
+// @router /api/auth/register [POST]
+func Register(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req auth.RegisterReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(auth.RegisterResp)
+
+	c.JSON(consts.StatusOK, resp)
+}

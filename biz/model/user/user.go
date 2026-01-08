@@ -646,7 +646,7 @@ func (p *GetUserInfoResp) String() string {
 type UserController interface {
 	GetUserInfo(ctx context.Context, request *GetUserInfoReq) (r *GetUserInfoResp, err error)
 
-	GetSelfInfo(ctx context.Context, request *GetUserInfoReq) (r *GetUserInfoResp, err error)
+	GetSelfInfo(ctx context.Context) (r *GetUserInfoResp, err error)
 }
 
 type UserControllerClient struct {
@@ -684,9 +684,8 @@ func (p *UserControllerClient) GetUserInfo(ctx context.Context, request *GetUser
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *UserControllerClient) GetSelfInfo(ctx context.Context, request *GetUserInfoReq) (r *GetUserInfoResp, err error) {
+func (p *UserControllerClient) GetSelfInfo(ctx context.Context) (r *GetUserInfoResp, err error) {
 	var _args UserControllerGetSelfInfoArgs
-	_args.Request = request
 	var _result UserControllerGetSelfInfoResult
 	if err = p.Client_().Call(ctx, "GetSelfInfo", &_args, &_result); err != nil {
 		return
@@ -804,7 +803,7 @@ func (p *userControllerProcessorGetSelfInfo) Process(ctx context.Context, seqId 
 	var err2 error
 	result := UserControllerGetSelfInfoResult{}
 	var retval *GetUserInfoResp
-	if retval, err2 = p.handler.GetSelfInfo(ctx, args.Request); err2 != nil {
+	if retval, err2 = p.handler.GetSelfInfo(ctx); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetSelfInfo: "+err2.Error())
 		oprot.WriteMessageBegin("GetSelfInfo", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
@@ -1127,7 +1126,6 @@ func (p *UserControllerGetUserInfoResult) String() string {
 }
 
 type UserControllerGetSelfInfoArgs struct {
-	Request *GetUserInfoReq `thrift:"request,1"`
 }
 
 func NewUserControllerGetSelfInfoArgs() *UserControllerGetSelfInfoArgs {
@@ -1137,22 +1135,7 @@ func NewUserControllerGetSelfInfoArgs() *UserControllerGetSelfInfoArgs {
 func (p *UserControllerGetSelfInfoArgs) InitDefault() {
 }
 
-var UserControllerGetSelfInfoArgs_Request_DEFAULT *GetUserInfoReq
-
-func (p *UserControllerGetSelfInfoArgs) GetRequest() (v *GetUserInfoReq) {
-	if !p.IsSetRequest() {
-		return UserControllerGetSelfInfoArgs_Request_DEFAULT
-	}
-	return p.Request
-}
-
-var fieldIDToName_UserControllerGetSelfInfoArgs = map[int16]string{
-	1: "request",
-}
-
-func (p *UserControllerGetSelfInfoArgs) IsSetRequest() bool {
-	return p.Request != nil
-}
+var fieldIDToName_UserControllerGetSelfInfoArgs = map[int16]string{}
 
 func (p *UserControllerGetSelfInfoArgs) Read(iprot thrift.TProtocol) (err error) {
 
@@ -1171,20 +1154,8 @@ func (p *UserControllerGetSelfInfoArgs) Read(iprot thrift.TProtocol) (err error)
 		if fieldTypeId == thrift.STOP {
 			break
 		}
-
-		switch fieldId {
-		case 1:
-			if fieldTypeId == thrift.STRUCT {
-				if err = p.ReadField1(iprot); err != nil {
-					goto ReadFieldError
-				}
-			} else if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
-		default:
-			if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
+		if err = iprot.Skip(fieldTypeId); err != nil {
+			goto SkipFieldTypeError
 		}
 		if err = iprot.ReadFieldEnd(); err != nil {
 			goto ReadFieldEndError
@@ -1199,10 +1170,8 @@ ReadStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
-ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_UserControllerGetSelfInfoArgs[fieldId]), err)
-SkipFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+SkipFieldTypeError:
+	return thrift.PrependError(fmt.Sprintf("%T skip field type %d error", p, fieldTypeId), err)
 
 ReadFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
@@ -1210,25 +1179,11 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *UserControllerGetSelfInfoArgs) ReadField1(iprot thrift.TProtocol) error {
-	_field := NewGetUserInfoReq()
-	if err := _field.Read(iprot); err != nil {
-		return err
-	}
-	p.Request = _field
-	return nil
-}
-
 func (p *UserControllerGetSelfInfoArgs) Write(oprot thrift.TProtocol) (err error) {
-	var fieldId int16
 	if err = oprot.WriteStructBegin("GetSelfInfo_args"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
-		if err = p.writeField1(oprot); err != nil {
-			fieldId = 1
-			goto WriteFieldError
-		}
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -1239,29 +1194,10 @@ func (p *UserControllerGetSelfInfoArgs) Write(oprot thrift.TProtocol) (err error
 	return nil
 WriteStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
-WriteFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
 WriteFieldStopError:
 	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
 WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
-}
-
-func (p *UserControllerGetSelfInfoArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := p.Request.Write(oprot); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
-	}
-	return nil
-WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
-WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
 func (p *UserControllerGetSelfInfoArgs) String() string {

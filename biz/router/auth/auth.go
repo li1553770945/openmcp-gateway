@@ -22,6 +22,7 @@ func Register(r *server.Hertz) {
 		{
 			_auth := _api.Group("/auth", _authMw()...)
 			_auth.POST("/login", append(_loginMw(), auth.Login)...)
+			_auth.POST("/register", append(_registerMw(), auth.Register)...)
 		}
 	}
 }

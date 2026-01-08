@@ -25,3 +25,67 @@ func AddMCPServer(ctx context.Context, c *app.RequestContext) {
 
 	c.JSON(consts.StatusOK, resp)
 }
+
+// GenerateToken .
+// @router /api/mcpservers/generate-token [POST]
+func GenerateToken(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req mcpserver.GenerateTokenReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(mcpserver.GenerateTokenResp)
+
+	c.JSON(consts.StatusOK, resp)
+}
+
+// GetSelfMCPServerList .
+// @router /api/mcpservers/self [GET]
+func GetSelfMCPServerList(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req mcpserver.GetMCPServerListReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(mcpserver.GetMCPServerListResp)
+
+	c.JSON(consts.StatusOK, resp)
+}
+
+// GetPublicMCPServerList .
+// @router /api/mcpservers/public [GET]
+func GetPublicMCPServerList(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req mcpserver.GetMCPServerListReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(mcpserver.GetMCPServerListResp)
+
+	c.JSON(consts.StatusOK, resp)
+}
+
+// GetMCPServer .
+// @router /api/mcpservers/:id [GET]
+func GetMCPServer(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req mcpserver.GetMCPServerReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(mcpserver.GetMCPServerResp)
+
+	c.JSON(consts.StatusOK, resp)
+}
