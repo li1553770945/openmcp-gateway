@@ -10,11 +10,16 @@ import (
 
 // 增加MCPServer
 type AddMCPServerReq struct {
-	Name        string `thrift:"name,1,required" form:"name,required" json:"name,required" query:"name,required"`
+	// MCPServer 名称
+	Name string `thrift:"name,1,required" form:"name,required" json:"name,required" query:"name,required"`
+	// MCPServer 描述
 	Description string `thrift:"description,2,required" form:"description,required" json:"description,required" query:"description,required"`
-	URL         string `thrift:"url,3,required" form:"url,required" json:"url,required" query:"url,required"`
-	IsPublic    bool   `thrift:"isPublic,4,required" form:"isPublic,required" json:"isPublic,required" query:"isPublic,required"`
-	OpenProxy   bool   `thrift:"openProxy,5,required" form:"openProxy,required" json:"openProxy,required" query:"openProxy,required"`
+	// MCPServer URL
+	URL string `thrift:"url,3,required" form:"url,required" json:"url,required" query:"url,required"`
+	// 是否公开
+	IsPublic bool `thrift:"isPublic,4,required" form:"isPublic,required" json:"isPublic,required" query:"isPublic,required"`
+	// 是否开启代理
+	OpenProxy bool `thrift:"openProxy,5,required" form:"openProxy,required" json:"openProxy,required" query:"openProxy,required"`
 }
 
 func NewAddMCPServerReq() *AddMCPServerReq {
@@ -370,7 +375,9 @@ func (p *AddMCPServerReq) String() string {
 }
 
 type AddMCPServerResp struct {
-	Code    int32  `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
+	// 状态码
+	Code int32 `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
+	// 消息
 	Message string `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
 }
 
@@ -572,7 +579,9 @@ func (p *AddMCPServerResp) String() string {
 
 // 生成token
 type GenerateTokenReq struct {
-	ID          int64  `thrift:"id,1,required" form:"id,required" json:"id,required" query:"id,required"`
+	// MCPServer ID
+	ID int64 `thrift:"id,1,required" form:"id,required" json:"id,required" query:"id,required"`
+	// Token 描述
 	Description string `thrift:"description,2,required" form:"description,required" json:"description,required" query:"description,required"`
 }
 
@@ -773,6 +782,7 @@ func (p *GenerateTokenReq) String() string {
 }
 
 type GenerateTokenRespData struct {
+	// 生成的 Token
 	Token string `thrift:"token,1,required" form:"token,required" json:"token,required" query:"token,required"`
 }
 
@@ -921,9 +931,12 @@ func (p *GenerateTokenRespData) String() string {
 }
 
 type GenerateTokenResp struct {
-	Code    int32                  `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
-	Message string                 `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
-	Data    *GenerateTokenRespData `thrift:"data,3,optional" form:"data" json:"data,omitempty" query:"data"`
+	// 状态码
+	Code int32 `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
+	// 消息
+	Message string `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
+	// 数据
+	Data *GenerateTokenRespData `thrift:"data,3,optional" form:"data" json:"data,omitempty" query:"data"`
 }
 
 func NewGenerateTokenResp() *GenerateTokenResp {
@@ -1177,6 +1190,7 @@ func (p *GenerateTokenResp) String() string {
 
 // 获取单个MCPServer
 type GetMCPServerReq struct {
+	// MCPServer ID
 	McpServerId int64 `thrift:"mcpServerId,1,required" json:"mcpServerId,required" path:"id,required"`
 }
 
@@ -1325,7 +1339,9 @@ func (p *GetMCPServerReq) String() string {
 }
 
 type TokenData struct {
-	Token       string `thrift:"token,1,required" form:"token,required" json:"token,required" query:"token,required"`
+	// Token
+	Token string `thrift:"token,1,required" form:"token,required" json:"token,required" query:"token,required"`
+	// 描述
 	Description string `thrift:"description,2,required" form:"description,required" json:"description,required" query:"description,required"`
 }
 
@@ -1526,12 +1542,24 @@ func (p *TokenData) String() string {
 }
 
 type GetMCPServerRespData struct {
-	Name        string       `thrift:"name,1,required" form:"name,required" json:"name,required" query:"name,required"`
-	Description string       `thrift:"description,2,required" form:"description,required" json:"description,required" query:"description,required"`
-	URL         string       `thrift:"url,3,required" form:"url,required" json:"url,required" query:"url,required"`
-	IsPublic    bool         `thrift:"isPublic,4,required" form:"isPublic,required" json:"isPublic,required" query:"isPublic,required"`
-	OpenProxy   bool         `thrift:"openProxy,5,required" form:"openProxy,required" json:"openProxy,required" query:"openProxy,required"`
-	Token       []*TokenData `thrift:"token,6,required,list<TokenData>" form:"token,required" json:"token,required" query:"token,required"`
+	// MCPServer ID
+	ID int64 `thrift:"id,1,required" form:"id,required" json:"id,required" query:"id,required"`
+	// 名称
+	Name string `thrift:"name,2,required" form:"name,required" json:"name,required" query:"name,required"`
+	// 描述
+	Description string `thrift:"description,3,required" form:"description,required" json:"description,required" query:"description,required"`
+	// URL
+	URL string `thrift:"url,4,required" form:"url,required" json:"url,required" query:"url,required"`
+	// 是否公开
+	IsPublic bool `thrift:"isPublic,5,required" form:"isPublic,required" json:"isPublic,required" query:"isPublic,required"`
+	// 是否开启代理
+	OpenProxy bool `thrift:"openProxy,6,required" form:"openProxy,required" json:"openProxy,required" query:"openProxy,required"`
+	// Token列表
+	Token []*TokenData `thrift:"token,7,required,list<TokenData>" form:"token,required" json:"token,required" query:"token,required"`
+	// 创建时间
+	CreatedAt string `thrift:"createdAt,8,required" form:"createdAt,required" json:"createdAt,required" query:"createdAt,required"`
+	// 更新时间
+	UpdatedAt string `thrift:"updatedAt,9,required" form:"updatedAt,required" json:"updatedAt,required" query:"updatedAt,required"`
 }
 
 func NewGetMCPServerRespData() *GetMCPServerRespData {
@@ -1539,6 +1567,10 @@ func NewGetMCPServerRespData() *GetMCPServerRespData {
 }
 
 func (p *GetMCPServerRespData) InitDefault() {
+}
+
+func (p *GetMCPServerRespData) GetID() (v int64) {
+	return p.ID
 }
 
 func (p *GetMCPServerRespData) GetName() (v string) {
@@ -1565,25 +1597,39 @@ func (p *GetMCPServerRespData) GetToken() (v []*TokenData) {
 	return p.Token
 }
 
+func (p *GetMCPServerRespData) GetCreatedAt() (v string) {
+	return p.CreatedAt
+}
+
+func (p *GetMCPServerRespData) GetUpdatedAt() (v string) {
+	return p.UpdatedAt
+}
+
 var fieldIDToName_GetMCPServerRespData = map[int16]string{
-	1: "name",
-	2: "description",
-	3: "url",
-	4: "isPublic",
-	5: "openProxy",
-	6: "token",
+	1: "id",
+	2: "name",
+	3: "description",
+	4: "url",
+	5: "isPublic",
+	6: "openProxy",
+	7: "token",
+	8: "createdAt",
+	9: "updatedAt",
 }
 
 func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
+	var issetID bool = false
 	var issetName bool = false
 	var issetDescription bool = false
 	var issetURL bool = false
 	var issetIsPublic bool = false
 	var issetOpenProxy bool = false
 	var issetToken bool = false
+	var issetCreatedAt bool = false
+	var issetUpdatedAt bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
 		goto ReadStructBeginError
@@ -1600,11 +1646,11 @@ func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
 
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.STRING {
+			if fieldTypeId == thrift.I64 {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetName = true
+				issetID = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -1613,7 +1659,7 @@ func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetDescription = true
+				issetName = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -1622,16 +1668,16 @@ func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField3(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetURL = true
+				issetDescription = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		case 4:
-			if fieldTypeId == thrift.BOOL {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField4(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetIsPublic = true
+				issetURL = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -1640,16 +1686,43 @@ func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField5(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetOpenProxy = true
+				issetIsPublic = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		case 6:
-			if fieldTypeId == thrift.LIST {
+			if fieldTypeId == thrift.BOOL {
 				if err = p.ReadField6(iprot); err != nil {
 					goto ReadFieldError
 				}
+				issetOpenProxy = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 7:
+			if fieldTypeId == thrift.LIST {
+				if err = p.ReadField7(iprot); err != nil {
+					goto ReadFieldError
+				}
 				issetToken = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 8:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField8(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetCreatedAt = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 9:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField9(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetUpdatedAt = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -1666,33 +1739,48 @@ func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
 		goto ReadStructEndError
 	}
 
-	if !issetName {
+	if !issetID {
 		fieldId = 1
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetDescription {
+	if !issetName {
 		fieldId = 2
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetURL {
+	if !issetDescription {
 		fieldId = 3
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetIsPublic {
+	if !issetURL {
 		fieldId = 4
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetOpenProxy {
+	if !issetIsPublic {
 		fieldId = 5
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetToken {
+	if !issetOpenProxy {
 		fieldId = 6
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetToken {
+		fieldId = 7
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetCreatedAt {
+		fieldId = 8
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetUpdatedAt {
+		fieldId = 9
 		goto RequiredFieldNotSetError
 	}
 	return nil
@@ -1715,13 +1803,13 @@ RequiredFieldNotSetError:
 
 func (p *GetMCPServerRespData) ReadField1(iprot thrift.TProtocol) error {
 
-	var _field string
-	if v, err := iprot.ReadString(); err != nil {
+	var _field int64
+	if v, err := iprot.ReadI64(); err != nil {
 		return err
 	} else {
 		_field = v
 	}
-	p.Name = _field
+	p.ID = _field
 	return nil
 }
 func (p *GetMCPServerRespData) ReadField2(iprot thrift.TProtocol) error {
@@ -1732,7 +1820,7 @@ func (p *GetMCPServerRespData) ReadField2(iprot thrift.TProtocol) error {
 	} else {
 		_field = v
 	}
-	p.Description = _field
+	p.Name = _field
 	return nil
 }
 func (p *GetMCPServerRespData) ReadField3(iprot thrift.TProtocol) error {
@@ -1743,18 +1831,18 @@ func (p *GetMCPServerRespData) ReadField3(iprot thrift.TProtocol) error {
 	} else {
 		_field = v
 	}
-	p.URL = _field
+	p.Description = _field
 	return nil
 }
 func (p *GetMCPServerRespData) ReadField4(iprot thrift.TProtocol) error {
 
-	var _field bool
-	if v, err := iprot.ReadBool(); err != nil {
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
 		_field = v
 	}
-	p.IsPublic = _field
+	p.URL = _field
 	return nil
 }
 func (p *GetMCPServerRespData) ReadField5(iprot thrift.TProtocol) error {
@@ -1765,10 +1853,21 @@ func (p *GetMCPServerRespData) ReadField5(iprot thrift.TProtocol) error {
 	} else {
 		_field = v
 	}
-	p.OpenProxy = _field
+	p.IsPublic = _field
 	return nil
 }
 func (p *GetMCPServerRespData) ReadField6(iprot thrift.TProtocol) error {
+
+	var _field bool
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.OpenProxy = _field
+	return nil
+}
+func (p *GetMCPServerRespData) ReadField7(iprot thrift.TProtocol) error {
 	_, size, err := iprot.ReadListBegin()
 	if err != nil {
 		return err
@@ -1789,6 +1888,28 @@ func (p *GetMCPServerRespData) ReadField6(iprot thrift.TProtocol) error {
 		return err
 	}
 	p.Token = _field
+	return nil
+}
+func (p *GetMCPServerRespData) ReadField8(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.CreatedAt = _field
+	return nil
+}
+func (p *GetMCPServerRespData) ReadField9(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.UpdatedAt = _field
 	return nil
 }
 
@@ -1822,6 +1943,18 @@ func (p *GetMCPServerRespData) Write(oprot thrift.TProtocol) (err error) {
 			fieldId = 6
 			goto WriteFieldError
 		}
+		if err = p.writeField7(oprot); err != nil {
+			fieldId = 7
+			goto WriteFieldError
+		}
+		if err = p.writeField8(oprot); err != nil {
+			fieldId = 8
+			goto WriteFieldError
+		}
+		if err = p.writeField9(oprot); err != nil {
+			fieldId = 9
+			goto WriteFieldError
+		}
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -1841,10 +1974,10 @@ WriteStructEndError:
 }
 
 func (p *GetMCPServerRespData) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("name", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("id", thrift.I64, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.Name); err != nil {
+	if err := oprot.WriteI64(p.ID); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1858,10 +1991,10 @@ WriteFieldEndError:
 }
 
 func (p *GetMCPServerRespData) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("description", thrift.STRING, 2); err != nil {
+	if err = oprot.WriteFieldBegin("name", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.Description); err != nil {
+	if err := oprot.WriteString(p.Name); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1875,10 +2008,10 @@ WriteFieldEndError:
 }
 
 func (p *GetMCPServerRespData) writeField3(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("url", thrift.STRING, 3); err != nil {
+	if err = oprot.WriteFieldBegin("description", thrift.STRING, 3); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.URL); err != nil {
+	if err := oprot.WriteString(p.Description); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1892,10 +2025,10 @@ WriteFieldEndError:
 }
 
 func (p *GetMCPServerRespData) writeField4(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("isPublic", thrift.BOOL, 4); err != nil {
+	if err = oprot.WriteFieldBegin("url", thrift.STRING, 4); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteBool(p.IsPublic); err != nil {
+	if err := oprot.WriteString(p.URL); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1909,10 +2042,10 @@ WriteFieldEndError:
 }
 
 func (p *GetMCPServerRespData) writeField5(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("openProxy", thrift.BOOL, 5); err != nil {
+	if err = oprot.WriteFieldBegin("isPublic", thrift.BOOL, 5); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteBool(p.OpenProxy); err != nil {
+	if err := oprot.WriteBool(p.IsPublic); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1926,7 +2059,24 @@ WriteFieldEndError:
 }
 
 func (p *GetMCPServerRespData) writeField6(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("token", thrift.LIST, 6); err != nil {
+	if err = oprot.WriteFieldBegin("openProxy", thrift.BOOL, 6); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.OpenProxy); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 end error: ", p), err)
+}
+
+func (p *GetMCPServerRespData) writeField7(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("token", thrift.LIST, 7); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Token)); err != nil {
@@ -1945,9 +2095,43 @@ func (p *GetMCPServerRespData) writeField6(oprot thrift.TProtocol) (err error) {
 	}
 	return nil
 WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 6 begin error: ", p), err)
+	return thrift.PrependError(fmt.Sprintf("%T write field 7 begin error: ", p), err)
 WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 6 end error: ", p), err)
+	return thrift.PrependError(fmt.Sprintf("%T write field 7 end error: ", p), err)
+}
+
+func (p *GetMCPServerRespData) writeField8(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("createdAt", thrift.STRING, 8); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.CreatedAt); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 8 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 8 end error: ", p), err)
+}
+
+func (p *GetMCPServerRespData) writeField9(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("updatedAt", thrift.STRING, 9); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.UpdatedAt); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 9 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 9 end error: ", p), err)
 }
 
 func (p *GetMCPServerRespData) String() string {
@@ -1959,9 +2143,12 @@ func (p *GetMCPServerRespData) String() string {
 }
 
 type GetMCPServerResp struct {
-	Code    int32                 `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
-	Message string                `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
-	Data    *GetMCPServerRespData `thrift:"data,3,optional" form:"data" json:"data,omitempty" query:"data"`
+	// 状态码
+	Code int32 `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
+	// 消息
+	Message string `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
+	// 数据
+	Data *GetMCPServerRespData `thrift:"data,3,optional" form:"data" json:"data,omitempty" query:"data"`
 }
 
 func NewGetMCPServerResp() *GetMCPServerResp {
@@ -2215,8 +2402,10 @@ func (p *GetMCPServerResp) String() string {
 
 // 获取MCPServer列表
 type GetMCPServerListReq struct {
+	// 起始位置
 	Start int64 `thrift:"start,1,required" form:"start,required" json:"start,required" query:"start,required"`
-	End   int64 `thrift:"end,2,required" form:"end,required" json:"end,required" query:"end,required"`
+	// 结束位置
+	End int64 `thrift:"end,2,required" form:"end,required" json:"end,required" query:"end,required"`
 }
 
 func NewGetMCPServerListReq() *GetMCPServerListReq {
@@ -2416,11 +2605,22 @@ func (p *GetMCPServerListReq) String() string {
 }
 
 type GetMCPServerListRespData struct {
-	Name        string `thrift:"name,1,required" form:"name,required" json:"name,required" query:"name,required"`
-	Description string `thrift:"description,2,required" form:"description,required" json:"description,required" query:"description,required"`
-	URL         string `thrift:"url,3,required" form:"url,required" json:"url,required" query:"url,required"`
-	IsPublic    bool   `thrift:"isPublic,4,required" form:"isPublic,required" json:"isPublic,required" query:"isPublic,required"`
-	OpenProxy   bool   `thrift:"openProxy,5,required" form:"openProxy,required" json:"openProxy,required" query:"openProxy,required"`
+	// MCPServer ID
+	ID int64 `thrift:"id,1,required" form:"id,required" json:"id,required" query:"id,required"`
+	// 名称
+	Name string `thrift:"name,2,required" form:"name,required" json:"name,required" query:"name,required"`
+	// 描述
+	Description string `thrift:"description,3,required" form:"description,required" json:"description,required" query:"description,required"`
+	// URL
+	URL string `thrift:"url,4,required" form:"url,required" json:"url,required" query:"url,required"`
+	// 是否公开
+	IsPublic bool `thrift:"isPublic,5,required" form:"isPublic,required" json:"isPublic,required" query:"isPublic,required"`
+	// 是否开启代理
+	OpenProxy bool `thrift:"openProxy,6,required" form:"openProxy,required" json:"openProxy,required" query:"openProxy,required"`
+	// 创建时间
+	CreatedAt string `thrift:"createdAt,7,required" form:"createdAt,required" json:"createdAt,required" query:"createdAt,required"`
+	// 更新时间
+	UpdatedAt string `thrift:"updatedAt,8,required" form:"updatedAt,required" json:"updatedAt,required" query:"updatedAt,required"`
 }
 
 func NewGetMCPServerListRespData() *GetMCPServerListRespData {
@@ -2428,6 +2628,10 @@ func NewGetMCPServerListRespData() *GetMCPServerListRespData {
 }
 
 func (p *GetMCPServerListRespData) InitDefault() {
+}
+
+func (p *GetMCPServerListRespData) GetID() (v int64) {
+	return p.ID
 }
 
 func (p *GetMCPServerListRespData) GetName() (v string) {
@@ -2450,23 +2654,37 @@ func (p *GetMCPServerListRespData) GetOpenProxy() (v bool) {
 	return p.OpenProxy
 }
 
+func (p *GetMCPServerListRespData) GetCreatedAt() (v string) {
+	return p.CreatedAt
+}
+
+func (p *GetMCPServerListRespData) GetUpdatedAt() (v string) {
+	return p.UpdatedAt
+}
+
 var fieldIDToName_GetMCPServerListRespData = map[int16]string{
-	1: "name",
-	2: "description",
-	3: "url",
-	4: "isPublic",
-	5: "openProxy",
+	1: "id",
+	2: "name",
+	3: "description",
+	4: "url",
+	5: "isPublic",
+	6: "openProxy",
+	7: "createdAt",
+	8: "updatedAt",
 }
 
 func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
+	var issetID bool = false
 	var issetName bool = false
 	var issetDescription bool = false
 	var issetURL bool = false
 	var issetIsPublic bool = false
 	var issetOpenProxy bool = false
+	var issetCreatedAt bool = false
+	var issetUpdatedAt bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
 		goto ReadStructBeginError
@@ -2483,11 +2701,11 @@ func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
 
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.STRING {
+			if fieldTypeId == thrift.I64 {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetName = true
+				issetID = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -2496,7 +2714,7 @@ func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetDescription = true
+				issetName = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -2505,16 +2723,16 @@ func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField3(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetURL = true
+				issetDescription = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
 		case 4:
-			if fieldTypeId == thrift.BOOL {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField4(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetIsPublic = true
+				issetURL = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -2523,7 +2741,34 @@ func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField5(iprot); err != nil {
 					goto ReadFieldError
 				}
+				issetIsPublic = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 6:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField6(iprot); err != nil {
+					goto ReadFieldError
+				}
 				issetOpenProxy = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 7:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField7(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetCreatedAt = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 8:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField8(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetUpdatedAt = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -2540,28 +2785,43 @@ func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
 		goto ReadStructEndError
 	}
 
-	if !issetName {
+	if !issetID {
 		fieldId = 1
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetDescription {
+	if !issetName {
 		fieldId = 2
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetURL {
+	if !issetDescription {
 		fieldId = 3
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetIsPublic {
+	if !issetURL {
 		fieldId = 4
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetOpenProxy {
+	if !issetIsPublic {
 		fieldId = 5
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetOpenProxy {
+		fieldId = 6
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetCreatedAt {
+		fieldId = 7
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetUpdatedAt {
+		fieldId = 8
 		goto RequiredFieldNotSetError
 	}
 	return nil
@@ -2584,13 +2844,13 @@ RequiredFieldNotSetError:
 
 func (p *GetMCPServerListRespData) ReadField1(iprot thrift.TProtocol) error {
 
-	var _field string
-	if v, err := iprot.ReadString(); err != nil {
+	var _field int64
+	if v, err := iprot.ReadI64(); err != nil {
 		return err
 	} else {
 		_field = v
 	}
-	p.Name = _field
+	p.ID = _field
 	return nil
 }
 func (p *GetMCPServerListRespData) ReadField2(iprot thrift.TProtocol) error {
@@ -2601,7 +2861,7 @@ func (p *GetMCPServerListRespData) ReadField2(iprot thrift.TProtocol) error {
 	} else {
 		_field = v
 	}
-	p.Description = _field
+	p.Name = _field
 	return nil
 }
 func (p *GetMCPServerListRespData) ReadField3(iprot thrift.TProtocol) error {
@@ -2612,18 +2872,18 @@ func (p *GetMCPServerListRespData) ReadField3(iprot thrift.TProtocol) error {
 	} else {
 		_field = v
 	}
-	p.URL = _field
+	p.Description = _field
 	return nil
 }
 func (p *GetMCPServerListRespData) ReadField4(iprot thrift.TProtocol) error {
 
-	var _field bool
-	if v, err := iprot.ReadBool(); err != nil {
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
 		_field = v
 	}
-	p.IsPublic = _field
+	p.URL = _field
 	return nil
 }
 func (p *GetMCPServerListRespData) ReadField5(iprot thrift.TProtocol) error {
@@ -2634,7 +2894,40 @@ func (p *GetMCPServerListRespData) ReadField5(iprot thrift.TProtocol) error {
 	} else {
 		_field = v
 	}
+	p.IsPublic = _field
+	return nil
+}
+func (p *GetMCPServerListRespData) ReadField6(iprot thrift.TProtocol) error {
+
+	var _field bool
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
 	p.OpenProxy = _field
+	return nil
+}
+func (p *GetMCPServerListRespData) ReadField7(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.CreatedAt = _field
+	return nil
+}
+func (p *GetMCPServerListRespData) ReadField8(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.UpdatedAt = _field
 	return nil
 }
 
@@ -2664,6 +2957,18 @@ func (p *GetMCPServerListRespData) Write(oprot thrift.TProtocol) (err error) {
 			fieldId = 5
 			goto WriteFieldError
 		}
+		if err = p.writeField6(oprot); err != nil {
+			fieldId = 6
+			goto WriteFieldError
+		}
+		if err = p.writeField7(oprot); err != nil {
+			fieldId = 7
+			goto WriteFieldError
+		}
+		if err = p.writeField8(oprot); err != nil {
+			fieldId = 8
+			goto WriteFieldError
+		}
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -2683,10 +2988,10 @@ WriteStructEndError:
 }
 
 func (p *GetMCPServerListRespData) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("name", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("id", thrift.I64, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.Name); err != nil {
+	if err := oprot.WriteI64(p.ID); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -2700,10 +3005,10 @@ WriteFieldEndError:
 }
 
 func (p *GetMCPServerListRespData) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("description", thrift.STRING, 2); err != nil {
+	if err = oprot.WriteFieldBegin("name", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.Description); err != nil {
+	if err := oprot.WriteString(p.Name); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -2717,10 +3022,10 @@ WriteFieldEndError:
 }
 
 func (p *GetMCPServerListRespData) writeField3(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("url", thrift.STRING, 3); err != nil {
+	if err = oprot.WriteFieldBegin("description", thrift.STRING, 3); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.URL); err != nil {
+	if err := oprot.WriteString(p.Description); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -2734,10 +3039,10 @@ WriteFieldEndError:
 }
 
 func (p *GetMCPServerListRespData) writeField4(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("isPublic", thrift.BOOL, 4); err != nil {
+	if err = oprot.WriteFieldBegin("url", thrift.STRING, 4); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteBool(p.IsPublic); err != nil {
+	if err := oprot.WriteString(p.URL); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -2751,10 +3056,10 @@ WriteFieldEndError:
 }
 
 func (p *GetMCPServerListRespData) writeField5(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("openProxy", thrift.BOOL, 5); err != nil {
+	if err = oprot.WriteFieldBegin("isPublic", thrift.BOOL, 5); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteBool(p.OpenProxy); err != nil {
+	if err := oprot.WriteBool(p.IsPublic); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -2767,6 +3072,57 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 5 end error: ", p), err)
 }
 
+func (p *GetMCPServerListRespData) writeField6(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("openProxy", thrift.BOOL, 6); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.OpenProxy); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 end error: ", p), err)
+}
+
+func (p *GetMCPServerListRespData) writeField7(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("createdAt", thrift.STRING, 7); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.CreatedAt); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 7 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 7 end error: ", p), err)
+}
+
+func (p *GetMCPServerListRespData) writeField8(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("updatedAt", thrift.STRING, 8); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.UpdatedAt); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 8 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 8 end error: ", p), err)
+}
+
 func (p *GetMCPServerListRespData) String() string {
 	if p == nil {
 		return "<nil>"
@@ -2776,9 +3132,12 @@ func (p *GetMCPServerListRespData) String() string {
 }
 
 type GetMCPServerListResp struct {
-	Code    int32                       `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
-	Message string                      `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
-	Data    []*GetMCPServerListRespData `thrift:"data,3,optional,list<GetMCPServerListRespData>" form:"data" json:"data,omitempty" query:"data"`
+	// 状态码
+	Code int32 `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
+	// 消息
+	Message string `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
+	// 数据列表
+	Data []*GetMCPServerListRespData `thrift:"data,3,default,list<GetMCPServerListRespData>" form:"data" json:"data" query:"data"`
 }
 
 func NewGetMCPServerListResp() *GetMCPServerListResp {
@@ -2796,12 +3155,7 @@ func (p *GetMCPServerListResp) GetMessage() (v string) {
 	return p.Message
 }
 
-var GetMCPServerListResp_Data_DEFAULT []*GetMCPServerListRespData
-
 func (p *GetMCPServerListResp) GetData() (v []*GetMCPServerListRespData) {
-	if !p.IsSetData() {
-		return GetMCPServerListResp_Data_DEFAULT
-	}
 	return p.Data
 }
 
@@ -2809,10 +3163,6 @@ var fieldIDToName_GetMCPServerListResp = map[int16]string{
 	1: "code",
 	2: "message",
 	3: "data",
-}
-
-func (p *GetMCPServerListResp) IsSetData() bool {
-	return p.Data != nil
 }
 
 func (p *GetMCPServerListResp) Read(iprot thrift.TProtocol) (err error) {
@@ -3019,24 +3369,22 @@ WriteFieldEndError:
 }
 
 func (p *GetMCPServerListResp) writeField3(oprot thrift.TProtocol) (err error) {
-	if p.IsSetData() {
-		if err = oprot.WriteFieldBegin("data", thrift.LIST, 3); err != nil {
-			goto WriteFieldBeginError
-		}
-		if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Data)); err != nil {
+	if err = oprot.WriteFieldBegin("data", thrift.LIST, 3); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Data)); err != nil {
+		return err
+	}
+	for _, v := range p.Data {
+		if err := v.Write(oprot); err != nil {
 			return err
 		}
-		for _, v := range p.Data {
-			if err := v.Write(oprot); err != nil {
-				return err
-			}
-		}
-		if err := oprot.WriteListEnd(); err != nil {
-			return err
-		}
-		if err = oprot.WriteFieldEnd(); err != nil {
-			goto WriteFieldEndError
-		}
+	}
+	if err := oprot.WriteListEnd(); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
 	}
 	return nil
 WriteFieldBeginError:
@@ -3055,12 +3403,18 @@ func (p *GetMCPServerListResp) String() string {
 
 // 更新现有MCPServer
 type UpdateMCPServerReq struct {
-	ID          int64  `thrift:"id,1,required" json:"id,required" path:"id,required"`
-	Name        string `thrift:"name,2,required" form:"name,required" json:"name,required" query:"name,required"`
+	// MCPServer ID
+	ID int64 `thrift:"id,1,required" json:"id,required" path:"id,required"`
+	// 名称
+	Name string `thrift:"name,2,required" form:"name,required" json:"name,required" query:"name,required"`
+	// 描述
 	Description string `thrift:"description,3,required" form:"description,required" json:"description,required" query:"description,required"`
-	URL         string `thrift:"url,4,required" form:"url,required" json:"url,required" query:"url,required"`
-	IsPublic    bool   `thrift:"isPublic,5,required" form:"isPublic,required" json:"isPublic,required" query:"isPublic,required"`
-	OpenProxy   bool   `thrift:"openProxy,6,required" form:"openProxy,required" json:"openProxy,required" query:"openProxy,required"`
+	// URL地址
+	URL string `thrift:"url,4,required" form:"url,required" json:"url,required" query:"url,required"`
+	// 是否公开
+	IsPublic bool `thrift:"isPublic,5,required" form:"isPublic,required" json:"isPublic,required" query:"isPublic,required"`
+	// 是否开启代理
+	OpenProxy bool `thrift:"openProxy,6,required" form:"openProxy,required" json:"openProxy,required" query:"openProxy,required"`
 }
 
 func NewUpdateMCPServerReq() *UpdateMCPServerReq {
@@ -3468,7 +3822,9 @@ func (p *UpdateMCPServerReq) String() string {
 }
 
 type UpdateMCPServerResp struct {
-	Code    int32  `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
+	// 状态码
+	Code int32 `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
+	// 消息
 	Message string `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
 }
 

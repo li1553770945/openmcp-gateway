@@ -1,6 +1,8 @@
 package mcpserver
 
 import (
+	"errors"
+
 	"github.com/li1553770945/openmcp-gateway/biz/internal/do"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/domain"
 	"gorm.io/gorm"
@@ -25,7 +27,7 @@ func (r *MCPServerRepoImpl) SaveMCPServer(server *domain.MCPServerEntity) error 
 	if serverDO.ID == 0 {
 		return r.DB.Create(serverDO).Error
 	} else {
-		return r.DB.Save(serverDO).Error
+		return r.DB.Omit("CreatedAt", "DeletedAt").Save(serverDO).Error
 	}
 }
 
@@ -33,6 +35,9 @@ func (r *MCPServerRepoImpl) FindMCPServerById(id int64) (*domain.MCPServerEntity
 	var serverDO do.MCPServerDO
 	err := r.DB.Preload("Tokens").Where("id = ?", id).First(&serverDO).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return DoToEntity(&serverDO), nil

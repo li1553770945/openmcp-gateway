@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type MCPServerEntity struct {
 	ID          int64
 	Name        string
@@ -9,6 +11,8 @@ type MCPServerEntity struct {
 	OpenProxy   bool
 	CreatorID   int64
 	Tokens      []MCPServerTokenEntity
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 type MCPServerTokenEntity struct {

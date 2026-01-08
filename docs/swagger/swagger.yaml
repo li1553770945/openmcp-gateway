@@ -3,176 +3,243 @@ definitions:
   auth.LoginReq:
     properties:
       password:
+        description: 密码
         type: string
       username:
+        description: 用户名
         type: string
     type: object
   auth.LoginResp:
     properties:
       code:
+        description: 状态码
         type: integer
       data:
-        $ref: '#/definitions/auth.LoginRespData'
+        allOf:
+        - $ref: '#/definitions/auth.LoginRespData'
+        description: 数据
       message:
+        description: 消息
         type: string
     type: object
   auth.LoginRespData:
     properties:
       token:
+        description: 登录凭证
         type: string
     type: object
   auth.RegisterReq:
     properties:
       email:
+        description: 邮箱
         type: string
       password:
+        description: 密码
         type: string
       username:
+        description: 用户名
         type: string
     type: object
   auth.RegisterResp:
     properties:
       code:
+        description: 状态码
         type: integer
       message:
+        description: 消息
         type: string
     type: object
   mcpserver.AddMCPServerReq:
     properties:
       description:
+        description: MCPServer 描述
         type: string
       isPublic:
+        description: 是否公开
         type: boolean
       name:
+        description: MCPServer 名称
         type: string
       openProxy:
+        description: 是否开启代理
         type: boolean
       url:
+        description: MCPServer URL
         type: string
     type: object
   mcpserver.AddMCPServerResp:
     properties:
       code:
+        description: 状态码
         type: integer
       message:
+        description: 消息
         type: string
     type: object
   mcpserver.GenerateTokenReq:
     properties:
       description:
+        description: Token 描述
         type: string
       id:
+        description: MCPServer ID
         type: integer
     type: object
   mcpserver.GenerateTokenResp:
     properties:
       code:
+        description: 状态码
         type: integer
       data:
-        $ref: '#/definitions/mcpserver.GenerateTokenRespData'
+        allOf:
+        - $ref: '#/definitions/mcpserver.GenerateTokenRespData'
+        description: 数据
       message:
+        description: 消息
         type: string
     type: object
   mcpserver.GenerateTokenRespData:
     properties:
       token:
+        description: 生成的 Token
         type: string
     type: object
   mcpserver.GetMCPServerListResp:
     properties:
       code:
+        description: 状态码
         type: integer
       data:
+        description: 数据列表
         items:
           $ref: '#/definitions/mcpserver.GetMCPServerListRespData'
         type: array
       message:
+        description: 消息
         type: string
     type: object
   mcpserver.GetMCPServerListRespData:
     properties:
       description:
+        description: 描述
         type: string
+      id:
+        description: MCPServer ID
+        type: integer
       isPublic:
+        description: 是否公开
         type: boolean
       name:
+        description: 名称
         type: string
       openProxy:
+        description: 是否开启代理
         type: boolean
       url:
+        description: URL
         type: string
     type: object
   mcpserver.GetMCPServerResp:
     properties:
       code:
+        description: 状态码
         type: integer
       data:
-        $ref: '#/definitions/mcpserver.GetMCPServerRespData'
+        allOf:
+        - $ref: '#/definitions/mcpserver.GetMCPServerRespData'
+        description: 数据
       message:
+        description: 消息
         type: string
     type: object
   mcpserver.GetMCPServerRespData:
     properties:
       description:
+        description: 描述
         type: string
+      id:
+        description: MCPServer ID
+        type: integer
       isPublic:
+        description: 是否公开
         type: boolean
       name:
+        description: 名称
         type: string
       openProxy:
+        description: 是否开启代理
         type: boolean
       token:
+        description: Token列表
         items:
           $ref: '#/definitions/mcpserver.TokenData'
         type: array
       url:
+        description: URL
         type: string
     type: object
   mcpserver.TokenData:
     properties:
       description:
+        description: 描述
         type: string
       token:
+        description: Token
         type: string
     type: object
   mcpserver.UpdateMCPServerReq:
     properties:
       description:
+        description: 描述
         type: string
       id:
+        description: MCPServer ID
         type: integer
       isPublic:
+        description: 是否公开
         type: boolean
       name:
+        description: 名称
         type: string
       openProxy:
+        description: 是否开启代理
         type: boolean
       url:
+        description: URL地址
         type: string
     type: object
   mcpserver.UpdateMCPServerResp:
     properties:
       code:
+        description: 状态码
         type: integer
       message:
+        description: 消息
         type: string
     type: object
   user.GetUserInfoResp:
     properties:
       code:
+        description: 状态码
         type: integer
       data:
-        $ref: '#/definitions/user.GetUserInfoRespData'
+        allOf:
+        - $ref: '#/definitions/user.GetUserInfoRespData'
+        description: 数据
       message:
+        description: 消息
         type: string
     type: object
   user.GetUserInfoRespData:
     properties:
       nickname:
+        description: 昵称
         type: string
       role:
+        description: 角色
         type: string
       username:
+        description: 用户名
         type: string
     type: object
 info:
@@ -322,10 +389,12 @@ paths:
     get:
       description: 获取所有公开的 MCPServer 列表
       parameters:
-      - in: query
+      - description: 结束位置
+        in: query
         name: end
         type: integer
-      - in: query
+      - description: 起始位置
+        in: query
         name: start
         type: integer
       produces:
@@ -342,10 +411,12 @@ paths:
     get:
       description: 获取当前用户创建的 MCPServer 列表
       parameters:
-      - in: query
+      - description: 结束位置
+        in: query
         name: end
         type: integer
-      - in: query
+      - description: 起始位置
+        in: query
         name: start
         type: integer
       produces:
@@ -362,7 +433,8 @@ paths:
     get:
       description: 获取当前登录用户的详细信息
       parameters:
-      - in: query
+      - description: 用户ID
+        in: query
         name: userId
         type: integer
       produces:
@@ -379,7 +451,8 @@ paths:
     get:
       description: 根据用户 ID 获取用户详细信息
       parameters:
-      - in: query
+      - description: 用户ID
+        in: query
         name: userId
         type: integer
       produces:

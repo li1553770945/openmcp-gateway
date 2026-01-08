@@ -238,11 +238,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "结束位置",
                         "name": "end",
                         "in": "query"
                     },
                     {
                         "type": "integer",
+                        "description": "起始位置",
                         "name": "start",
                         "in": "query"
                     }
@@ -270,11 +272,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "结束位置",
                         "name": "end",
                         "in": "query"
                     },
                     {
                         "type": "integer",
+                        "description": "起始位置",
                         "name": "start",
                         "in": "query"
                     }
@@ -302,6 +306,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "用户ID",
                         "name": "userId",
                         "in": "query"
                     }
@@ -329,6 +334,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "用户ID",
                         "name": "userId",
                         "in": "query"
                     }
@@ -369,9 +375,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "password": {
+                    "description": "密码",
                     "type": "string"
                 },
                 "username": {
+                    "description": "用户名",
                     "type": "string"
                 }
             }
@@ -380,12 +388,19 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "code": {
+                    "description": "状态码",
                     "type": "integer"
                 },
                 "data": {
-                    "$ref": "#/definitions/auth.LoginRespData"
+                    "description": "数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/auth.LoginRespData"
+                        }
+                    ]
                 },
                 "message": {
+                    "description": "消息",
                     "type": "string"
                 }
             }
@@ -394,6 +409,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "token": {
+                    "description": "登录凭证",
                     "type": "string"
                 }
             }
@@ -402,12 +418,15 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
+                    "description": "邮箱",
                     "type": "string"
                 },
                 "password": {
+                    "description": "密码",
                     "type": "string"
                 },
                 "username": {
+                    "description": "用户名",
                     "type": "string"
                 }
             }
@@ -416,9 +435,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "code": {
+                    "description": "状态码",
                     "type": "integer"
                 },
                 "message": {
+                    "description": "消息",
                     "type": "string"
                 }
             }
@@ -427,18 +448,23 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
+                    "description": "MCPServer 描述",
                     "type": "string"
                 },
                 "isPublic": {
+                    "description": "是否公开",
                     "type": "boolean"
                 },
                 "name": {
+                    "description": "MCPServer 名称",
                     "type": "string"
                 },
                 "openProxy": {
+                    "description": "是否开启代理",
                     "type": "boolean"
                 },
                 "url": {
+                    "description": "MCPServer URL",
                     "type": "string"
                 }
             }
@@ -447,9 +473,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "code": {
+                    "description": "状态码",
                     "type": "integer"
                 },
                 "message": {
+                    "description": "消息",
                     "type": "string"
                 }
             }
@@ -458,9 +486,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
+                    "description": "Token 描述",
                     "type": "string"
                 },
                 "id": {
+                    "description": "MCPServer ID",
                     "type": "integer"
                 }
             }
@@ -469,12 +499,19 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "code": {
+                    "description": "状态码",
                     "type": "integer"
                 },
                 "data": {
-                    "$ref": "#/definitions/mcpserver.GenerateTokenRespData"
+                    "description": "数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/mcpserver.GenerateTokenRespData"
+                        }
+                    ]
                 },
                 "message": {
+                    "description": "消息",
                     "type": "string"
                 }
             }
@@ -483,6 +520,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "token": {
+                    "description": "生成的 Token",
                     "type": "string"
                 }
             }
@@ -491,15 +529,18 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "code": {
+                    "description": "状态码",
                     "type": "integer"
                 },
                 "data": {
+                    "description": "数据列表",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/mcpserver.GetMCPServerListRespData"
                     }
                 },
                 "message": {
+                    "description": "消息",
                     "type": "string"
                 }
             }
@@ -508,18 +549,27 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
+                    "description": "描述",
                     "type": "string"
                 },
+                "id": {
+                    "description": "MCPServer ID",
+                    "type": "integer"
+                },
                 "isPublic": {
+                    "description": "是否公开",
                     "type": "boolean"
                 },
                 "name": {
+                    "description": "名称",
                     "type": "string"
                 },
                 "openProxy": {
+                    "description": "是否开启代理",
                     "type": "boolean"
                 },
                 "url": {
+                    "description": "URL",
                     "type": "string"
                 }
             }
@@ -528,12 +578,19 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "code": {
+                    "description": "状态码",
                     "type": "integer"
                 },
                 "data": {
-                    "$ref": "#/definitions/mcpserver.GetMCPServerRespData"
+                    "description": "数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/mcpserver.GetMCPServerRespData"
+                        }
+                    ]
                 },
                 "message": {
+                    "description": "消息",
                     "type": "string"
                 }
             }
@@ -542,24 +599,34 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
+                    "description": "描述",
                     "type": "string"
                 },
+                "id": {
+                    "description": "MCPServer ID",
+                    "type": "integer"
+                },
                 "isPublic": {
+                    "description": "是否公开",
                     "type": "boolean"
                 },
                 "name": {
+                    "description": "名称",
                     "type": "string"
                 },
                 "openProxy": {
+                    "description": "是否开启代理",
                     "type": "boolean"
                 },
                 "token": {
+                    "description": "Token列表",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/mcpserver.TokenData"
                     }
                 },
                 "url": {
+                    "description": "URL",
                     "type": "string"
                 }
             }
@@ -568,9 +635,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
+                    "description": "描述",
                     "type": "string"
                 },
                 "token": {
+                    "description": "Token",
                     "type": "string"
                 }
             }
@@ -579,21 +648,27 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
+                    "description": "描述",
                     "type": "string"
                 },
                 "id": {
+                    "description": "MCPServer ID",
                     "type": "integer"
                 },
                 "isPublic": {
+                    "description": "是否公开",
                     "type": "boolean"
                 },
                 "name": {
+                    "description": "名称",
                     "type": "string"
                 },
                 "openProxy": {
+                    "description": "是否开启代理",
                     "type": "boolean"
                 },
                 "url": {
+                    "description": "URL地址",
                     "type": "string"
                 }
             }
@@ -602,9 +677,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "code": {
+                    "description": "状态码",
                     "type": "integer"
                 },
                 "message": {
+                    "description": "消息",
                     "type": "string"
                 }
             }
@@ -613,12 +690,19 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "code": {
+                    "description": "状态码",
                     "type": "integer"
                 },
                 "data": {
-                    "$ref": "#/definitions/user.GetUserInfoRespData"
+                    "description": "数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/user.GetUserInfoRespData"
+                        }
+                    ]
                 },
                 "message": {
+                    "description": "消息",
                     "type": "string"
                 }
             }
@@ -627,12 +711,15 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "nickname": {
+                    "description": "昵称",
                     "type": "string"
                 },
                 "role": {
+                    "description": "角色",
                     "type": "string"
                 },
                 "username": {
+                    "description": "用户名",
                     "type": "string"
                 }
             }

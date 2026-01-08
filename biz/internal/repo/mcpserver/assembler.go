@@ -23,6 +23,8 @@ func DoToEntity(serverDO *do.MCPServerDO) *domain.MCPServerEntity {
 		OpenProxy:   serverDO.OpenProxy,
 		CreatorID:   serverDO.CreatorID,
 		Tokens:      tokens,
+		CreatedAt:   serverDO.CreatedAt,
+		UpdatedAt:   serverDO.UpdatedAt,
 	}
 }
 
@@ -37,7 +39,9 @@ func EntityToDo(serverEntity *domain.MCPServerEntity) *do.MCPServerDO {
 
 	return &do.MCPServerDO{
 		BaseModel: do.BaseModel{
-			ID: serverEntity.ID,
+			ID:        serverEntity.ID,
+			CreatedAt: serverEntity.CreatedAt,
+			UpdatedAt: serverEntity.UpdatedAt,
 		},
 		Name:        serverEntity.Name,
 		Description: serverEntity.Description,

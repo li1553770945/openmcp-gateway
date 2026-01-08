@@ -47,7 +47,7 @@ func (Repo *UserRepoImpl) SaveUser(userEntity *domain.UserEntity) error {
 		err := Repo.DB.Create(&userDO).Error
 		return err
 	} else {
-		err := Repo.DB.Save(&userDO).Error
+		err := Repo.DB.Omit("CreatedAt", "DeletedAt").Save(&userDO).Error
 		return err
 	}
 }

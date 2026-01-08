@@ -1,6 +1,8 @@
 package mcpserver
 
 import (
+	"time"
+
 	"github.com/li1553770945/openmcp-gateway/biz/internal/domain"
 	"github.com/li1553770945/openmcp-gateway/biz/model/mcpserver"
 )
@@ -10,11 +12,14 @@ func EntityToMCPServerListRespData(entity *domain.MCPServerEntity) *mcpserver.Ge
 		return nil
 	}
 	return &mcpserver.GetMCPServerListRespData{
+		ID:          entity.ID,
 		Name:        entity.Name,
 		Description: entity.Description,
 		URL:         entity.Url,
 		IsPublic:    entity.IsPublic,
 		OpenProxy:   entity.OpenProxy,
+		CreatedAt:   entity.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   entity.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
@@ -31,12 +36,15 @@ func EntityToMCPServerRespData(entity *domain.MCPServerEntity) *mcpserver.GetMCP
 	}
 
 	return &mcpserver.GetMCPServerRespData{
+		ID:          entity.ID,
 		Name:        entity.Name,
 		Description: entity.Description,
 		URL:         entity.Url,
 		IsPublic:    entity.IsPublic,
 		OpenProxy:   entity.OpenProxy,
 		Token:       tokens,
+		CreatedAt:   entity.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   entity.UpdatedAt.Format(time.RFC3339),
 	}
 }
 

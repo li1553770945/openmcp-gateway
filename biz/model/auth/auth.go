@@ -9,7 +9,9 @@ import (
 )
 
 type LoginReq struct {
+	// 用户名
 	Username string `thrift:"username,1,required" form:"username,required" json:"username,required" query:"username,required"`
+	// 密码
 	Password string `thrift:"password,2,required" form:"password,required" json:"password,required" query:"password,required"`
 }
 
@@ -210,6 +212,7 @@ func (p *LoginReq) String() string {
 }
 
 type LoginRespData struct {
+	// 登录凭证
 	Token string `thrift:"token,1" form:"token" json:"token" query:"token"`
 }
 
@@ -350,9 +353,12 @@ func (p *LoginRespData) String() string {
 }
 
 type LoginResp struct {
-	Code    int32          `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
-	Message string         `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
-	Data    *LoginRespData `thrift:"data,3,optional" form:"data" json:"data,omitempty" query:"data"`
+	// 状态码
+	Code int32 `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
+	// 消息
+	Message string `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
+	// 数据
+	Data *LoginRespData `thrift:"data,3,optional" form:"data" json:"data,omitempty" query:"data"`
 }
 
 func NewLoginResp() *LoginResp {
@@ -605,9 +611,12 @@ func (p *LoginResp) String() string {
 }
 
 type RegisterReq struct {
+	// 用户名
 	Username string `thrift:"username,1,required" form:"username,required" json:"username,required" query:"username,required"`
+	// 密码
 	Password string `thrift:"password,2,required" form:"password,required" json:"password,required" query:"password,required"`
-	Email    string `thrift:"email,3,required" form:"email,required" json:"email,required" query:"email,required"`
+	// 邮箱
+	Email string `thrift:"email,3,required" form:"email,required" json:"email,required" query:"email,required"`
 }
 
 func NewRegisterReq() *RegisterReq {
@@ -859,7 +868,9 @@ func (p *RegisterReq) String() string {
 }
 
 type RegisterResp struct {
-	Code    int32  `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
+	// 状态码
+	Code int32 `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
+	// 消息
 	Message string `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
 }
 

@@ -62,7 +62,7 @@ func (s *MCPServerServiceImpl) GenerateToken(ctx context.Context, req *mcpserver
 	// Permission check
 	creatorID, _ := ctx.Value("user_id").(int64)
 	if server.CreatorID != creatorID {
-		return &mcpserver.GenerateTokenResp{Code: constant.Unauthorized, Message: "无权限"}
+		return &mcpserver.GenerateTokenResp{Code: constant.Unauthorized, Message: "您无权限生成该 MCPServer 的 Token"}
 	}
 
 	tokenStr := generateRandomToken(32)
@@ -92,9 +92,9 @@ func (s *MCPServerServiceImpl) GetSelfMCPServerList(ctx context.Context, req *mc
 		return &mcpserver.GetMCPServerListResp{Code: constant.SystemError, Message: "获取服务器列表失败"}
 	}
 
-	data := make([]*mcpserver.GetMCPServerListRespData, len(list))
-	for i, v := range list {
-		data[i] = EntityToMCPServerListRespData(v)
+	data := make([]*mcpserver.GetMCPServerListRespData, 0)
+	for _, v := range list {
+		data = append(data, EntityToMCPServerListRespData(v))
 	}
 
 	return &mcpserver.GetMCPServerListResp{
@@ -110,9 +110,9 @@ func (s *MCPServerServiceImpl) GetPublicMCPServerList(ctx context.Context, req *
 		return &mcpserver.GetMCPServerListResp{Code: constant.SystemError, Message: "获取公开服务器列表失败"}
 	}
 
-	data := make([]*mcpserver.GetMCPServerListRespData, len(list))
-	for i, v := range list {
-		data[i] = EntityToMCPServerListRespData(v)
+	data := make([]*mcpserver.GetMCPServerListRespData, 0)
+	for _, v := range list {
+		data = append(data, EntityToMCPServerListRespData(v))
 	}
 
 	return &mcpserver.GetMCPServerListResp{
@@ -130,7 +130,7 @@ func (s *MCPServerServiceImpl) UpdateMCPServer(ctx context.Context, req *mcpserv
 
 	creatorID, _ := ctx.Value("user_id").(int64)
 	if server.CreatorID != creatorID {
-		return &mcpserver.UpdateMCPServerResp{Code: constant.Unauthorized, Message: "无权限"}
+		return &mcpserver.UpdateMCPServerResp{Code: constant.Unauthorized, Message: "您无权限更新该 MCPServer"}
 	}
 
 	server.Name = req.Name
@@ -158,7 +158,7 @@ func (s *MCPServerServiceImpl) GetMCPServer(ctx context.Context, req *mcpserver.
 
 	creatorID, _ := ctx.Value("user_id").(int64)
 	if !server.IsPublic && server.CreatorID != creatorID {
-		return &mcpserver.GetMCPServerResp{Code: constant.Unauthorized, Message: "无权限"}
+		return &mcpserver.GetMCPServerResp{Code: constant.Unauthorized, Message: "您无权限查看该 MCPServer 详情"}
 	}
 
 	return &mcpserver.GetMCPServerResp{

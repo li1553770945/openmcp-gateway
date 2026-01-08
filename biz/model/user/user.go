@@ -9,6 +9,7 @@ import (
 )
 
 type GetUserInfoReq struct {
+	// 用户ID
 	UserId int64 `thrift:"userId,1,required" json:"userId,required" query:"user_id,required"`
 }
 
@@ -157,9 +158,12 @@ func (p *GetUserInfoReq) String() string {
 }
 
 type GetUserInfoRespData struct {
+	// 用户名
 	Username string `thrift:"username,1" form:"username" json:"username" query:"username"`
+	// 昵称
 	Nickname string `thrift:"nickname,2" form:"nickname" json:"nickname" query:"nickname"`
-	Role     string `thrift:"role,3" form:"role" json:"role" query:"role"`
+	// 角色
+	Role string `thrift:"role,3" form:"role" json:"role" query:"role"`
 }
 
 func NewGetUserInfoRespData() *GetUserInfoRespData {
@@ -389,9 +393,12 @@ func (p *GetUserInfoRespData) String() string {
 }
 
 type GetUserInfoResp struct {
-	Code    int32                `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
-	Message string               `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
-	Data    *GetUserInfoRespData `thrift:"data,3,optional" form:"data" json:"data,omitempty" query:"data"`
+	// 状态码
+	Code int32 `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
+	// 消息
+	Message string `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
+	// 数据
+	Data *GetUserInfoRespData `thrift:"data,3,optional" form:"data" json:"data,omitempty" query:"data"`
 }
 
 func NewGetUserInfoResp() *GetUserInfoResp {
