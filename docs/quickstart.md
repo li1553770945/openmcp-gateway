@@ -14,7 +14,7 @@
 1. 克隆代码库
 
 ```bash
-git clone
+git clone https://github.com/li1553770945/openmcp-gateway
 cd openmcp-gateway
 ```
 
