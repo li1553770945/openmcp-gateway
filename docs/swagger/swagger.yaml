@@ -1,0 +1,408 @@
+basePath: /
+definitions:
+  auth.LoginReq:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  auth.LoginResp:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/auth.LoginRespData'
+      message:
+        type: string
+    type: object
+  auth.LoginRespData:
+    properties:
+      token:
+        type: string
+    type: object
+  auth.RegisterReq:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  auth.RegisterResp:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  mcpserver.AddMCPServerReq:
+    properties:
+      description:
+        type: string
+      isPublic:
+        type: boolean
+      name:
+        type: string
+      openProxy:
+        type: boolean
+      url:
+        type: string
+    type: object
+  mcpserver.AddMCPServerResp:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  mcpserver.GenerateTokenReq:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+    type: object
+  mcpserver.GenerateTokenResp:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/mcpserver.GenerateTokenRespData'
+      message:
+        type: string
+    type: object
+  mcpserver.GenerateTokenRespData:
+    properties:
+      token:
+        type: string
+    type: object
+  mcpserver.GetMCPServerListResp:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/mcpserver.GetMCPServerListRespData'
+        type: array
+      message:
+        type: string
+    type: object
+  mcpserver.GetMCPServerListRespData:
+    properties:
+      description:
+        type: string
+      isPublic:
+        type: boolean
+      name:
+        type: string
+      openProxy:
+        type: boolean
+      url:
+        type: string
+    type: object
+  mcpserver.GetMCPServerResp:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/mcpserver.GetMCPServerRespData'
+      message:
+        type: string
+    type: object
+  mcpserver.GetMCPServerRespData:
+    properties:
+      description:
+        type: string
+      isPublic:
+        type: boolean
+      name:
+        type: string
+      openProxy:
+        type: boolean
+      token:
+        items:
+          $ref: '#/definitions/mcpserver.TokenData'
+        type: array
+      url:
+        type: string
+    type: object
+  mcpserver.TokenData:
+    properties:
+      description:
+        type: string
+      token:
+        type: string
+    type: object
+  mcpserver.UpdateMCPServerReq:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      isPublic:
+        type: boolean
+      name:
+        type: string
+      openProxy:
+        type: boolean
+      url:
+        type: string
+    type: object
+  mcpserver.UpdateMCPServerResp:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  user.GetUserInfoResp:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/user.GetUserInfoRespData'
+      message:
+        type: string
+    type: object
+  user.GetUserInfoRespData:
+    properties:
+      nickname:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: OpenMCP 网关服务 API 文档
+  title: OpenMCP Gateway API
+  version: "1.0"
+paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 用户使用账号密码登录
+      parameters:
+      - description: 登录请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功 (Code=0) 或失败 (Code!=0)
+          schema:
+            $ref: '#/definitions/auth.LoginResp'
+      summary: 用户登录
+      tags:
+      - 认证管理
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: 新用户注册账号
+      parameters:
+      - description: 注册请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功 (Code=0) 或失败 (Code!=0)
+          schema:
+            $ref: '#/definitions/auth.RegisterResp'
+      summary: 用户注册
+      tags:
+      - 认证管理
+  /api/mcpservers:
+    post:
+      consumes:
+      - application/json
+      description: 注册一个新的 MCPServer 服务
+      parameters:
+      - description: 添加请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/mcpserver.AddMCPServerReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/mcpserver.AddMCPServerResp'
+      summary: 添加 MCPServer
+      tags:
+      - MCPServer管理
+  /api/mcpservers/:id:
+    get:
+      description: 根据 ID 获取指定的 MCPServer 详情
+      parameters:
+      - description: MCPServer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/mcpserver.GetMCPServerResp'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/mcpserver.GetMCPServerResp'
+      summary: 获取单个 MCPServer
+      tags:
+      - MCPServer管理
+    put:
+      consumes:
+      - application/json
+      description: 更新指定的 MCPServer 信息
+      parameters:
+      - description: MCPServer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 更新请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/mcpserver.UpdateMCPServerReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/mcpserver.UpdateMCPServerResp'
+      summary: 更新 MCPServer
+      tags:
+      - MCPServer管理
+  /api/mcpservers/generate-token:
+    post:
+      consumes:
+      - application/json
+      description: 为 MCPServer 生成访问 Token
+      parameters:
+      - description: 生成Token请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/mcpserver.GenerateTokenReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/mcpserver.GenerateTokenResp'
+      summary: 生成 Token
+      tags:
+      - MCPServer管理
+  /api/mcpservers/public:
+    get:
+      description: 获取所有公开的 MCPServer 列表
+      parameters:
+      - in: query
+        name: end
+        type: integer
+      - in: query
+        name: start
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/mcpserver.GetMCPServerListResp'
+      summary: 获取公共 MCPServer 列表
+      tags:
+      - MCPServer管理
+  /api/mcpservers/self:
+    get:
+      description: 获取当前用户创建的 MCPServer 列表
+      parameters:
+      - in: query
+        name: end
+        type: integer
+      - in: query
+        name: start
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/mcpserver.GetMCPServerListResp'
+      summary: 获取我的 MCPServer 列表
+      tags:
+      - MCPServer管理
+  /api/users/me:
+    get:
+      description: 获取当前登录用户的详细信息
+      parameters:
+      - in: query
+        name: userId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/user.GetUserInfoResp'
+      summary: 获取当前用户信息
+      tags:
+      - 用户管理
+  /api/users/user-info:
+    get:
+      description: 根据用户 ID 获取用户详细信息
+      parameters:
+      - in: query
+        name: userId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/user.GetUserInfoResp'
+      summary: 获取用户信息
+      tags:
+      - 用户管理
+  /ping:
+    get:
+      description: 检查服务是否存活
+      responses:
+        "200":
+          description: Pong
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: 健康检查
+      tags:
+      - 基础接口
+swagger: "2.0"

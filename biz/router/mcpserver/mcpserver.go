@@ -23,6 +23,7 @@ func Register(r *server.Hertz) {
 		_mcpservers := _api.Group("/mcpservers", _mcpserversMw()...)
 		_mcpservers.POST("/generate-token", append(_generatetokenMw(), mcpserver.GenerateToken)...)
 		_mcpservers.GET("/:id", append(_getmcpserverMw(), mcpserver.GetMCPServer)...)
+		_mcpservers.PUT("/:id", append(_updatemcpserverMw(), mcpserver.UpdateMCPServer)...)
 		_mcpservers.GET("/public", append(_getpublicmcpserverlistMw(), mcpserver.GetPublicMCPServerList)...)
 		_mcpservers.GET("/self", append(_getselfmcpserverlistMw(), mcpserver.GetSelfMCPServerList)...)
 	}

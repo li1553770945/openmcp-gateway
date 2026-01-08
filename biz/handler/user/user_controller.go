@@ -13,8 +13,14 @@ import (
 	user "github.com/li1553770945/openmcp-gateway/biz/model/user"
 )
 
-// GetUserInfo .
-// @router /api/users/user-info [GET]
+// GetUserInfo
+// @Summary 获取用户信息
+// @Description 根据用户 ID 获取用户详细信息
+// @Tags 用户管理
+// @Produce json
+// @Param request query user.GetUserInfoReq true "查询参数"
+// @Success 200 {object} user.GetUserInfoResp "请求响应 (Code=0 成功)"
+// @Router /api/users/user-info [GET]
 func GetUserInfo(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req user.GetUserInfoReq
@@ -34,8 +40,14 @@ func GetUserInfo(ctx context.Context, c *app.RequestContext) {
 	c.JSON(consts.StatusOK, resp)
 }
 
-// GetSelfInfo .
-// @router /api/users/me [GET]
+// GetSelfInfo
+// @Summary 获取当前用户信息
+// @Description 获取当前登录用户的详细信息
+// @Tags 用户管理
+// @Produce json
+// @Param request query user.GetUserInfoReq true "查询参数"
+// @Success 200 {object} user.GetUserInfoResp "请求响应 (Code=0 成功)"
+// @Router /api/users/me [GET]
 func GetSelfInfo(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req user.GetUserInfoReq

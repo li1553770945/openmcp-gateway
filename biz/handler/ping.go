@@ -10,7 +10,12 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
-// Ping .
+// Ping
+// @Summary 健康检查
+// @Description 检查服务是否存活
+// @Tags 基础接口
+// @Success 200 {object} map[string]string "Pong"
+// @Router /ping [get]
 func Ping(ctx context.Context, c *app.RequestContext) {
 	c.JSON(consts.StatusOK, utils.H{
 		"message": "pong",

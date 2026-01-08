@@ -4,6 +4,7 @@ package mcpserver
 
 import (
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/li1553770945/openmcp-gateway/biz/container"
 )
 
 func rootMw() []app.HandlerFunc {
@@ -17,13 +18,15 @@ func _apiMw() []app.HandlerFunc {
 }
 
 func _addmcpserverMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		container.GetGlobalContainer().AuthAndUserInfoMiddleware,
+	}
 }
 
 func _mcpserversMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		container.GetGlobalContainer().AuthAndUserInfoMiddleware,
+	}
 }
 
 func _generatetokenMw() []app.HandlerFunc {
@@ -42,6 +45,11 @@ func _getpublicmcpserverlistMw() []app.HandlerFunc {
 }
 
 func _getselfmcpserverlistMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _updatemcpserverMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }

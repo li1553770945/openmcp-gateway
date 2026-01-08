@@ -13,8 +13,15 @@ import (
 	auth "github.com/li1553770945/openmcp-gateway/biz/model/auth"
 )
 
-// Login .
-// @router /api/auth/login [POST]
+// Login
+// @Summary 用户登录
+// @Description 用户使用账号密码登录
+// @Tags 认证管理
+// @Accept json
+// @Produce json
+// @Param request body auth.LoginReq true "登录请求参数"
+// @Success 200 {object} auth.LoginResp "请求成功 (Code=0) 或失败 (Code!=0)"
+// @Router /api/auth/login [POST]
 func Login(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req auth.LoginReq
@@ -42,8 +49,15 @@ func Login(ctx context.Context, c *app.RequestContext) {
 	c.JSON(consts.StatusOK, resp)
 }
 
-// Register .
-// @router /api/auth/register [POST]
+// Register
+// @Summary 用户注册
+// @Description 新用户注册账号
+// @Tags 认证管理
+// @Accept json
+// @Produce json
+// @Param request body auth.RegisterReq true "注册请求参数"
+// @Success 200 {object} auth.RegisterResp "请求成功 (Code=0) 或失败 (Code!=0)"
+// @Router /api/auth/register [POST]
 func Register(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req auth.RegisterReq

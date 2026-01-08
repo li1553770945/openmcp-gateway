@@ -13,6 +13,8 @@ type AddMCPServerReq struct {
 	Name        string `thrift:"name,1,required" form:"name,required" json:"name,required" query:"name,required"`
 	Description string `thrift:"description,2,required" form:"description,required" json:"description,required" query:"description,required"`
 	URL         string `thrift:"url,3,required" form:"url,required" json:"url,required" query:"url,required"`
+	IsPublic    bool   `thrift:"isPublic,4,required" form:"isPublic,required" json:"isPublic,required" query:"isPublic,required"`
+	OpenProxy   bool   `thrift:"openProxy,5,required" form:"openProxy,required" json:"openProxy,required" query:"openProxy,required"`
 }
 
 func NewAddMCPServerReq() *AddMCPServerReq {
@@ -34,10 +36,20 @@ func (p *AddMCPServerReq) GetURL() (v string) {
 	return p.URL
 }
 
+func (p *AddMCPServerReq) GetIsPublic() (v bool) {
+	return p.IsPublic
+}
+
+func (p *AddMCPServerReq) GetOpenProxy() (v bool) {
+	return p.OpenProxy
+}
+
 var fieldIDToName_AddMCPServerReq = map[int16]string{
 	1: "name",
 	2: "description",
 	3: "url",
+	4: "isPublic",
+	5: "openProxy",
 }
 
 func (p *AddMCPServerReq) Read(iprot thrift.TProtocol) (err error) {
@@ -47,6 +59,8 @@ func (p *AddMCPServerReq) Read(iprot thrift.TProtocol) (err error) {
 	var issetName bool = false
 	var issetDescription bool = false
 	var issetURL bool = false
+	var issetIsPublic bool = false
+	var issetOpenProxy bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
 		goto ReadStructBeginError
@@ -89,6 +103,24 @@ func (p *AddMCPServerReq) Read(iprot thrift.TProtocol) (err error) {
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
+		case 4:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField4(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetIsPublic = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 5:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField5(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetOpenProxy = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
@@ -114,6 +146,16 @@ func (p *AddMCPServerReq) Read(iprot thrift.TProtocol) (err error) {
 
 	if !issetURL {
 		fieldId = 3
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetIsPublic {
+		fieldId = 4
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetOpenProxy {
+		fieldId = 5
 		goto RequiredFieldNotSetError
 	}
 	return nil
@@ -167,6 +209,28 @@ func (p *AddMCPServerReq) ReadField3(iprot thrift.TProtocol) error {
 	p.URL = _field
 	return nil
 }
+func (p *AddMCPServerReq) ReadField4(iprot thrift.TProtocol) error {
+
+	var _field bool
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.IsPublic = _field
+	return nil
+}
+func (p *AddMCPServerReq) ReadField5(iprot thrift.TProtocol) error {
+
+	var _field bool
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.OpenProxy = _field
+	return nil
+}
 
 func (p *AddMCPServerReq) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
@@ -184,6 +248,14 @@ func (p *AddMCPServerReq) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField3(oprot); err != nil {
 			fieldId = 3
+			goto WriteFieldError
+		}
+		if err = p.writeField4(oprot); err != nil {
+			fieldId = 4
+			goto WriteFieldError
+		}
+		if err = p.writeField5(oprot); err != nil {
+			fieldId = 5
 			goto WriteFieldError
 		}
 	}
@@ -253,6 +325,40 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
+}
+
+func (p *AddMCPServerReq) writeField4(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("isPublic", thrift.BOOL, 4); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.IsPublic); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
+}
+
+func (p *AddMCPServerReq) writeField5(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("openProxy", thrift.BOOL, 5); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.OpenProxy); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 5 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 5 end error: ", p), err)
 }
 
 func (p *AddMCPServerReq) String() string {
@@ -466,7 +572,7 @@ func (p *AddMCPServerResp) String() string {
 
 // 生成token
 type GenerateTokenReq struct {
-	McpServerId int64  `thrift:"mcpServerId,1,required" form:"mcpServerId,required" json:"mcpServerId,required" query:"mcpServerId,required"`
+	ID          int64  `thrift:"id,1,required" form:"id,required" json:"id,required" query:"id,required"`
 	Description string `thrift:"description,2,required" form:"description,required" json:"description,required" query:"description,required"`
 }
 
@@ -477,8 +583,8 @@ func NewGenerateTokenReq() *GenerateTokenReq {
 func (p *GenerateTokenReq) InitDefault() {
 }
 
-func (p *GenerateTokenReq) GetMcpServerId() (v int64) {
-	return p.McpServerId
+func (p *GenerateTokenReq) GetID() (v int64) {
+	return p.ID
 }
 
 func (p *GenerateTokenReq) GetDescription() (v string) {
@@ -486,7 +592,7 @@ func (p *GenerateTokenReq) GetDescription() (v string) {
 }
 
 var fieldIDToName_GenerateTokenReq = map[int16]string{
-	1: "mcpServerId",
+	1: "id",
 	2: "description",
 }
 
@@ -494,7 +600,7 @@ func (p *GenerateTokenReq) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
-	var issetMcpServerId bool = false
+	var issetID bool = false
 	var issetDescription bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
@@ -516,7 +622,7 @@ func (p *GenerateTokenReq) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetMcpServerId = true
+				issetID = true
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
@@ -542,7 +648,7 @@ func (p *GenerateTokenReq) Read(iprot thrift.TProtocol) (err error) {
 		goto ReadStructEndError
 	}
 
-	if !issetMcpServerId {
+	if !issetID {
 		fieldId = 1
 		goto RequiredFieldNotSetError
 	}
@@ -577,7 +683,7 @@ func (p *GenerateTokenReq) ReadField1(iprot thrift.TProtocol) error {
 	} else {
 		_field = v
 	}
-	p.McpServerId = _field
+	p.ID = _field
 	return nil
 }
 func (p *GenerateTokenReq) ReadField2(iprot thrift.TProtocol) error {
@@ -625,10 +731,10 @@ WriteStructEndError:
 }
 
 func (p *GenerateTokenReq) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("mcpServerId", thrift.I64, 1); err != nil {
+	if err = oprot.WriteFieldBegin("id", thrift.I64, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteI64(p.McpServerId); err != nil {
+	if err := oprot.WriteI64(p.ID); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1423,7 +1529,9 @@ type GetMCPServerRespData struct {
 	Name        string       `thrift:"name,1,required" form:"name,required" json:"name,required" query:"name,required"`
 	Description string       `thrift:"description,2,required" form:"description,required" json:"description,required" query:"description,required"`
 	URL         string       `thrift:"url,3,required" form:"url,required" json:"url,required" query:"url,required"`
-	Token       []*TokenData `thrift:"token,4,required,list<TokenData>" form:"token,required" json:"token,required" query:"token,required"`
+	IsPublic    bool         `thrift:"isPublic,4,required" form:"isPublic,required" json:"isPublic,required" query:"isPublic,required"`
+	OpenProxy   bool         `thrift:"openProxy,5,required" form:"openProxy,required" json:"openProxy,required" query:"openProxy,required"`
+	Token       []*TokenData `thrift:"token,6,required,list<TokenData>" form:"token,required" json:"token,required" query:"token,required"`
 }
 
 func NewGetMCPServerRespData() *GetMCPServerRespData {
@@ -1445,6 +1553,14 @@ func (p *GetMCPServerRespData) GetURL() (v string) {
 	return p.URL
 }
 
+func (p *GetMCPServerRespData) GetIsPublic() (v bool) {
+	return p.IsPublic
+}
+
+func (p *GetMCPServerRespData) GetOpenProxy() (v bool) {
+	return p.OpenProxy
+}
+
 func (p *GetMCPServerRespData) GetToken() (v []*TokenData) {
 	return p.Token
 }
@@ -1453,7 +1569,9 @@ var fieldIDToName_GetMCPServerRespData = map[int16]string{
 	1: "name",
 	2: "description",
 	3: "url",
-	4: "token",
+	4: "isPublic",
+	5: "openProxy",
+	6: "token",
 }
 
 func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
@@ -1463,6 +1581,8 @@ func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
 	var issetName bool = false
 	var issetDescription bool = false
 	var issetURL bool = false
+	var issetIsPublic bool = false
+	var issetOpenProxy bool = false
 	var issetToken bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
@@ -1507,8 +1627,26 @@ func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
 				goto SkipFieldError
 			}
 		case 4:
-			if fieldTypeId == thrift.LIST {
+			if fieldTypeId == thrift.BOOL {
 				if err = p.ReadField4(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetIsPublic = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 5:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField5(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetOpenProxy = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 6:
+			if fieldTypeId == thrift.LIST {
+				if err = p.ReadField6(iprot); err != nil {
 					goto ReadFieldError
 				}
 				issetToken = true
@@ -1543,8 +1681,18 @@ func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetToken {
+	if !issetIsPublic {
 		fieldId = 4
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetOpenProxy {
+		fieldId = 5
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetToken {
+		fieldId = 6
 		goto RequiredFieldNotSetError
 	}
 	return nil
@@ -1599,6 +1747,28 @@ func (p *GetMCPServerRespData) ReadField3(iprot thrift.TProtocol) error {
 	return nil
 }
 func (p *GetMCPServerRespData) ReadField4(iprot thrift.TProtocol) error {
+
+	var _field bool
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.IsPublic = _field
+	return nil
+}
+func (p *GetMCPServerRespData) ReadField5(iprot thrift.TProtocol) error {
+
+	var _field bool
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.OpenProxy = _field
+	return nil
+}
+func (p *GetMCPServerRespData) ReadField6(iprot thrift.TProtocol) error {
 	_, size, err := iprot.ReadListBegin()
 	if err != nil {
 		return err
@@ -1642,6 +1812,14 @@ func (p *GetMCPServerRespData) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField4(oprot); err != nil {
 			fieldId = 4
+			goto WriteFieldError
+		}
+		if err = p.writeField5(oprot); err != nil {
+			fieldId = 5
+			goto WriteFieldError
+		}
+		if err = p.writeField6(oprot); err != nil {
+			fieldId = 6
 			goto WriteFieldError
 		}
 	}
@@ -1714,7 +1892,41 @@ WriteFieldEndError:
 }
 
 func (p *GetMCPServerRespData) writeField4(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("token", thrift.LIST, 4); err != nil {
+	if err = oprot.WriteFieldBegin("isPublic", thrift.BOOL, 4); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.IsPublic); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
+}
+
+func (p *GetMCPServerRespData) writeField5(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("openProxy", thrift.BOOL, 5); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.OpenProxy); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 5 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 5 end error: ", p), err)
+}
+
+func (p *GetMCPServerRespData) writeField6(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("token", thrift.LIST, 6); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Token)); err != nil {
@@ -1733,9 +1945,9 @@ func (p *GetMCPServerRespData) writeField4(oprot thrift.TProtocol) (err error) {
 	}
 	return nil
 WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 begin error: ", p), err)
 WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 end error: ", p), err)
 }
 
 func (p *GetMCPServerRespData) String() string {
@@ -2207,6 +2419,8 @@ type GetMCPServerListRespData struct {
 	Name        string `thrift:"name,1,required" form:"name,required" json:"name,required" query:"name,required"`
 	Description string `thrift:"description,2,required" form:"description,required" json:"description,required" query:"description,required"`
 	URL         string `thrift:"url,3,required" form:"url,required" json:"url,required" query:"url,required"`
+	IsPublic    bool   `thrift:"isPublic,4,required" form:"isPublic,required" json:"isPublic,required" query:"isPublic,required"`
+	OpenProxy   bool   `thrift:"openProxy,5,required" form:"openProxy,required" json:"openProxy,required" query:"openProxy,required"`
 }
 
 func NewGetMCPServerListRespData() *GetMCPServerListRespData {
@@ -2228,10 +2442,20 @@ func (p *GetMCPServerListRespData) GetURL() (v string) {
 	return p.URL
 }
 
+func (p *GetMCPServerListRespData) GetIsPublic() (v bool) {
+	return p.IsPublic
+}
+
+func (p *GetMCPServerListRespData) GetOpenProxy() (v bool) {
+	return p.OpenProxy
+}
+
 var fieldIDToName_GetMCPServerListRespData = map[int16]string{
 	1: "name",
 	2: "description",
 	3: "url",
+	4: "isPublic",
+	5: "openProxy",
 }
 
 func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
@@ -2241,6 +2465,8 @@ func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
 	var issetName bool = false
 	var issetDescription bool = false
 	var issetURL bool = false
+	var issetIsPublic bool = false
+	var issetOpenProxy bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
 		goto ReadStructBeginError
@@ -2283,6 +2509,24 @@ func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
+		case 4:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField4(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetIsPublic = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 5:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField5(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetOpenProxy = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
@@ -2308,6 +2552,16 @@ func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
 
 	if !issetURL {
 		fieldId = 3
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetIsPublic {
+		fieldId = 4
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetOpenProxy {
+		fieldId = 5
 		goto RequiredFieldNotSetError
 	}
 	return nil
@@ -2361,6 +2615,28 @@ func (p *GetMCPServerListRespData) ReadField3(iprot thrift.TProtocol) error {
 	p.URL = _field
 	return nil
 }
+func (p *GetMCPServerListRespData) ReadField4(iprot thrift.TProtocol) error {
+
+	var _field bool
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.IsPublic = _field
+	return nil
+}
+func (p *GetMCPServerListRespData) ReadField5(iprot thrift.TProtocol) error {
+
+	var _field bool
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.OpenProxy = _field
+	return nil
+}
 
 func (p *GetMCPServerListRespData) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
@@ -2378,6 +2654,14 @@ func (p *GetMCPServerListRespData) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField3(oprot); err != nil {
 			fieldId = 3
+			goto WriteFieldError
+		}
+		if err = p.writeField4(oprot); err != nil {
+			fieldId = 4
+			goto WriteFieldError
+		}
+		if err = p.writeField5(oprot); err != nil {
+			fieldId = 5
 			goto WriteFieldError
 		}
 	}
@@ -2447,6 +2731,40 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
+}
+
+func (p *GetMCPServerListRespData) writeField4(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("isPublic", thrift.BOOL, 4); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.IsPublic); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
+}
+
+func (p *GetMCPServerListRespData) writeField5(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("openProxy", thrift.BOOL, 5); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.OpenProxy); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 5 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 5 end error: ", p), err)
 }
 
 func (p *GetMCPServerListRespData) String() string {
@@ -2735,6 +3053,621 @@ func (p *GetMCPServerListResp) String() string {
 
 }
 
+// 更新现有MCPServer
+type UpdateMCPServerReq struct {
+	ID          int64  `thrift:"id,1,required" json:"id,required" path:"id,required"`
+	Name        string `thrift:"name,2,required" form:"name,required" json:"name,required" query:"name,required"`
+	Description string `thrift:"description,3,required" form:"description,required" json:"description,required" query:"description,required"`
+	URL         string `thrift:"url,4,required" form:"url,required" json:"url,required" query:"url,required"`
+	IsPublic    bool   `thrift:"isPublic,5,required" form:"isPublic,required" json:"isPublic,required" query:"isPublic,required"`
+	OpenProxy   bool   `thrift:"openProxy,6,required" form:"openProxy,required" json:"openProxy,required" query:"openProxy,required"`
+}
+
+func NewUpdateMCPServerReq() *UpdateMCPServerReq {
+	return &UpdateMCPServerReq{}
+}
+
+func (p *UpdateMCPServerReq) InitDefault() {
+}
+
+func (p *UpdateMCPServerReq) GetID() (v int64) {
+	return p.ID
+}
+
+func (p *UpdateMCPServerReq) GetName() (v string) {
+	return p.Name
+}
+
+func (p *UpdateMCPServerReq) GetDescription() (v string) {
+	return p.Description
+}
+
+func (p *UpdateMCPServerReq) GetURL() (v string) {
+	return p.URL
+}
+
+func (p *UpdateMCPServerReq) GetIsPublic() (v bool) {
+	return p.IsPublic
+}
+
+func (p *UpdateMCPServerReq) GetOpenProxy() (v bool) {
+	return p.OpenProxy
+}
+
+var fieldIDToName_UpdateMCPServerReq = map[int16]string{
+	1: "id",
+	2: "name",
+	3: "description",
+	4: "url",
+	5: "isPublic",
+	6: "openProxy",
+}
+
+func (p *UpdateMCPServerReq) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+	var issetID bool = false
+	var issetName bool = false
+	var issetDescription bool = false
+	var issetURL bool = false
+	var issetIsPublic bool = false
+	var issetOpenProxy bool = false
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I64 {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetID = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField2(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetName = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 3:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField3(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetDescription = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 4:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField4(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetURL = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 5:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField5(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetIsPublic = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 6:
+			if fieldTypeId == thrift.BOOL {
+				if err = p.ReadField6(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetOpenProxy = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	if !issetID {
+		fieldId = 1
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetName {
+		fieldId = 2
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetDescription {
+		fieldId = 3
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetURL {
+		fieldId = 4
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetIsPublic {
+		fieldId = 5
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetOpenProxy {
+		fieldId = 6
+		goto RequiredFieldNotSetError
+	}
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_UpdateMCPServerReq[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+RequiredFieldNotSetError:
+	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_UpdateMCPServerReq[fieldId]))
+}
+
+func (p *UpdateMCPServerReq) ReadField1(iprot thrift.TProtocol) error {
+
+	var _field int64
+	if v, err := iprot.ReadI64(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.ID = _field
+	return nil
+}
+func (p *UpdateMCPServerReq) ReadField2(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.Name = _field
+	return nil
+}
+func (p *UpdateMCPServerReq) ReadField3(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.Description = _field
+	return nil
+}
+func (p *UpdateMCPServerReq) ReadField4(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.URL = _field
+	return nil
+}
+func (p *UpdateMCPServerReq) ReadField5(iprot thrift.TProtocol) error {
+
+	var _field bool
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.IsPublic = _field
+	return nil
+}
+func (p *UpdateMCPServerReq) ReadField6(iprot thrift.TProtocol) error {
+
+	var _field bool
+	if v, err := iprot.ReadBool(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.OpenProxy = _field
+	return nil
+}
+
+func (p *UpdateMCPServerReq) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("UpdateMCPServerReq"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+		if err = p.writeField2(oprot); err != nil {
+			fieldId = 2
+			goto WriteFieldError
+		}
+		if err = p.writeField3(oprot); err != nil {
+			fieldId = 3
+			goto WriteFieldError
+		}
+		if err = p.writeField4(oprot); err != nil {
+			fieldId = 4
+			goto WriteFieldError
+		}
+		if err = p.writeField5(oprot); err != nil {
+			fieldId = 5
+			goto WriteFieldError
+		}
+		if err = p.writeField6(oprot); err != nil {
+			fieldId = 6
+			goto WriteFieldError
+		}
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *UpdateMCPServerReq) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("id", thrift.I64, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI64(p.ID); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *UpdateMCPServerReq) writeField2(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("name", thrift.STRING, 2); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Name); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+}
+
+func (p *UpdateMCPServerReq) writeField3(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("description", thrift.STRING, 3); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Description); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
+}
+
+func (p *UpdateMCPServerReq) writeField4(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("url", thrift.STRING, 4); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.URL); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
+}
+
+func (p *UpdateMCPServerReq) writeField5(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("isPublic", thrift.BOOL, 5); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.IsPublic); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 5 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 5 end error: ", p), err)
+}
+
+func (p *UpdateMCPServerReq) writeField6(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("openProxy", thrift.BOOL, 6); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteBool(p.OpenProxy); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 end error: ", p), err)
+}
+
+func (p *UpdateMCPServerReq) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UpdateMCPServerReq(%+v)", *p)
+
+}
+
+type UpdateMCPServerResp struct {
+	Code    int32  `thrift:"code,1,required" form:"code,required" json:"code,required" query:"code,required"`
+	Message string `thrift:"message,2,required" form:"message,required" json:"message,required" query:"message,required"`
+}
+
+func NewUpdateMCPServerResp() *UpdateMCPServerResp {
+	return &UpdateMCPServerResp{}
+}
+
+func (p *UpdateMCPServerResp) InitDefault() {
+}
+
+func (p *UpdateMCPServerResp) GetCode() (v int32) {
+	return p.Code
+}
+
+func (p *UpdateMCPServerResp) GetMessage() (v string) {
+	return p.Message
+}
+
+var fieldIDToName_UpdateMCPServerResp = map[int16]string{
+	1: "code",
+	2: "message",
+}
+
+func (p *UpdateMCPServerResp) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+	var issetCode bool = false
+	var issetMessage bool = false
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I32 {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetCode = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField2(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetMessage = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	if !issetCode {
+		fieldId = 1
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetMessage {
+		fieldId = 2
+		goto RequiredFieldNotSetError
+	}
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_UpdateMCPServerResp[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+RequiredFieldNotSetError:
+	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_UpdateMCPServerResp[fieldId]))
+}
+
+func (p *UpdateMCPServerResp) ReadField1(iprot thrift.TProtocol) error {
+
+	var _field int32
+	if v, err := iprot.ReadI32(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.Code = _field
+	return nil
+}
+func (p *UpdateMCPServerResp) ReadField2(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.Message = _field
+	return nil
+}
+
+func (p *UpdateMCPServerResp) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("UpdateMCPServerResp"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+		if err = p.writeField2(oprot); err != nil {
+			fieldId = 2
+			goto WriteFieldError
+		}
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *UpdateMCPServerResp) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("code", thrift.I32, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI32(p.Code); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *UpdateMCPServerResp) writeField2(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("message", thrift.STRING, 2); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Message); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+}
+
+func (p *UpdateMCPServerResp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("UpdateMCPServerResp(%+v)", *p)
+
+}
+
 type MCPServerService interface {
 	AddMCPServer(ctx context.Context, req *AddMCPServerReq) (r *AddMCPServerResp, err error)
 
@@ -2743,6 +3676,8 @@ type MCPServerService interface {
 	GetSelfMCPServerList(ctx context.Context, req *GetMCPServerListReq) (r *GetMCPServerListResp, err error)
 
 	GetPublicMCPServerList(ctx context.Context, req *GetMCPServerListReq) (r *GetMCPServerListResp, err error)
+
+	UpdateMCPServer(ctx context.Context, req *UpdateMCPServerReq) (r *UpdateMCPServerResp, err error)
 
 	GetMCPServer(ctx context.Context, req *GetMCPServerReq) (r *GetMCPServerResp, err error)
 }
@@ -2809,6 +3744,15 @@ func (p *MCPServerServiceClient) GetPublicMCPServerList(ctx context.Context, req
 	}
 	return _result.GetSuccess(), nil
 }
+func (p *MCPServerServiceClient) UpdateMCPServer(ctx context.Context, req *UpdateMCPServerReq) (r *UpdateMCPServerResp, err error) {
+	var _args MCPServerServiceUpdateMCPServerArgs
+	_args.Req = req
+	var _result MCPServerServiceUpdateMCPServerResult
+	if err = p.Client_().Call(ctx, "UpdateMCPServer", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
 func (p *MCPServerServiceClient) GetMCPServer(ctx context.Context, req *GetMCPServerReq) (r *GetMCPServerResp, err error) {
 	var _args MCPServerServiceGetMCPServerArgs
 	_args.Req = req
@@ -2843,6 +3787,7 @@ func NewMCPServerServiceProcessor(handler MCPServerService) *MCPServerServicePro
 	self.AddToProcessorMap("GenerateToken", &mCPServerServiceProcessorGenerateToken{handler: handler})
 	self.AddToProcessorMap("GetSelfMCPServerList", &mCPServerServiceProcessorGetSelfMCPServerList{handler: handler})
 	self.AddToProcessorMap("GetPublicMCPServerList", &mCPServerServiceProcessorGetPublicMCPServerList{handler: handler})
+	self.AddToProcessorMap("UpdateMCPServer", &mCPServerServiceProcessorUpdateMCPServer{handler: handler})
 	self.AddToProcessorMap("GetMCPServer", &mCPServerServiceProcessorGetMCPServer{handler: handler})
 	return self
 }
@@ -3039,6 +3984,54 @@ func (p *mCPServerServiceProcessorGetPublicMCPServerList) Process(ctx context.Co
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("GetPublicMCPServerList", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type mCPServerServiceProcessorUpdateMCPServer struct {
+	handler MCPServerService
+}
+
+func (p *mCPServerServiceProcessorUpdateMCPServer) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MCPServerServiceUpdateMCPServerArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("UpdateMCPServer", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	var err2 error
+	result := MCPServerServiceUpdateMCPServerResult{}
+	var retval *UpdateMCPServerResp
+	if retval, err2 = p.handler.UpdateMCPServer(ctx, args.Req); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing UpdateMCPServer: "+err2.Error())
+		oprot.WriteMessageBegin("UpdateMCPServer", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush(ctx)
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("UpdateMCPServer", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -4277,6 +5270,300 @@ func (p *MCPServerServiceGetPublicMCPServerListResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("MCPServerServiceGetPublicMCPServerListResult(%+v)", *p)
+
+}
+
+type MCPServerServiceUpdateMCPServerArgs struct {
+	Req *UpdateMCPServerReq `thrift:"req,1"`
+}
+
+func NewMCPServerServiceUpdateMCPServerArgs() *MCPServerServiceUpdateMCPServerArgs {
+	return &MCPServerServiceUpdateMCPServerArgs{}
+}
+
+func (p *MCPServerServiceUpdateMCPServerArgs) InitDefault() {
+}
+
+var MCPServerServiceUpdateMCPServerArgs_Req_DEFAULT *UpdateMCPServerReq
+
+func (p *MCPServerServiceUpdateMCPServerArgs) GetReq() (v *UpdateMCPServerReq) {
+	if !p.IsSetReq() {
+		return MCPServerServiceUpdateMCPServerArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+var fieldIDToName_MCPServerServiceUpdateMCPServerArgs = map[int16]string{
+	1: "req",
+}
+
+func (p *MCPServerServiceUpdateMCPServerArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+func (p *MCPServerServiceUpdateMCPServerArgs) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceUpdateMCPServerArgs[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+}
+
+func (p *MCPServerServiceUpdateMCPServerArgs) ReadField1(iprot thrift.TProtocol) error {
+	_field := NewUpdateMCPServerReq()
+	if err := _field.Read(iprot); err != nil {
+		return err
+	}
+	p.Req = _field
+	return nil
+}
+
+func (p *MCPServerServiceUpdateMCPServerArgs) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("UpdateMCPServer_args"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *MCPServerServiceUpdateMCPServerArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("req", thrift.STRUCT, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := p.Req.Write(oprot); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *MCPServerServiceUpdateMCPServerArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MCPServerServiceUpdateMCPServerArgs(%+v)", *p)
+
+}
+
+type MCPServerServiceUpdateMCPServerResult struct {
+	Success *UpdateMCPServerResp `thrift:"success,0,optional"`
+}
+
+func NewMCPServerServiceUpdateMCPServerResult() *MCPServerServiceUpdateMCPServerResult {
+	return &MCPServerServiceUpdateMCPServerResult{}
+}
+
+func (p *MCPServerServiceUpdateMCPServerResult) InitDefault() {
+}
+
+var MCPServerServiceUpdateMCPServerResult_Success_DEFAULT *UpdateMCPServerResp
+
+func (p *MCPServerServiceUpdateMCPServerResult) GetSuccess() (v *UpdateMCPServerResp) {
+	if !p.IsSetSuccess() {
+		return MCPServerServiceUpdateMCPServerResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+var fieldIDToName_MCPServerServiceUpdateMCPServerResult = map[int16]string{
+	0: "success",
+}
+
+func (p *MCPServerServiceUpdateMCPServerResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *MCPServerServiceUpdateMCPServerResult) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 0:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField0(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceUpdateMCPServerResult[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+}
+
+func (p *MCPServerServiceUpdateMCPServerResult) ReadField0(iprot thrift.TProtocol) error {
+	_field := NewUpdateMCPServerResp()
+	if err := _field.Read(iprot); err != nil {
+		return err
+	}
+	p.Success = _field
+	return nil
+}
+
+func (p *MCPServerServiceUpdateMCPServerResult) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("UpdateMCPServer_result"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField0(oprot); err != nil {
+			fieldId = 0
+			goto WriteFieldError
+		}
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *MCPServerServiceUpdateMCPServerResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err = oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			goto WriteFieldBeginError
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return err
+		}
+		if err = oprot.WriteFieldEnd(); err != nil {
+			goto WriteFieldEndError
+		}
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 0 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 0 end error: ", p), err)
+}
+
+func (p *MCPServerServiceUpdateMCPServerResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MCPServerServiceUpdateMCPServerResult(%+v)", *p)
 
 }
 

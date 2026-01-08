@@ -7,85 +7,156 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"github.com/li1553770945/openmcp-gateway/biz/constant"
+	"github.com/li1553770945/openmcp-gateway/biz/container"
 	mcpserver "github.com/li1553770945/openmcp-gateway/biz/model/mcpserver"
 )
 
-// AddMCPServer .
-// @router /api/mcpserver [POST]
+// AddMCPServer
+// @Summary 添加 MCPServer
+// @Description 注册一个新的 MCPServer 服务
+// @Tags MCPServer管理
+// @Accept json
+// @Produce json
+// @Param request body mcpserver.AddMCPServerReq true "添加请求参数"
+// @Success 200 {object} mcpserver.AddMCPServerResp "请求响应 (Code=0 成功)"
+// @Router /api/mcpservers [POST]
 func AddMCPServer(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req mcpserver.AddMCPServerReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		c.JSON(consts.StatusOK, &mcpserver.AddMCPServerResp{
+			Code:    constant.InvalidInput,
+			Message: err.Error(),
+		})
 		return
 	}
 
-	resp := new(mcpserver.AddMCPServerResp)
-
+	resp := container.GetGlobalContainer().MCPServerService.AddMCPServer(ctx, &req)
 	c.JSON(consts.StatusOK, resp)
 }
 
-// GenerateToken .
-// @router /api/mcpservers/generate-token [POST]
+// GenerateToken
+// @Summary 生成 Token
+// @Description 为 MCPServer 生成访问 Token
+// @Tags MCPServer管理
+// @Accept json
+// @Produce json
+// @Param request body mcpserver.GenerateTokenReq true "生成Token请求参数"
+// @Success 200 {object} mcpserver.GenerateTokenResp "请求响应 (Code=0 成功)"
+// @Router /api/mcpservers/generate-token [POST]
 func GenerateToken(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req mcpserver.GenerateTokenReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		c.JSON(consts.StatusOK, &mcpserver.GenerateTokenResp{
+			Code:    constant.InvalidInput,
+			Message: err.Error(),
+		})
 		return
 	}
 
-	resp := new(mcpserver.GenerateTokenResp)
-
+	resp := container.GetGlobalContainer().MCPServerService.GenerateToken(ctx, &req)
 	c.JSON(consts.StatusOK, resp)
 }
 
-// GetSelfMCPServerList .
-// @router /api/mcpservers/self [GET]
+// GetSelfMCPServerList
+// @Summary 获取我的 MCPServer 列表
+// @Description 获取当前用户创建的 MCPServer 列表
+// @Tags MCPServer管理
+// @Produce json
+// @Param request query mcpserver.GetMCPServerListReq true "查询参数"
+// @Success 200 {object} mcpserver.GetMCPServerListResp "请求响应 (Code=0 成功)"
+// @Router /api/mcpservers/self [GET]
 func GetSelfMCPServerList(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req mcpserver.GetMCPServerListReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		c.JSON(consts.StatusOK, &mcpserver.GetMCPServerListResp{
+			Code:    constant.InvalidInput,
+			Message: err.Error(),
+		})
 		return
 	}
 
-	resp := new(mcpserver.GetMCPServerListResp)
-
+	resp := container.GetGlobalContainer().MCPServerService.GetSelfMCPServerList(ctx, &req)
 	c.JSON(consts.StatusOK, resp)
 }
 
-// GetPublicMCPServerList .
-// @router /api/mcpservers/public [GET]
+// GetPublicMCPServerList
+// @Summary 获取公共 MCPServer 列表
+// @Description 获取所有公开的 MCPServer 列表
+// @Tags MCPServer管理
+// @Produce json
+// @Param request query mcpserver.GetMCPServerListReq true "查询参数"
+// @Success 200 {object} mcpserver.GetMCPServerListResp "请求响应 (Code=0 成功)"
+// @Router /api/mcpservers/public [GET]
 func GetPublicMCPServerList(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req mcpserver.GetMCPServerListReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		c.JSON(consts.StatusOK, &mcpserver.GetMCPServerListResp{
+			Code:    constant.InvalidInput,
+			Message: err.Error(),
+		})
 		return
 	}
 
-	resp := new(mcpserver.GetMCPServerListResp)
-
+	resp := container.GetGlobalContainer().MCPServerService.GetPublicMCPServerList(ctx, &req)
 	c.JSON(consts.StatusOK, resp)
 }
 
-// GetMCPServer .
-// @router /api/mcpservers/:id [GET]
+// UpdateMCPServer
+// @Summary 更新 MCPServer
+// @Description 更新指定的 MCPServer 信息
+// @Tags MCPServer管理
+// @Accept json
+// @Produce json
+// @Param id path string true "MCPServer ID"
+// @Param request body mcpserver.UpdateMCPServerReq true "更新请求参数"
+// @Success 200 {object} mcpserver.UpdateMCPServerResp "请求响应 (Code=0 成功)"
+// @Router /api/mcpservers/:id [PUT]
+func UpdateMCPServer(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req mcpserver.UpdateMCPServerReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.JSON(consts.StatusOK, &mcpserver.UpdateMCPServerResp{
+			Code:    constant.InvalidInput,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	resp := container.GetGlobalContainer().MCPServerService.UpdateMCPServer(ctx, &req)
+	c.JSON(consts.StatusOK, resp)
+}
+
+// GetMCPServer
+// @Summary 获取单个 MCPServer
+// @Description 根据 ID 获取指定的 MCPServer 详情
+// @Tags MCPServer管理
+// @Produce json
+// @Param id path string true "MCPServer ID"
+// @Success 200 {object} mcpserver.GetMCPServerResp "请求响应 (Code=0 成功)"
+// @Failure 400 {object} mcpserver.GetMCPServerResp "请求参数错误"
+// @Router /api/mcpservers/:id [GET]
 func GetMCPServer(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req mcpserver.GetMCPServerReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		c.JSON(consts.StatusOK, &mcpserver.GetMCPServerResp{
+			Code:    constant.InvalidInput,
+			Message: err.Error(),
+		})
 		return
 	}
 
-	resp := new(mcpserver.GetMCPServerResp)
-
+	resp := container.GetGlobalContainer().MCPServerService.GetMCPServer(ctx, &req)
 	c.JSON(consts.StatusOK, resp)
 }
