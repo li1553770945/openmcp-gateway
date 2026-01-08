@@ -23,22 +23,22 @@ jobs:
       # 构建 Linux 版本
       - name: Build Linux
         run: |
-          GOOS=linux GOARCH=amd64 go build -v -o build_artifacts/openmcp-gateway-linux-amd64 main.go
+          GOOS=linux GOARCH=amd64 go build -v -o build_artifacts/openmcp-gateway-linux-amd64 .
 
       # 构建 Windows 版本
       - name: Build Windows
         run: |
-          GOOS=windows GOARCH=amd64 go build -v -o build_artifacts/openmcp-gateway-windows-amd64.exe main.go
+          GOOS=windows GOARCH=amd64 go build -v -o build_artifacts/openmcp-gateway-windows-amd64.exe .
 
       # 构建 macOS (Intel) 版本
       - name: Build macOS (amd64)
         run: |
-          GOOS=darwin GOARCH=amd64 go build -v -o build_artifacts/openmcp-gateway-darwin-amd64 main.go
+          GOOS=darwin GOARCH=amd64 go build -v -o build_artifacts/openmcp-gateway-darwin-amd64 .
 
       # 构建 macOS (Apple Silicon) 版本
       - name: Build macOS (arm64)
         run: |
-          GOOS=darwin GOARCH=arm64 go build -v -o build_artifacts/openmcp-gateway-darwin-arm64 main.go
+          GOOS=darwin GOARCH=arm64 go build -v -o build_artifacts/openmcp-gateway-darwin-arm64 .
 
       # 上传构建产物
       - name: Upload artifacts
