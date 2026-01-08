@@ -1,44 +1,98 @@
-# QuickStart
+# QuickStart | 快速开始
 
-本指南将帮助你快速部署和运行 openmcp 端口转发工具-后端。
+本指南将指引你在几分钟内完成 **OpenMCP-Gateway** 后端的部署与运行。
 
-## 环境准备
+## 🛠 环境要求
 
-1. 一台服务器或本地机器，建议使用服务器
-2. linux或 macOS 操作系统（推荐使用linux，已知在windows上很可能存在问题，强烈建议不要使用windows）
-3. Go1.25.1 及以上版本
+在开始之前，请确保你的环境满足以下条件：
 
-## 部署步骤
+* **操作系统**: Linux 或 macOS (强烈建议 **不要** 使用 Windows)。
+* **Go 语言**: [Go 1.25.1](https://gs.jurieo.com/gemini/official/search?q=https://go.dev/dl/) 及以上版本。
+* **网络环境**: 确保服务器防火墙已放行你准备配置的 API 端口。
 
+---
 
-1. 克隆代码库
+## 🚀 部署步骤
+
+### 1. 克隆代码库
+
+首先，将项目源码克隆到本地或服务器：
 
 ```bash
 git clone https://github.com/li1553770945/openmcp-gateway
 cd openmcp-gateway
+
 ```
 
-2. 安装依赖
+### 2. 初始化环境
+
+下载项目所需的依赖包：
 
 ```bash
 go mod tidy
+
 ```
 
-3. 新建配置文件
+### 3. 配置文件准备
 
-新建一个`conf`文件夹，复制 `config-example.yml` 文件到该文件夹并重命名。
+项目通过 `conf/` 目录下的配置文件管理运行参数。请根据你的运行环境进行设置：
 
-本地开发环境重命名为 `deployment.yml`，生产环境重命名为 `production.yml`，这将根据`ENV`环境变量来决定加载哪个配置文件。
+1. **创建配置目录**: `mkdir -p conf`
+2. **复制示例配置**: `cp config-example.yml conf/`
+3. **重命名配置文件**:
+* **开发环境**: 重命名为 `conf/deployment.yml`
+* **生产环境**: 重命名为 `conf/production.yml`
 
-有关配置文件的详细信息，请参考[配置说明](./docs/configuration.md)。
 
-4. 运行
+
+> 📌 **注意**: 具体的配置项含义（如端口、数据库、密钥等），请参考 [配置说明文档](/docs/configuration.md)。
+
+### 4. 启动服务
+
+启动时必须通过环境变量 `ENV` 指定配置文件。
+
+**开发模式 (Development):**
 
 ```bash
-export ENV=development # 或 production 根据需要选择环境，必须设置且必须是二者之一
+export ENV=development
 go run .
+
 ```
 
-5. 访问
+**生产模式 (Production):**
 
-访问`http://<服务器IP>:<端口>/ping`，你应该能看到输出`{"message":"pong"}`。
+```bash
+export ENV=production
+go run .
+
+```
+
+---
+
+## ✅ 结果验证
+
+服务启动后，可以通过以下两种方式验证是否部署成功：
+
+### 1. 基础连通性测试
+
+在终端执行：
+
+```bash
+curl http://127.0.0.1:<你的端口>/ping
+
+```
+
+**期望响应**: `{"code": 0, "message": "pong"}`
+
+### 2. 交互式文档访问
+
+在浏览器中打开：
+`http://<服务器IP>:<端口>/docs`
+如果能正常看到 Swagger 或 ReDoc 界面，说明后端服务及文档系统均已就绪。
+
+---
+
+## 💡 常见问题排查
+
+* **报错 `config file not found**`: 请检查 `ENV` 变量是否设置，且 `conf/` 目录下是否存在对应的 `.yml` 文件。
+
