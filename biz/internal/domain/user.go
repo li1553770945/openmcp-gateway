@@ -7,4 +7,5 @@ type UserEntity struct {
 	Role     string
 	CanUse   bool
 	Password string
+	Email    string
 }

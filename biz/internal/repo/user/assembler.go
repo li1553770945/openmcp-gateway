@@ -12,6 +12,8 @@ func DoToEntity(do *do.UserDO) *domain.UserEntity {
 		Nickname: do.Nickname,
 		Role:     do.Role,
 		CanUse:   do.CanUse,
+		Email:    do.Email,
+		Password: do.Password,
 	}
 }
 
@@ -21,6 +23,7 @@ func EntityToDo(entity *domain.UserEntity) *do.UserDO {
 		Nickname: entity.Nickname,
 		Role:     entity.Role,
 		CanUse:   entity.CanUse,
+		Email:    entity.Email,
 	}
 	if entity.Password != "" {
 		userDO.Password = entity.Password

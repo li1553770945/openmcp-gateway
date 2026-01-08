@@ -8,6 +8,7 @@ type UserDO struct {
 
 	Nickname string `gorm:"type:varchar(255)"` // 建议 Nickname 也加上长度限制
 	Password string `gorm:"type:varchar(255)"` // 建议 Password 也加上
+	Email    string `gorm:"type:varchar(255)"`
 	Role     string `gorm:"type:varchar(50)"`
 	CanUse   bool
 }

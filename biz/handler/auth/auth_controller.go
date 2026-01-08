@@ -4,9 +4,12 @@ package auth
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"github.com/li1553770945/openmcp-gateway/biz/constant"
+	"github.com/li1553770945/openmcp-gateway/biz/container"
 	auth "github.com/li1553770945/openmcp-gateway/biz/model/auth"
 )
 
@@ -17,11 +20,24 @@ func Login(ctx context.Context, c *app.RequestContext) {
 	var req auth.LoginReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		resp := auth.LoginResp{
+			Code:    constant.InvalidInput,
+			Message: fmt.Sprintf("请求参数错误:%s", err.Error()),
+		}
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 
-	resp := new(auth.LoginResp)
+	App := container.GetGlobalContainer()
+	resp, err := App.AuthService.Login(ctx, &req)
+	if err != nil {
+		resp := auth.LoginResp{
+			Code:    constant.SystemError,
+			Message: err.Error(),
+		}
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -33,11 +49,24 @@ func Register(ctx context.Context, c *app.RequestContext) {
 	var req auth.RegisterReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		resp := auth.RegisterResp{
+			Code:    constant.InvalidInput,
+			Message: fmt.Sprintf("请求参数错误:%s", err.Error()),
+		}
+		c.JSON(consts.StatusOK, resp)
 		return
 	}
 
-	resp := new(auth.RegisterResp)
+	App := container.GetGlobalContainer()
+	resp, err := App.AuthService.Register(ctx, &req)
+	if err != nil {
+		resp := auth.RegisterResp{
+			Code:    constant.SystemError,
+			Message: err.Error(),
+		}
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }

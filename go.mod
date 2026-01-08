@@ -5,6 +5,8 @@ go 1.25.1
 require (
 	github.com/apache/thrift v0.22.0
 	github.com/cloudwego/hertz v0.10.3
+	github.com/golang-jwt/jwt/v5 v5.3.0
+	golang.org/x/crypto v0.46.0
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/gorm v1.31.1
@@ -30,8 +32,8 @@ require (
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
-	golang.org/x/sys v0.24.0 // indirect
-	golang.org/x/text v0.20.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/text v0.32.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 )
 

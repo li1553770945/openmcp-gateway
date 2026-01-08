@@ -26,6 +26,9 @@ func (Repo *UserRepoImpl) FindUserByUsername(username string) (*domain.UserEntit
 	if err != nil {
 		return nil, err
 	}
+	if user.ID == 0 {
+		return nil, nil
+	}
 	return DoToEntity(&user), nil
 }
 

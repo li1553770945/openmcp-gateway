@@ -23,10 +23,14 @@ type DatabaseConfig struct {
 	UseTLS   bool   `yaml:"use-tls"`
 }
 
+type AuthConfig struct {
+	JWTKey string `yaml:"jwt-key"`
+}
 type Config struct {
-	Env            string
+	Env            string         `yaml:"-"`
 	ServerConfig   ServerConfig   `yaml:"server"`
 	DatabaseConfig DatabaseConfig `yaml:"database"`
+	AuthConfig     AuthConfig     `yaml:"auth"`
 }
 
 func GetConfig(env string) *Config {

@@ -6,12 +6,13 @@ import (
 	"github.com/li1553770945/openmcp-gateway/biz/infra/database"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/middleware"
 	user_repo "github.com/li1553770945/openmcp-gateway/biz/internal/repo/user"
-	"github.com/li1553770945/openmcp-gateway/biz/internal/service/user"
+	authService "github.com/li1553770945/openmcp-gateway/biz/internal/service/auth"
 	userService "github.com/li1553770945/openmcp-gateway/biz/internal/service/user"
 )
 
 type Container struct {
-	UserService user.IUserService
+	UserService userService.IUserService
+	AuthService authService.IAuthService
 
 	Config                    *config.Config
 	AuthAndUserInfoMiddleware app.HandlerFunc
@@ -30,9 +31,11 @@ func InitContainer(env string) {
 	cfg := config.GetConfig(env)
 	db := database.NewDatabase(cfg)
 	userRepo := user_repo.NewUserRepository(db)
+	userSvc := userService.NewUserService(userRepo)
 
 	globalApp = &Container{
-		UserService:               userService.NewUserService(userRepo),
+		UserService:               userSvc,
+		AuthService:               authService.NewAuthService(userSvc, cfg),
 		Config:                    cfg,
 		AuthAndUserInfoMiddleware: middleware.NewAuthAndUserInfoMiddleware(),
 	}

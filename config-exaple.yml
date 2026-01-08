@@ -1,0 +1,14 @@
+server:
+  listen-address: 0.0.0.0:9000
+  proxy-listen-address: 0.0.0.0:9001
+
+database:
+  username: your_db_username
+  password: your_db_password
+  database: your_database_name
+  address: your_database_address
+  port: 21024
+  use-tls: false
+
+auth:
+  jwt-key: "your_jwt_key"
