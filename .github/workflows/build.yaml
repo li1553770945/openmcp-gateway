@@ -1,0 +1,48 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master  # 当代码推送到 master 分支时触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 检出代码库
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 设置 Go 环境
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.25.1'  # 指定 Go 版本
+
+      # 构建 Linux 版本
+      - name: Build Linux
+        run: |
+          GOOS=linux GOARCH=amd64 go build -v -o build_artifacts/openmcp-gateway-linux-amd64 main.go
+
+      # 构建 Windows 版本
+      - name: Build Windows
+        run: |
+          GOOS=windows GOARCH=amd64 go build -v -o build_artifacts/openmcp-gateway-windows-amd64.exe main.go
+
+      # 构建 macOS (Intel) 版本
+      - name: Build macOS (amd64)
+        run: |
+          GOOS=darwin GOARCH=amd64 go build -v -o build_artifacts/openmcp-gateway-darwin-amd64 main.go
+
+      # 构建 macOS (Apple Silicon) 版本
+      - name: Build macOS (arm64)
+        run: |
+          GOOS=darwin GOARCH=arm64 go build -v -o build_artifacts/openmcp-gateway-darwin-arm64 main.go
+
+      # 上传构建产物
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: openmcp-gateway-binaries
+          path: build_artifacts/*
