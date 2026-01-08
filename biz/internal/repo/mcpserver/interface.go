@@ -11,4 +11,5 @@ type IMCPServerRepository interface {
 	ListPublicMCPServers(start, end int64) ([]*domain.MCPServerEntity, error)
 
 	SaveToken(token *domain.MCPServerTokenEntity) error
+	FindTokenByToken(token string) (*domain.MCPServerTokenEntity, error)
 }

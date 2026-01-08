@@ -8,7 +8,7 @@ type MCPServerDO struct {
 	IsPublic    bool               `gorm:"default:false"`
 	OpenProxy   bool               `gorm:"default:false"`
 	CreatorID   int64              `gorm:"index"`
-	Tokens      []MCPServerTokenDO `gorm:"foreignKey:MCPServerID"`
+	Tokens      []MCPServerTokenDO `gorm:"foreignKey:MCPServerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type MCPServerTokenDO struct {

@@ -98,3 +98,15 @@ func (r *MCPServerRepoImpl) SaveToken(token *domain.MCPServerTokenEntity) error 
 	}
 	return r.DB.Save(tokenDO).Error
 }
+
+func (r *MCPServerRepoImpl) FindTokenByToken(token string) (*domain.MCPServerTokenEntity, error) {
+	var tokenDO do.MCPServerTokenDO
+	err := r.DB.Where("token = ?", token).First(&tokenDO).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return TokenDoToEntity(&tokenDO), nil
+}

@@ -66,6 +66,22 @@ func (s *MCPServerServiceImpl) GenerateToken(ctx context.Context, req *mcpserver
 	}
 
 	tokenStr := generateRandomToken(32)
+	retryCount := 0
+	for {
+		if retryCount >= 10 {
+			return &mcpserver.GenerateTokenResp{Code: constant.SystemError, Message: "生成唯一 token 失败，请稍后重试"}
+		}
+		exist, err := s.Repo.FindTokenByToken(tokenStr)
+		if err != nil {
+			return &mcpserver.GenerateTokenResp{Code: constant.SystemError, Message: "生成 token 校验失败"}
+		}
+		if exist == nil {
+			break
+		}
+		tokenStr = generateRandomToken(32)
+		retryCount++
+	}
+
 	tokenEntity := &domain.MCPServerTokenEntity{
 		MCPServerID: req.ID,
 		Description: req.Description,
