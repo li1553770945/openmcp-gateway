@@ -13,4 +13,6 @@ type IMCPServerService interface {
 	GetPublicMCPServerList(ctx context.Context, req *mcpserver.GetMCPServerListReq) (resp *mcpserver.GetMCPServerListResp)
 	UpdateMCPServer(ctx context.Context, req *mcpserver.UpdateMCPServerReq) (resp *mcpserver.UpdateMCPServerResp)
 	GetMCPServer(ctx context.Context, req *mcpserver.GetMCPServerReq) (resp *mcpserver.GetMCPServerResp)
+	DeleteMCPServer(ctx context.Context, req *mcpserver.DeleteMCPServerReq) (resp *mcpserver.DeleteMCPServerResp)
+	DeleteToken(ctx context.Context, req *mcpserver.DeleteTokenReq) (resp *mcpserver.DeleteTokenResp)
 }

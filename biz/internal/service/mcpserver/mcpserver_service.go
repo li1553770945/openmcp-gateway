@@ -184,6 +184,59 @@ func (s *MCPServerServiceImpl) GetMCPServer(ctx context.Context, req *mcpserver.
 	}
 }
 
+func (s *MCPServerServiceImpl) DeleteMCPServer(ctx context.Context, req *mcpserver.DeleteMCPServerReq) (resp *mcpserver.DeleteMCPServerResp) {
+	server, err := s.Repo.FindMCPServerById(req.ID)
+	if err != nil {
+		return &mcpserver.DeleteMCPServerResp{Code: constant.SystemError, Message: "查询服务器失败"}
+	}
+	if server == nil {
+		return &mcpserver.DeleteMCPServerResp{Code: constant.NotFound, Message: "McpServer 未找到"}
+	}
+
+	creatorID, _ := ctx.Value("user_id").(int64)
+	if server.CreatorID != creatorID {
+		return &mcpserver.DeleteMCPServerResp{Code: constant.Unauthorized, Message: "您无权限删除该 MCPServer"}
+	}
+
+	err = s.Repo.DeleteMCPServer(req.ID)
+	if err != nil {
+		return &mcpserver.DeleteMCPServerResp{Code: constant.SystemError, Message: "删除服务器失败"}
+	}
+
+	return &mcpserver.DeleteMCPServerResp{Code: constant.Success, Message: "删除成功"}
+}
+
+func (s *MCPServerServiceImpl) DeleteToken(ctx context.Context, req *mcpserver.DeleteTokenReq) (resp *mcpserver.DeleteTokenResp) {
+	token, err := s.Repo.FindTokenById(req.ID)
+	if err != nil {
+		return &mcpserver.DeleteTokenResp{Code: constant.SystemError, Message: "查询Token失败"}
+	}
+	if token == nil {
+		return &mcpserver.DeleteTokenResp{Code: constant.NotFound, Message: "Token 未找到"}
+	}
+
+	// 校验权限
+	server, err := s.Repo.FindMCPServerById(token.MCPServerID)
+	if err != nil {
+		return &mcpserver.DeleteTokenResp{Code: constant.SystemError, Message: "查询服务器失败"}
+	}
+	if server == nil {
+		return &mcpserver.DeleteTokenResp{Code: constant.NotFound, Message: "关联的服务器未找到"}
+	}
+
+	creatorID, _ := ctx.Value("user_id").(int64)
+	if server.CreatorID != creatorID {
+		return &mcpserver.DeleteTokenResp{Code: constant.Unauthorized, Message: "您无权限删除该 Token"}
+	}
+
+	err = s.Repo.DeleteToken(req.ID)
+	if err != nil {
+		return &mcpserver.DeleteTokenResp{Code: constant.SystemError, Message: "删除Token失败"}
+	}
+
+	return &mcpserver.DeleteTokenResp{Code: constant.Success, Message: "删除成功"}
+}
+
 func generateRandomToken(n int) string {
 	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	b := make([]byte, n)

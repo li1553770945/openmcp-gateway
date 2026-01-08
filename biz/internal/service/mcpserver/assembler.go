@@ -30,6 +30,7 @@ func EntityToMCPServerRespData(entity *domain.MCPServerEntity) *mcpserver.GetMCP
 	tokens := make([]*mcpserver.TokenData, 0, len(entity.Tokens))
 	for _, t := range entity.Tokens {
 		tokens = append(tokens, &mcpserver.TokenData{
+			ID:          t.ID,
 			Token:       t.Token,
 			Description: t.Description,
 		})

@@ -49,10 +49,12 @@ struct GetMCPServerReq{
     1: required i64 mcpServerId (api.path="id");
 }
 struct TokenData{
+    // ID
+    1: required i64 id;
     // Token
-    1: required string token;
+    2: required string token;
     // 描述
-    2: required string description;
+    3: required string description;
 }
 
 struct GetMCPServerRespData{
@@ -148,6 +150,32 @@ struct UpdateMCPServerResp{
      2: required string message;
 }
 
+// 删除MCPServer
+struct DeleteMCPServerReq {
+    // MCPServer ID
+    1: required i64 id (api.path="id");
+}
+
+struct DeleteMCPServerResp {
+     // 状态码
+     1: required i32 code;
+     // 消息
+     2: required string message;
+}
+
+// 删除Token
+struct DeleteTokenReq {
+    // Token ID
+    1: required i64 id (api.path="id");
+}
+
+struct DeleteTokenResp {
+     // 状态码
+     1: required i32 code;
+     // 消息
+     2: required string message;
+}
+
 
 
 service MCPServerService {
@@ -158,4 +186,7 @@ service MCPServerService {
     UpdateMCPServerResp UpdateMCPServer(1: UpdateMCPServerReq req)(api.put="/api/mcpservers/:id")
 
     GetMCPServerResp GetMCPServer(1:GetMCPServerReq req)(api.get="/api/mcpservers/:id")
+
+    DeleteMCPServerResp DeleteMCPServer(1: DeleteMCPServerReq req)(api.delete="/api/mcpservers/:id")
+    DeleteTokenResp DeleteToken(1: DeleteTokenReq req)(api.delete="/api/mcpservers/token/:id")
 }

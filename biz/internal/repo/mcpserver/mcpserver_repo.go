@@ -110,3 +110,33 @@ func (r *MCPServerRepoImpl) FindTokenByToken(token string) (*domain.MCPServerTok
 	}
 	return TokenDoToEntity(&tokenDO), nil
 }
+
+func (r *MCPServerRepoImpl) FindTokenById(id int64) (*domain.MCPServerTokenEntity, error) {
+	var tokenDO do.MCPServerTokenDO
+	err := r.DB.Where("id = ?", id).First(&tokenDO).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return TokenDoToEntity(&tokenDO), nil
+}
+
+func (r *MCPServerRepoImpl) DeleteMCPServer(id int64) error {
+	return r.DB.Transaction(func(tx *gorm.DB) error {
+		// 删除相关的 token
+		if err := tx.Where("mcp_server_id = ?", id).Delete(&do.MCPServerTokenDO{}).Error; err != nil {
+			return err
+		}
+		// 删除服务器
+		if err := tx.Delete(&do.MCPServerDO{}, id).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
+func (r *MCPServerRepoImpl) DeleteToken(id int64) error {
+	return r.DB.Delete(&do.MCPServerTokenDO{}, id).Error
+}

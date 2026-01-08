@@ -53,3 +53,18 @@ func _updatemcpserverMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _deletemcpserverMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _tokenMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _deletetokenMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

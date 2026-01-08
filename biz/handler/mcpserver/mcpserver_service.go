@@ -160,3 +160,39 @@ func GetMCPServer(ctx context.Context, c *app.RequestContext) {
 	resp := container.GetGlobalContainer().MCPServerService.GetMCPServer(ctx, &req)
 	c.JSON(consts.StatusOK, resp)
 }
+
+// DeleteMCPServer .
+// @router /api/mcpservers/:id [DELETE]
+func DeleteMCPServer(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req mcpserver.DeleteMCPServerReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.JSON(consts.StatusOK, &mcpserver.DeleteMCPServerResp{
+			Code:    constant.InvalidInput,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	resp := container.GetGlobalContainer().MCPServerService.DeleteMCPServer(ctx, &req)
+	c.JSON(consts.StatusOK, resp)
+}
+
+// DeleteToken .
+// @router /api/mcpservers/token/:id [DELETE]
+func DeleteToken(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req mcpserver.DeleteTokenReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.JSON(consts.StatusOK, &mcpserver.DeleteTokenResp{
+			Code:    constant.InvalidInput,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	resp := container.GetGlobalContainer().MCPServerService.DeleteToken(ctx, &req)
+	c.JSON(consts.StatusOK, resp)
+}
