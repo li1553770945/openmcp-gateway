@@ -45,12 +45,12 @@ func (s *UserServiceImpl) CheckUsernameAndPasswd(ctx context.Context, username s
 		return nil, err
 	}
 	if user == nil {
-		return nil, errors.New("user not found")
+		return nil, errors.New("用户不存在")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
-		return nil, errors.New("password mismatch")
+		return nil, errors.New("密码错误")
 	}
 	return user, nil
 }
@@ -59,7 +59,7 @@ func (s *UserServiceImpl) RegisterUser(ctx context.Context, username string, pas
 	// Check if user exists
 	existingUser, _ := s.Repo.FindUserByUsername(username)
 	if existingUser != nil {
-		return nil, errors.New("username already exists")
+		return nil, errors.New("用户名已存在")
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

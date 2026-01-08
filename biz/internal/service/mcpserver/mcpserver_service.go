@@ -36,16 +36,16 @@ func (s *MCPServerServiceImpl) AddMCPServer(ctx context.Context, req *mcpserver.
 
 	err := s.Repo.SaveMCPServer(entity)
 	if err != nil {
-		hlog.Errorf("Create MCPServer error: %v", err)
+		hlog.Errorf("创建 MCPServer 失败: %v", err)
 		return &mcpserver.AddMCPServerResp{
 			Code:    constant.SystemError,
-			Message: "Failed to create MCPServer",
+			Message: "创建 MCPServer 失败",
 		}
 	}
 
 	return &mcpserver.AddMCPServerResp{
 		Code:    constant.Success,
-		Message: "Success",
+		Message: "成功",
 	}
 }
 
@@ -53,16 +53,16 @@ func (s *MCPServerServiceImpl) GenerateToken(ctx context.Context, req *mcpserver
 	// First check if server exists
 	server, err := s.Repo.FindMCPServerById(req.ID)
 	if err != nil {
-		return &mcpserver.GenerateTokenResp{Code: constant.SystemError, Message: "DB Error"}
+		return &mcpserver.GenerateTokenResp{Code: constant.SystemError, Message: "数据库错误"}
 	}
 	if server == nil {
-		return &mcpserver.GenerateTokenResp{Code: constant.NotFound, Message: "Server not found"}
+		return &mcpserver.GenerateTokenResp{Code: constant.NotFound, Message: "McpServer 未找到"}
 	}
 
 	// Permission check
 	creatorID, _ := ctx.Value("user_id").(int64)
 	if server.CreatorID != creatorID {
-		return &mcpserver.GenerateTokenResp{Code: constant.Unauthorized, Message: "Unauthorized"}
+		return &mcpserver.GenerateTokenResp{Code: constant.Unauthorized, Message: "无权限"}
 	}
 
 	tokenStr := generateRandomToken(32)
@@ -74,12 +74,12 @@ func (s *MCPServerServiceImpl) GenerateToken(ctx context.Context, req *mcpserver
 
 	err = s.Repo.SaveToken(tokenEntity)
 	if err != nil {
-		return &mcpserver.GenerateTokenResp{Code: constant.SystemError, Message: "Failed to save token"}
+		return &mcpserver.GenerateTokenResp{Code: constant.SystemError, Message: "保存 token 失败"}
 	}
 
 	return &mcpserver.GenerateTokenResp{
 		Code:    constant.Success,
-		Message: "Success",
+		Message: "成功",
 		Data:    TokenEntityToRespData(tokenEntity),
 	}
 }
@@ -89,7 +89,7 @@ func (s *MCPServerServiceImpl) GetSelfMCPServerList(ctx context.Context, req *mc
 
 	list, err := s.Repo.ListMCPServersByCreatorId(creatorID, req.Start, req.End)
 	if err != nil {
-		return &mcpserver.GetMCPServerListResp{Code: constant.SystemError, Message: err.Error()}
+		return &mcpserver.GetMCPServerListResp{Code: constant.SystemError, Message: "获取服务器列表失败"}
 	}
 
 	data := make([]*mcpserver.GetMCPServerListRespData, len(list))
@@ -99,7 +99,7 @@ func (s *MCPServerServiceImpl) GetSelfMCPServerList(ctx context.Context, req *mc
 
 	return &mcpserver.GetMCPServerListResp{
 		Code:    constant.Success,
-		Message: "Success",
+		Message: "成功",
 		Data:    data,
 	}
 }
@@ -107,7 +107,7 @@ func (s *MCPServerServiceImpl) GetSelfMCPServerList(ctx context.Context, req *mc
 func (s *MCPServerServiceImpl) GetPublicMCPServerList(ctx context.Context, req *mcpserver.GetMCPServerListReq) (resp *mcpserver.GetMCPServerListResp) {
 	list, err := s.Repo.ListPublicMCPServers(req.Start, req.End)
 	if err != nil {
-		return &mcpserver.GetMCPServerListResp{Code: constant.SystemError, Message: err.Error()}
+		return &mcpserver.GetMCPServerListResp{Code: constant.SystemError, Message: "获取公开服务器列表失败"}
 	}
 
 	data := make([]*mcpserver.GetMCPServerListRespData, len(list))
@@ -117,7 +117,7 @@ func (s *MCPServerServiceImpl) GetPublicMCPServerList(ctx context.Context, req *
 
 	return &mcpserver.GetMCPServerListResp{
 		Code:    constant.Success,
-		Message: "Success",
+		Message: "成功",
 		Data:    data,
 	}
 }
@@ -125,12 +125,12 @@ func (s *MCPServerServiceImpl) GetPublicMCPServerList(ctx context.Context, req *
 func (s *MCPServerServiceImpl) UpdateMCPServer(ctx context.Context, req *mcpserver.UpdateMCPServerReq) (resp *mcpserver.UpdateMCPServerResp) {
 	server, err := s.Repo.FindMCPServerById(req.ID)
 	if server == nil {
-		return &mcpserver.UpdateMCPServerResp{Code: constant.NotFound, Message: "Not Found"}
+		return &mcpserver.UpdateMCPServerResp{Code: constant.NotFound, Message: "McpServer 未找到"}
 	}
 
 	creatorID, _ := ctx.Value("user_id").(int64)
 	if server.CreatorID != creatorID {
-		return &mcpserver.UpdateMCPServerResp{Code: constant.Unauthorized, Message: "Unauthorized"}
+		return &mcpserver.UpdateMCPServerResp{Code: constant.Unauthorized, Message: "无权限"}
 	}
 
 	server.Name = req.Name
@@ -141,29 +141,29 @@ func (s *MCPServerServiceImpl) UpdateMCPServer(ctx context.Context, req *mcpserv
 
 	err = s.Repo.SaveMCPServer(server)
 	if err != nil {
-		return &mcpserver.UpdateMCPServerResp{Code: constant.SystemError, Message: err.Error()}
+		return &mcpserver.UpdateMCPServerResp{Code: constant.SystemError, Message: "更新服务器失败"}
 	}
 
-	return &mcpserver.UpdateMCPServerResp{Code: constant.Success, Message: "Success"}
+	return &mcpserver.UpdateMCPServerResp{Code: constant.Success, Message: "成功"}
 }
 
 func (s *MCPServerServiceImpl) GetMCPServer(ctx context.Context, req *mcpserver.GetMCPServerReq) (resp *mcpserver.GetMCPServerResp) {
 	server, err := s.Repo.FindMCPServerById(req.McpServerId)
 	if err != nil {
-		return &mcpserver.GetMCPServerResp{Code: constant.SystemError, Message: err.Error()}
+		return &mcpserver.GetMCPServerResp{Code: constant.SystemError, Message: "获取服务器详情失败"}
 	}
 	if server == nil {
-		return &mcpserver.GetMCPServerResp{Code: constant.NotFound, Message: "Not Found"}
+		return &mcpserver.GetMCPServerResp{Code: constant.NotFound, Message: "McpServer 未找到"}
 	}
 
 	creatorID, _ := ctx.Value("user_id").(int64)
 	if !server.IsPublic && server.CreatorID != creatorID {
-		return &mcpserver.GetMCPServerResp{Code: constant.Unauthorized, Message: "Access Denied"}
+		return &mcpserver.GetMCPServerResp{Code: constant.Unauthorized, Message: "无权限"}
 	}
 
 	return &mcpserver.GetMCPServerResp{
 		Code:    constant.Success,
-		Message: "Success",
+		Message: "成功",
 		Data:    EntityToMCPServerRespData(server),
 	}
 }
