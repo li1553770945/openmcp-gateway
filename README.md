@@ -7,6 +7,8 @@
 
 **OpenMCP-Gateway** 是一个高性能、易配置的开源转发工具。它致力于解决复杂网络环境下的MCPServer暴露问题，为开发者提供简洁、稳定且安全的流量转发方案。
 
+前端项目地址：👉 **[OpenMCP-Gateway Frontend](https://github.com/li1553770945/openmcp-gateway-fe)**。
+
 ---
 
 ## 📖 项目简介
