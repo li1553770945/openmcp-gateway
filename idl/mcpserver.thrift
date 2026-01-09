@@ -180,7 +180,7 @@ struct DeleteTokenResp {
 
 service MCPServerService {
     AddMCPServerResp AddMCPServer(1: AddMCPServerReq req)(api.post="/api/mcpservers");
-    GenerateTokenResp GenerateToken(1: GenerateTokenReq req)(api.post="/api/mcpservers/generate-token")
+    GenerateTokenResp GenerateToken(1: GenerateTokenReq req)(api.post="/api/mcpservers/tokens")
     GetMCPServerListResp GetSelfMCPServerList(1: GetMCPServerListReq req)(api.get="/api/mcpservers/self")
     GetMCPServerListResp GetPublicMCPServerList(1: GetMCPServerListReq req)(api.get="/api/mcpservers/public")
     UpdateMCPServerResp UpdateMCPServer(1: UpdateMCPServerReq req)(api.put="/api/mcpservers/:id")
@@ -188,5 +188,5 @@ service MCPServerService {
     GetMCPServerResp GetMCPServer(1:GetMCPServerReq req)(api.get="/api/mcpservers/:id")
 
     DeleteMCPServerResp DeleteMCPServer(1: DeleteMCPServerReq req)(api.delete="/api/mcpservers/:id")
-    DeleteTokenResp DeleteToken(1: DeleteTokenReq req)(api.delete="/api/mcpservers/token/:id")
+    DeleteTokenResp DeleteToken(1: DeleteTokenReq req)(api.delete="/api/mcpservers/tokens/:id")
 }

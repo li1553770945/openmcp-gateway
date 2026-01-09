@@ -28,27 +28,6 @@ definitions:
         description: 登录凭证
         type: string
     type: object
-  auth.RegisterReq:
-    properties:
-      email:
-        description: 邮箱
-        type: string
-      password:
-        description: 密码
-        type: string
-      username:
-        description: 用户名
-        type: string
-    type: object
-  auth.RegisterResp:
-    properties:
-      code:
-        description: 状态码
-        type: integer
-      message:
-        description: 消息
-        type: string
-    type: object
   mcpserver.AddMCPServerReq:
     properties:
       description:
@@ -275,6 +254,48 @@ definitions:
         description: 用户名
         type: string
     type: object
+  user.RegisterReq:
+    properties:
+      email:
+        description: 邮箱
+        type: string
+      nickname:
+        description: 昵称
+        type: string
+      password:
+        description: 密码
+        type: string
+      username:
+        description: 用户名
+        type: string
+    type: object
+  user.RegisterResp:
+    properties:
+      code:
+        description: 状态码
+        type: integer
+      message:
+        description: 消息
+        type: string
+    type: object
+  user.UpdateSelfInfoReq:
+    properties:
+      nickname:
+        description: 昵称
+        type: string
+      password:
+        description: 密码
+        type: string
+    type: object
+  user.UpdateSelfInfoResp:
+    properties:
+      code:
+        description: 状态码
+        type: integer
+      message:
+        description: 消息
+        type: string
+    type: object
 info:
   contact: {}
   description: OpenMCP 网关服务 API 文档
@@ -301,28 +322,6 @@ paths:
           schema:
             $ref: '#/definitions/auth.LoginResp'
       summary: 用户登录
-      tags:
-      - 认证管理
-  /api/auth/register:
-    post:
-      consumes:
-      - application/json
-      description: 新用户注册账号
-      parameters:
-      - description: 注册请求参数
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/auth.RegisterReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功 (Code=0) 或失败 (Code!=0)
-          schema:
-            $ref: '#/definitions/auth.RegisterResp'
-      summary: 用户注册
       tags:
       - 认证管理
   /api/mcpservers:
@@ -414,28 +413,6 @@ paths:
       summary: 更新 MCPServer
       tags:
       - MCPServer管理
-  /api/mcpservers/generate-token:
-    post:
-      consumes:
-      - application/json
-      description: 为 MCPServer 生成访问 Token
-      parameters:
-      - description: 生成Token请求参数
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/mcpserver.GenerateTokenReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求响应 (Code=0 成功)
-          schema:
-            $ref: '#/definitions/mcpserver.GenerateTokenResp'
-      summary: 生成 Token
-      tags:
-      - MCPServer管理
   /api/mcpservers/public:
     get:
       description: 获取所有公开的 MCPServer 列表
@@ -480,7 +457,29 @@ paths:
       summary: 获取我的 MCPServer 列表
       tags:
       - MCPServer管理
-  /api/mcpservers/token/:id:
+  /api/mcpservers/tokens:
+    post:
+      consumes:
+      - application/json
+      description: 为 MCPServer 生成访问 Token
+      parameters:
+      - description: 生成Token请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/mcpserver.GenerateTokenReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/mcpserver.GenerateTokenResp'
+      summary: 生成 Token
+      tags:
+      - MCPServer管理
+  /api/mcpservers/tokens/:id:
     delete:
       description: 删除指定的 Token
       parameters:
@@ -499,6 +498,47 @@ paths:
       summary: 删除 Token
       tags:
       - MCPServer管理
+  /api/users:
+    post:
+      consumes:
+      - application/json
+      description: 新用户注册账号
+      parameters:
+      - description: 注册请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.RegisterReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功 (Code=0) 或失败 (Code!=0)
+          schema:
+            $ref: '#/definitions/user.RegisterResp'
+      summary: 用户注册
+      tags:
+      - 认证管理
+  /api/users/:id:
+    get:
+      description: 根据用户 ID 获取用户详细信息
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/user.GetUserInfoResp'
+      summary: 获取用户信息
+      tags:
+      - 用户管理
   /api/users/me:
     get:
       description: 获取当前登录用户的详细信息
@@ -512,22 +552,25 @@ paths:
       summary: 获取当前用户信息
       tags:
       - 用户管理
-  /api/users/user-info:
-    get:
-      description: 根据用户 ID 获取用户详细信息
+    put:
+      consumes:
+      - application/json
+      description: 更新当前登录用户的详细信息
       parameters:
-      - description: 用户ID
-        in: query
-        name: userId
-        type: integer
+      - description: 更新参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateSelfInfoReq'
       produces:
       - application/json
       responses:
         "200":
           description: 请求响应 (Code=0 成功)
           schema:
-            $ref: '#/definitions/user.GetUserInfoResp'
-      summary: 获取用户信息
+            $ref: '#/definitions/user.UpdateSelfInfoResp'
+      summary: 更新当前用户信息
       tags:
       - 用户管理
   /ping:

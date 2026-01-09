@@ -34,3 +34,20 @@ func _getuserinfoMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _updateselfinfoMw() []app.HandlerFunc {
+	App := container.GetGlobalContainer()
+	return []app.HandlerFunc{
+		App.AuthAndUserInfoMiddleware,
+	}
+}
+
+func _authMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _registerMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

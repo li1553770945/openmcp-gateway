@@ -45,7 +45,7 @@ func AddMCPServer(ctx context.Context, c *app.RequestContext) {
 // @Produce json
 // @Param request body mcpserver.GenerateTokenReq true "生成Token请求参数"
 // @Success 200 {object} mcpserver.GenerateTokenResp "请求响应 (Code=0 成功)"
-// @Router /api/mcpservers/generate-token [POST]
+// @Router /api/mcpservers/tokens [POST]
 func GenerateToken(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req mcpserver.GenerateTokenReq
@@ -192,7 +192,7 @@ func DeleteMCPServer(ctx context.Context, c *app.RequestContext) {
 // @Produce json
 // @Param id path string true "Token ID"
 // @Success 200 {object} mcpserver.DeleteTokenResp "请求响应 (Code=0 成功)"
-// @Router /api/mcpservers/token/:id [DELETE]
+// @Router /api/mcpservers/tokens/:id [DELETE]
 func DeleteToken(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req mcpserver.DeleteTokenReq

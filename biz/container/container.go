@@ -47,7 +47,7 @@ func InitContainer(env string) {
 
 	globalApp = &Container{
 		UserService:               userSvc,
-		AuthService:               authService.NewAuthService(userSvc, cfg),
+		AuthService:               authService.NewAuthService(userRepo, cfg),
 		MCPServerService:          mcpserverSvc,
 		ProxyService:              proxySvc,
 		Config:                    cfg,

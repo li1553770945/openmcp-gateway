@@ -1,30 +1,65 @@
 namespace go user
 
+// 注册用户
+struct RegisterReq {
+    // 用户名
+    1: required string username,
+    // 密码
+    2: required string password,
+    // 邮箱
+    3: required string email,
+    // 昵称
+    4: required string nickname,
+}
+
+// 注册用户响应
+struct RegisterResp {
+    // 状态码
+    1: required i32 code,
+    // 消息
+    2: required string message,
+}
+
 struct GetUserInfoReq {
     // 用户ID
-    1: required i64 userId (api.query="user_id");
+    1: required i64 userId (api.path = "id"),
 }
 
 struct GetUserInfoRespData {
     // 用户名
-    1: string username;
+    1: required string username,
     // 昵称
-    2: string nickname;
+    2: required string nickname,
     // 角色
-    3: string role;
+    3: required string role,
 }
 
-struct GetUserInfoResp{
+struct GetUserInfoResp {
     // 状态码
-    1: required i32 code;
+    1: required i32 code,
     // 消息
-    2: required string message;
+    2: required string message,
     // 数据
-    3: optional GetUserInfoRespData data;
+    3: optional GetUserInfoRespData data,
 }
 
+struct UpdateSelfInfoReq {
+    // 昵称
+    1: optional string nickname,
+    // 密码
+    2: optional string password,
+}
+
+struct UpdateSelfInfoResp {
+    // 状态码
+    1: required i32 code,
+    // 消息
+    2: required string message,
+}
 
 service UserController {
-    GetUserInfoResp GetUserInfo(1: GetUserInfoReq request) (api.get="/api/users/user-info");
-    GetUserInfoResp GetSelfInfo() (api.get="/api/users/me");
+    RegisterResp Register(1: RegisterReq request) (api.post = "/api/users"),
+    GetUserInfoResp GetUserInfo(1: GetUserInfoReq request) (api.get = "/api/users/:id"),
+    GetUserInfoResp GetSelfInfo() (api.get = "/api/users/me"),
+    UpdateSelfInfoResp UpdateSelfInfo(1: UpdateSelfInfoReq request) (api.put = "/api/users/me"),
 }

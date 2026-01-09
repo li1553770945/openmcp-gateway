@@ -49,40 +49,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/register": {
-            "post": {
-                "description": "新用户注册账号",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "认证管理"
-                ],
-                "summary": "用户注册",
-                "parameters": [
-                    {
-                        "description": "注册请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/auth.RegisterReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功 (Code=0) 或失败 (Code!=0)",
-                        "schema": {
-                            "$ref": "#/definitions/auth.RegisterResp"
-                        }
-                    }
-                }
-            }
-        },
         "/api/mcpservers": {
             "post": {
                 "description": "注册一个新的 MCPServer 服务",
@@ -218,40 +184,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/mcpservers/generate-token": {
-            "post": {
-                "description": "为 MCPServer 生成访问 Token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "MCPServer管理"
-                ],
-                "summary": "生成 Token",
-                "parameters": [
-                    {
-                        "description": "生成Token请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/mcpserver.GenerateTokenReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求响应 (Code=0 成功)",
-                        "schema": {
-                            "$ref": "#/definitions/mcpserver.GenerateTokenResp"
-                        }
-                    }
-                }
-            }
-        },
         "/api/mcpservers/public": {
             "get": {
                 "description": "获取所有公开的 MCPServer 列表",
@@ -320,7 +252,41 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/mcpservers/token/:id": {
+        "/api/mcpservers/tokens": {
+            "post": {
+                "description": "为 MCPServer 生成访问 Token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MCPServer管理"
+                ],
+                "summary": "生成 Token",
+                "parameters": [
+                    {
+                        "description": "生成Token请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/mcpserver.GenerateTokenReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求响应 (Code=0 成功)",
+                        "schema": {
+                            "$ref": "#/definitions/mcpserver.GenerateTokenResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/mcpservers/tokens/:id": {
             "delete": {
                 "description": "删除指定的 Token",
                 "produces": [
@@ -349,6 +315,69 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/users": {
+            "post": {
+                "description": "新用户注册账号",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "认证管理"
+                ],
+                "summary": "用户注册",
+                "parameters": [
+                    {
+                        "description": "注册请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.RegisterReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功 (Code=0) 或失败 (Code!=0)",
+                        "schema": {
+                            "$ref": "#/definitions/user.RegisterResp"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/:id": {
+            "get": {
+                "description": "根据用户 ID 获取用户详细信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "获取用户信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求响应 (Code=0 成功)",
+                        "schema": {
+                            "$ref": "#/definitions/user.GetUserInfoResp"
+                        }
+                    }
+                }
+            }
+        },
         "/api/users/me": {
             "get": {
                 "description": "获取当前登录用户的详细信息",
@@ -367,31 +396,35 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/api/users/user-info": {
-            "get": {
-                "description": "根据用户 ID 获取用户详细信息",
+            },
+            "put": {
+                "description": "更新当前登录用户的详细信息",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "用户管理"
                 ],
-                "summary": "获取用户信息",
+                "summary": "更新当前用户信息",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "用户ID",
-                        "name": "userId",
-                        "in": "query"
+                        "description": "更新参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.UpdateSelfInfoReq"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "请求响应 (Code=0 成功)",
                         "schema": {
-                            "$ref": "#/definitions/user.GetUserInfoResp"
+                            "$ref": "#/definitions/user.UpdateSelfInfoResp"
                         }
                     }
                 }
@@ -500,36 +533,6 @@ const docTemplate = `{
             "properties": {
                 "token": {
                     "description": "登录凭证",
-                    "type": "string"
-                }
-            }
-        },
-        "auth.RegisterReq": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "description": "邮箱",
-                    "type": "string"
-                },
-                "password": {
-                    "description": "密码",
-                    "type": "string"
-                },
-                "username": {
-                    "description": "用户名",
-                    "type": "string"
-                }
-            }
-        },
-        "auth.RegisterResp": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "状态码",
-                    "type": "integer"
-                },
-                "message": {
-                    "description": "消息",
                     "type": "string"
                 }
             }
@@ -856,6 +859,66 @@ const docTemplate = `{
                 },
                 "username": {
                     "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "user.RegisterReq": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "nickname": {
+                    "description": "昵称",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "user.RegisterResp": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer"
+                },
+                "message": {
+                    "description": "消息",
+                    "type": "string"
+                }
+            }
+        },
+        "user.UpdateSelfInfoReq": {
+            "type": "object",
+            "properties": {
+                "nickname": {
+                    "description": "昵称",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                }
+            }
+        },
+        "user.UpdateSelfInfoResp": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer"
+                },
+                "message": {
+                    "description": "消息",
                     "type": "string"
                 }
             }

@@ -18,9 +18,9 @@ import (
 // @Description 根据用户 ID 获取用户详细信息
 // @Tags 用户管理
 // @Produce json
-// @Param request query user.GetUserInfoReq true "查询参数"
+// @Param id path string true "用户ID"
 // @Success 200 {object} user.GetUserInfoResp "请求响应 (Code=0 成功)"
-// @Router /api/users/user-info [GET]
+// @Router /api/users/:id [GET]
 func GetUserInfo(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req user.GetUserInfoReq
@@ -51,5 +51,64 @@ func GetSelfInfo(ctx context.Context, c *app.RequestContext) {
 
 	App := container.GetGlobalContainer()
 	resp := App.UserService.GetSelfInfo(ctx)
+	c.JSON(consts.StatusOK, resp)
+}
+
+// UpdateSelfInfo
+// @Summary 更新当前用户信息
+// @Description 更新当前登录用户的详细信息
+// @Tags 用户管理
+// @Accept json
+// @Produce json
+// @Param request body user.UpdateSelfInfoReq true "更新参数"
+// @Success 200 {object} user.UpdateSelfInfoResp "请求响应 (Code=0 成功)"
+// @router /api/users/me [PUT]
+func UpdateSelfInfo(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.UpdateSelfInfoReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(user.UpdateSelfInfoResp)
+
+	c.JSON(consts.StatusOK, resp)
+}
+
+// Register
+// @Summary 用户注册
+// @Description 新用户注册账号
+// @Tags 用户管理
+// @Accept json
+// @Produce json
+// @Param request body user.RegisterReq true "注册请求参数"
+// @Success 200 {object} user.RegisterResp "请求成功 (Code=0) 或失败 (Code!=0)"
+// @Router /api/users [POST]
+func Register(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.RegisterReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		resp := user.RegisterResp{
+			Code:    constant.InvalidInput,
+			Message: fmt.Sprintf("请求参数错误:%s", err.Error()),
+		}
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+
+	App := container.GetGlobalContainer()
+	resp, err := App.UserService.Register(ctx, &req)
+	if err != nil {
+		resp := user.RegisterResp{
+			Code:    constant.SystemError,
+			Message: err.Error(),
+		}
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+
 	c.JSON(consts.StatusOK, resp)
 }
