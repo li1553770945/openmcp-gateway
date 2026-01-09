@@ -67,6 +67,49 @@ OpenMCP-Gateway Backend 负责处理核心转发逻辑以及API 管理。采用�
 
 服务部署后，请访问 `http://<server_ip>:<port>/docs` 查看完整的 Swagger/ReDoc 接口说明。
 
+
+
+---
+
+## 🔐 认证规范 (Usage)
+
+本服务采用 **JWT (JSON Web Token)** 认证机制。在访问受保护的接口前，需要先通过登录接口获取 Token。
+
+### 1. 获取 Token (登录)
+
+调用 `/api/auth/login` 接口获取访问凭证：
+
+```bash
+curl -X POST http://127.0.0.1:9000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "your_username",
+    "password": "your_password"
+  }'
+```
+
+**响应示例:**
+
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+}
+```
+
+### 2. 访问受保护接口
+
+在后续请求中，需将获取到的 Token 添加到 HTTP Header 的 `Authorization` 字段中，格式为 `Bearer <token>`：
+
+```bash
+curl http://127.0.0.1:9000/api/protected/resource \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+
 ## 🛠️ 开发指南
 
 我们非常欢迎开发者提交 Pull Request 或报告 Issue！
