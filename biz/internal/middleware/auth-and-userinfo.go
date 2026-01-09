@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/utils"
@@ -20,6 +21,9 @@ func AuthMiddleware(cfg *config.Config) app.HandlerFunc {
 	return func(ctx context.Context, c *app.RequestContext) {
 		// 获取 Authorization 头部的 token
 		tokenString := string(c.GetHeader("Authorization"))
+		if strings.HasPrefix(tokenString, "Bearer ") {
+			tokenString = tokenString[len("Bearer "):]
+		}
 		if tokenString == "" {
 			c.JSON(200, utils.H{"code": constant.Unauthorized, "message": "您还未登陆，请先登录"})
 			c.Abort()
