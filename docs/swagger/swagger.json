@@ -215,6 +215,34 @@
                 }
             }
         },
+        "/api/mcpservers/count": {
+            "get": {
+                "description": "获取 MCPServer 数量，通过 scope 参数区分获取自己的还是公共的",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MCPServer管理"
+                ],
+                "summary": "获取 MCPServer 数量",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "范围",
+                        "name": "scope",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求响应 (Code=0 成功)",
+                        "schema": {
+                            "$ref": "#/definitions/mcpserver.GetMCPServerCountResp"
+                        }
+                    }
+                }
+            }
+        },
         "/api/mcpservers/tokens": {
             "post": {
                 "description": "为 MCPServer 生成访问 Token",
@@ -604,6 +632,36 @@
                 "token": {
                     "description": "生成的 Token",
                     "type": "string"
+                }
+            }
+        },
+        "mcpserver.GetMCPServerCountResp": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "状态码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/mcpserver.GetMCPServerCountRespData"
+                        }
+                    ]
+                },
+                "message": {
+                    "description": "消息",
+                    "type": "string"
+                }
+            }
+        },
+        "mcpserver.GetMCPServerCountRespData": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "description": "数量",
+                    "type": "integer"
                 }
             }
         },

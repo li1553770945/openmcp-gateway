@@ -184,3 +184,27 @@ func GetMCPServerList(ctx context.Context, c *app.RequestContext) {
 	resp := container.GetGlobalContainer().MCPServerService.GetMCPServerList(ctx, &req)
 	c.JSON(consts.StatusOK, resp)
 }
+
+// GetMCPServerCount
+// @Summary 获取 MCPServer 数量
+// @Description 获取 MCPServer 数量，通过 scope 参数区分获取自己的还是公共的
+// @Tags MCPServer管理
+// @Produce json
+// @Param request query mcpserver.GetMCPServerCountReq true "查询参数"
+// @Success 200 {object} mcpserver.GetMCPServerCountResp "请求响应 (Code=0 成功)"
+// @Router /api/mcpservers/count [GET]
+func GetMCPServerCount(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req mcpserver.GetMCPServerCountReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.JSON(consts.StatusOK, &mcpserver.GetMCPServerCountResp{
+			Code:    constant.InvalidInput,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	resp := container.GetGlobalContainer().MCPServerService.GetMCPServerCount(ctx, &req)
+	c.JSON(consts.StatusOK, resp)
+}

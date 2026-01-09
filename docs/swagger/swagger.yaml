@@ -101,6 +101,25 @@ definitions:
         description: 生成的 Token
         type: string
     type: object
+  mcpserver.GetMCPServerCountResp:
+    properties:
+      code:
+        description: 状态码
+        type: integer
+      data:
+        allOf:
+        - $ref: '#/definitions/mcpserver.GetMCPServerCountRespData'
+        description: 数据
+      message:
+        description: 消息
+        type: string
+    type: object
+  mcpserver.GetMCPServerCountRespData:
+    properties:
+      count:
+        description: 数量
+        type: integer
+    type: object
   mcpserver.GetMCPServerListResp:
     properties:
       code:
@@ -451,6 +470,24 @@ paths:
           schema:
             $ref: '#/definitions/mcpserver.UpdateMCPServerResp'
       summary: 更新 MCPServer
+      tags:
+      - MCPServer管理
+  /api/mcpservers/count:
+    get:
+      description: 获取 MCPServer 数量，通过 scope 参数区分获取自己的还是公共的
+      parameters:
+      - description: 范围
+        in: query
+        name: scope
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/mcpserver.GetMCPServerCountResp'
+      summary: 获取 MCPServer 数量
       tags:
       - MCPServer管理
   /api/mcpservers/tokens:

@@ -163,8 +163,51 @@ func (s *MCPServerServiceImpl) GetMCPServerList(ctx context.Context, req *mcpser
 	}
 }
 
+func (s *MCPServerServiceImpl) GetMCPServerCount(ctx context.Context, req *mcpserver.GetMCPServerCountReq) (resp *mcpserver.GetMCPServerCountResp) {
+	scope := req.Scope
+	var count int64
+	var err error
+
+	if scope == "self" {
+		userID, ok := ctx.Value("user_id").(int64)
+		if !ok {
+			return &mcpserver.GetMCPServerCountResp{
+				Code:    constant.Unauthorized,
+				Message: "用户未登录",
+			}
+		}
+		count, err = s.Repo.CountMCPServersByCreatorId(userID)
+	} else if scope == "public" {
+		count, err = s.Repo.CountPublicMCPServers()
+	} else {
+		return &mcpserver.GetMCPServerCountResp{
+			Code:    constant.InvalidInput,
+			Message: "无效的范围参数",
+		}
+	}
+
+	if err != nil {
+		hlog.Errorf("获取MCPServer数量失败: %v", err)
+		return &mcpserver.GetMCPServerCountResp{
+			Code:    constant.SystemError,
+			Message: "获取MCPServer数量失败",
+		}
+	}
+
+	return &mcpserver.GetMCPServerCountResp{
+		Code:    constant.Success,
+		Message: "success",
+		Data: &mcpserver.GetMCPServerCountRespData{
+			Count: count,
+		},
+	}
+}
+
 func (s *MCPServerServiceImpl) UpdateMCPServer(ctx context.Context, req *mcpserver.UpdateMCPServerReq) (resp *mcpserver.UpdateMCPServerResp) {
 	server, err := s.Repo.FindMCPServerById(req.ID)
+	if err != nil {
+		return &mcpserver.UpdateMCPServerResp{Code: constant.SystemError, Message: "查询服务器失败"}
+	}
 	if server == nil {
 		return &mcpserver.UpdateMCPServerResp{Code: constant.NotFound, Message: "McpServer 未找到"}
 	}

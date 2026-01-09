@@ -82,3 +82,9 @@ func _mcpservers0Mw() []app.HandlerFunc {
 		container.GetGlobalContainer().AuthAndUserInfoMiddleware,
 	}
 }
+
+func _getmcpservercountMw() []app.HandlerFunc {
+	return []app.HandlerFunc{
+		container.GetGlobalContainer().AuthAndUserInfoMiddleware,
+	}
+}

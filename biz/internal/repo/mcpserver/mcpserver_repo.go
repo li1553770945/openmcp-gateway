@@ -1,8 +1,6 @@
 package mcpserver
 
 import (
-	"errors"
-
 	assembler "github.com/li1553770945/openmcp-gateway/biz/internal/converter"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/do"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/domain"
@@ -34,12 +32,12 @@ func (r *MCPServerRepoImpl) SaveMCPServer(server *domain.MCPServerEntity) error 
 
 func (r *MCPServerRepoImpl) FindMCPServerById(id int64) (*domain.MCPServerEntity, error) {
 	var serverDO do.MCPServerDO
-	err := r.DB.Preload("Tokens").Preload("Creator").Where("id = ?", id).First(&serverDO).Error
+	err := r.DB.Preload("Tokens").Preload("Creator").Where("id = ?", id).Limit(1).Find(&serverDO).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
 		return nil, err
+	}
+	if serverDO.ID == 0 {
+		return nil, nil
 	}
 	return assembler.MCPServerDoToEntity(&serverDO), nil
 }
@@ -94,6 +92,18 @@ func (r *MCPServerRepoImpl) ListPublicMCPServers(start, end int64) ([]*domain.MC
 	return results, nil
 }
 
+func (r *MCPServerRepoImpl) CountMCPServersByCreatorId(creatorId int64) (int64, error) {
+	var count int64
+	err := r.DB.Model(&do.MCPServerDO{}).Where("creator_id = ?", creatorId).Count(&count).Error
+	return count, err
+}
+
+func (r *MCPServerRepoImpl) CountPublicMCPServers() (int64, error) {
+	var count int64
+	err := r.DB.Model(&do.MCPServerDO{}).Where("is_public = ?", true).Count(&count).Error
+	return count, err
+}
+
 func (r *MCPServerRepoImpl) SaveToken(token *domain.MCPServerTokenEntity) error {
 	tokenDO := assembler.MCPServerTokenEntityToDo(token)
 	if tokenDO.ID == 0 {
@@ -104,7 +114,6 @@ func (r *MCPServerRepoImpl) SaveToken(token *domain.MCPServerTokenEntity) error 
 
 func (r *MCPServerRepoImpl) FindTokenByToken(token string) (*domain.MCPServerTokenEntity, error) {
 	var tokenDO do.MCPServerTokenDO
-	// 使用 Find 替代 First 以避免记录不存在时的日志警告
 	if err := r.DB.Where("token = ?", token).Limit(1).Find(&tokenDO).Error; err != nil {
 		return nil, err
 	}
@@ -116,7 +125,6 @@ func (r *MCPServerRepoImpl) FindTokenByToken(token string) (*domain.MCPServerTok
 
 func (r *MCPServerRepoImpl) FindTokenById(id int64) (*domain.MCPServerTokenEntity, error) {
 	var tokenDO do.MCPServerTokenDO
-	// 使用 Find 替代 First 以避免记录不存在时的日志警告
 	if err := r.DB.Where("id = ?", id).Limit(1).Find(&tokenDO).Error; err != nil {
 		return nil, err
 	}

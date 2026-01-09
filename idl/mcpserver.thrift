@@ -137,6 +137,26 @@ struct GetMCPServerListResp{
     3: list<GetMCPServerListRespData> data;
 }
 
+// 获取MCPServer数量
+struct GetMCPServerCountReq{
+    // 范围
+    1: required string scope (api.query="scope"); // "self" or "public"
+}
+
+struct GetMCPServerCountRespData{
+    // 数量
+    1: required i64 count;
+}
+
+struct GetMCPServerCountResp{
+    // 状态码
+    1: required i32 code;
+    // 消息
+    2: required string message;
+    // 数据
+    3: optional GetMCPServerCountRespData data;
+}
+
 
 // 更新现有MCPServer
 struct UpdateMCPServerReq {
@@ -193,6 +213,7 @@ service MCPServerController {
     AddMCPServerResp AddMCPServer(1: AddMCPServerReq req)(api.post="/api/mcpservers");
     GenerateTokenResp GenerateToken(1: GenerateTokenReq req)(api.post="/api/mcpservers/tokens")
     GetMCPServerListResp GetMCPServerList(1: GetMCPServerListReq req)(api.get="/api/mcpservers")
+    GetMCPServerCountResp GetMCPServerCount(1: GetMCPServerCountReq req)(api.get="/api/mcpservers/count")
     UpdateMCPServerResp UpdateMCPServer(1: UpdateMCPServerReq req)(api.put="/api/mcpservers/:id")
 
     GetMCPServerResp GetMCPServer(1:GetMCPServerReq req)(api.get="/api/mcpservers/:id")

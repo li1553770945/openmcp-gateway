@@ -21,6 +21,7 @@ func Register(r *server.Hertz) {
 		_api := root.Group("/api", _apiMw()...)
 		_api.GET("/mcpservers", append(_getmcpserverlistMw(), mcpserver.GetMCPServerList)...)
 		_mcpservers := _api.Group("/mcpservers", _mcpserversMw()...)
+		_mcpservers.GET("/count", append(_getmcpservercountMw(), mcpserver.GetMCPServerCount)...)
 		_mcpservers.DELETE("/:id", append(_deletemcpserverMw(), mcpserver.DeleteMCPServer)...)
 		_mcpservers.GET("/:id", append(_getmcpserverMw(), mcpserver.GetMCPServer)...)
 		_mcpservers.PUT("/:id", append(_updatemcpserverMw(), mcpserver.UpdateMCPServer)...)
