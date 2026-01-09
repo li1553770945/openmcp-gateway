@@ -180,9 +180,6 @@ func (s *MCPServerServiceImpl) UpdateMCPServer(ctx context.Context, req *mcpserv
 			Message: "URL 必须以 http:// 或 https:// 开头",
 		}
 	}
-	oldURL := server.Url
-	newURL := req.URL
-
 	server.Name = req.Name
 	server.Description = req.Description
 	server.Url = req.URL
@@ -194,23 +191,21 @@ func (s *MCPServerServiceImpl) UpdateMCPServer(ctx context.Context, req *mcpserv
 		return &mcpserver.UpdateMCPServerResp{Code: constant.SystemError, Message: "更新服务器失败"}
 	}
 
-	if oldURL != newURL {
-		tokens, err := s.Repo.FindTokensByMcpServerId(server.ID)
+	tokens, err := s.Repo.FindTokensByMcpServerId(server.ID)
+	if err != nil {
+		hlog.Errorf("UpdateMCPServer: 通知 ProxyService 清理缓存失败: %v", err)
+		return &mcpserver.UpdateMCPServerResp{Code: constant.SystemError, Message: "更新服务器成功但缓存失败"}
+
+	}
+	// 通知 ProxyService 清理缓存
+	for _, t := range tokens {
+		err = s.ProxyCache.InvalidateByToken(t.Token)
 		if err != nil {
 			hlog.Errorf("UpdateMCPServer: 通知 ProxyService 清理缓存失败: %v", err)
 			return &mcpserver.UpdateMCPServerResp{Code: constant.SystemError, Message: "更新服务器成功但缓存失败"}
-
 		}
-		// URL 变更，通知 ProxyService 清理缓存
-		for _, t := range tokens {
-			err = s.ProxyCache.InvalidateByToken(t.Token)
-			if err != nil {
-				hlog.Errorf("UpdateMCPServer: 通知 ProxyService 清理缓存失败: %v", err)
-				return &mcpserver.UpdateMCPServerResp{Code: constant.SystemError, Message: "更新服务器成功但缓存失败"}
-			}
-		}
-
 	}
+
 	return &mcpserver.UpdateMCPServerResp{Code: constant.Success, Message: "成功"}
 }
 
@@ -309,7 +304,11 @@ func (s *MCPServerServiceImpl) DeleteToken(ctx context.Context, req *mcpserver.D
 
 	// 清除 Token 缓存
 	if s.ProxyCache != nil {
-		s.ProxyCache.InvalidateByToken(token.Token)
+		err = s.ProxyCache.InvalidateByToken(token.Token)
+		if err != nil {
+			hlog.Errorf("DeleteToken: 通知 ProxyService 清理缓存失败: %v", err)
+			return &mcpserver.DeleteTokenResp{Code: constant.SystemError, Message: "删除Token成功但缓存清理失败"}
+		}
 	}
 
 	return &mcpserver.DeleteTokenResp{Code: constant.Success, Message: "删除成功"}

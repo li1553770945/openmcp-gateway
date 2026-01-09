@@ -56,6 +56,9 @@ func (s *ProxyServiceImpl) resolveTarget(token string) (string, error) {
 	if mcpServer == nil {
 		return "", errors.New("关联的MCPServer不存在") // 关联的 MCPServer 不存在
 	}
+	if mcpServer.OpenProxy == false {
+		return "", errors.New("该MCPServer未开启代理功能") // MCPServer 未开启代理功能
+	}
 
 	// 3. 更新缓存
 	s.proxyCache.SetTargetBaseUrl(token, mcpServer.Url)
@@ -75,7 +78,7 @@ func (s *ProxyServiceImpl) ForwardRequest(ctx context.Context, c *app.RequestCon
 	targetBaseURL, err := s.resolveTarget(token)
 	if err != nil {
 		hlog.CtxErrorf(ctx, "Resolve token failed: %v", err)
-		c.String(http.StatusUnauthorized, "Invalid Token or Server Error")
+		c.String(http.StatusBadRequest, "解析URL失败: "+err.Error())
 		return
 	}
 

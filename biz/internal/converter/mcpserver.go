@@ -50,7 +50,6 @@ func MCPServerEntityToDo(serverEntity *domain.MCPServerEntity) *do.MCPServerDO {
 		IsPublic:    serverEntity.IsPublic,
 		OpenProxy:   serverEntity.OpenProxy,
 		CreatorID:   serverEntity.CreatorID,
-		Creator:     UserEntityToDo(serverEntity.Creator),
 		Tokens:      tokens,
 	}
 }
