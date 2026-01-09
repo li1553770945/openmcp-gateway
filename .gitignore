@@ -37,3 +37,5 @@ dumped_hertz_remote_config.json
 
 conf
 openmcp-gateway
+data/
+*.db

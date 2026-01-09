@@ -14,6 +14,7 @@ type ServerConfig struct {
 }
 
 type DatabaseConfig struct {
+	Type     string `yaml:"type"`
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 	Database string `yaml:"database"`

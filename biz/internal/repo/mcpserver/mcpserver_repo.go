@@ -104,24 +104,24 @@ func (r *MCPServerRepoImpl) SaveToken(token *domain.MCPServerTokenEntity) error 
 
 func (r *MCPServerRepoImpl) FindTokenByToken(token string) (*domain.MCPServerTokenEntity, error) {
 	var tokenDO do.MCPServerTokenDO
-	err := r.DB.Where("token = ?", token).First(&tokenDO).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
+	// 使用 Find 替代 First 以避免记录不存在时的日志警告
+	if err := r.DB.Where("token = ?", token).Limit(1).Find(&tokenDO).Error; err != nil {
 		return nil, err
+	}
+	if tokenDO.ID == 0 {
+		return nil, nil
 	}
 	return assembler.MCPServerTokenDoToEntity(&tokenDO), nil
 }
 
 func (r *MCPServerRepoImpl) FindTokenById(id int64) (*domain.MCPServerTokenEntity, error) {
 	var tokenDO do.MCPServerTokenDO
-	err := r.DB.Where("id = ?", id).First(&tokenDO).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
+	// 使用 Find 替代 First 以避免记录不存在时的日志警告
+	if err := r.DB.Where("id = ?", id).Limit(1).Find(&tokenDO).Error; err != nil {
 		return nil, err
+	}
+	if tokenDO.ID == 0 {
+		return nil, nil
 	}
 	return assembler.MCPServerTokenDoToEntity(&tokenDO), nil
 }

@@ -13,6 +13,8 @@
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
+| `database.type` | String | 是 | 使用的数据库类型，如 `mysql`。 |
+| `database.database` | String | 是 | 使用的数据库名称，如果是 SQLite，则为文件路径。 |
 | `database.username` | String | 是 | 数据库登录用户名。 |
 | `database.password` | String | 是 | 数据库登录密码。 |
 | `database.address` | String | 是 | 数据库连接地址（不带端口）。 |

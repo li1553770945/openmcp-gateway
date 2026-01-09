@@ -34,6 +34,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/nyaruka/phonenumbers v1.0.55 // indirect
 	github.com/swaggo/files v1.0.1 // indirect
 	github.com/swaggo/swag v1.16.1 // indirect
@@ -47,6 +48,7 @@ require (
 	golang.org/x/text v0.32.0 // indirect
 	golang.org/x/tools v0.39.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
+	gorm.io/driver/sqlite v1.6.0 // indirect
 )
 
 replace github.com/apache/thrift => github.com/apache/thrift v0.13.0
