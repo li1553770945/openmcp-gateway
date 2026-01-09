@@ -10,9 +10,13 @@
 * **Go 语言**: [Go 1.25.1](https://gs.jurieo.com/gemini/official/search?q=https://go.dev/dl/) 及以上版本。
 * **网络环境**: 确保服务器防火墙已放行你准备配置的 API 端口。
 
+为了方便没有 Go 语言环境的用户，我们提供[release版本](https://github.com/li1553770945/openmcp-gateway/releases)，但不保证release的更新速度，建议使用源码编译版本。
+
 ---
 
 ## 🚀 部署步骤
+
+如果你使用release，请跳过编译步骤，直接下载对应平台的二进制文件，解压后进行配置和启动。
 
 ### 1. 克隆代码库
 

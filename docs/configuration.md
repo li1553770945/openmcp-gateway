@@ -13,7 +13,7 @@
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `database.type` | String | 是 | 使用的数据库类型，如 `mysql`。 |
+| `database.type` | String | 是 | 使用的数据库类型，目前支持 `mysql` 和 `sqlite`。 |
 | `database.database` | String | 是 | 使用的数据库名称，如果是 SQLite，则为文件路径。 |
 | `database.username` | String | 是 | 数据库登录用户名。 |
 | `database.password` | String | 是 | 数据库登录密码。 |
@@ -44,28 +44,4 @@
 
 ## 📄 完整配置示例
 
-你可以直接复制以下内容到 `conf/production.yml` 并进行修改：
-
-```yaml
-# OpenMCP-Gateway 生产环境配置文件
-
-server:
-  # 服务地址，0.0.0.0 表示监听所有网卡
-  listen-address: "0.0.0.0:9000"
-
-database:
-  username: "admin"
-  password: "your_secure_password"
-  database: "openmcp_db"
-  address: "127.0.0.1"
-  port: 21024
-  use-tls: false
-
-auth:
-  # 建议生成方式: openssl rand -base64 32
-  jwt-key: "GR9S8v8_EXAMPLE_KEY_DO_NOT_USE_IN_PROD"
-
-proxy:
-  cache-expiration-seconds: 60
-
-```
+请参考项目根目录下的`config-example.yml`文件获取完整的配置示例。
