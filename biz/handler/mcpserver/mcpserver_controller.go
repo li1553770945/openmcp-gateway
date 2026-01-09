@@ -62,54 +62,6 @@ func GenerateToken(ctx context.Context, c *app.RequestContext) {
 	c.JSON(consts.StatusOK, resp)
 }
 
-// GetSelfMCPServerList
-// @Summary 获取我的 MCPServer 列表
-// @Description 获取当前用户创建的 MCPServer 列表
-// @Tags MCPServer管理
-// @Produce json
-// @Param request query mcpserver.GetMCPServerListReq true "查询参数"
-// @Success 200 {object} mcpserver.GetMCPServerListResp "请求响应 (Code=0 成功)"
-// @Router /api/mcpservers/self [GET]
-func GetSelfMCPServerList(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req mcpserver.GetMCPServerListReq
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.JSON(consts.StatusOK, &mcpserver.GetMCPServerListResp{
-			Code:    constant.InvalidInput,
-			Message: err.Error(),
-		})
-		return
-	}
-
-	resp := container.GetGlobalContainer().MCPServerService.GetSelfMCPServerList(ctx, &req)
-	c.JSON(consts.StatusOK, resp)
-}
-
-// GetPublicMCPServerList
-// @Summary 获取公共 MCPServer 列表
-// @Description 获取所有公开的 MCPServer 列表
-// @Tags MCPServer管理
-// @Produce json
-// @Param request query mcpserver.GetMCPServerListReq true "查询参数"
-// @Success 200 {object} mcpserver.GetMCPServerListResp "请求响应 (Code=0 成功)"
-// @Router /api/mcpservers/public [GET]
-func GetPublicMCPServerList(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req mcpserver.GetMCPServerListReq
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.JSON(consts.StatusOK, &mcpserver.GetMCPServerListResp{
-			Code:    constant.InvalidInput,
-			Message: err.Error(),
-		})
-		return
-	}
-
-	resp := container.GetGlobalContainer().MCPServerService.GetPublicMCPServerList(ctx, &req)
-	c.JSON(consts.StatusOK, resp)
-}
-
 // UpdateMCPServer
 // @Summary 更新 MCPServer
 // @Description 更新指定的 MCPServer 信息
@@ -206,5 +158,29 @@ func DeleteToken(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := container.GetGlobalContainer().MCPServerService.DeleteToken(ctx, &req)
+	c.JSON(consts.StatusOK, resp)
+}
+
+// GetMCPServerList
+// @Summary 获取 MCPServer 列表
+// @Description 获取 MCPServer 列表，通过 scope 参数区分获取自己的还是公共的
+// @Tags MCPServer管理
+// @Produce json
+// @Param request query mcpserver.GetMCPServerListReq true "查询参数"
+// @Success 200 {object} mcpserver.GetMCPServerListResp "请求响应 (Code=0 成功)"
+// @Router /api/mcpservers [GET]
+func GetMCPServerList(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req mcpserver.GetMCPServerListReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.JSON(consts.StatusOK, &mcpserver.GetMCPServerListResp{
+			Code:    constant.InvalidInput,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	resp := container.GetGlobalContainer().MCPServerService.GetMCPServerList(ctx, &req)
 	c.JSON(consts.StatusOK, resp)
 }

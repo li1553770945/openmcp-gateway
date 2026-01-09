@@ -73,3 +73,13 @@ func _tokensMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _getmcpserverlistMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _mcpservers0Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

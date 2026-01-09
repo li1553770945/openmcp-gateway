@@ -50,6 +50,44 @@ const docTemplate = `{
             }
         },
         "/api/mcpservers": {
+            "get": {
+                "description": "获取 MCPServer 列表，通过 scope 参数区分获取自己的还是公共的",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MCPServer管理"
+                ],
+                "summary": "获取 MCPServer 列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "结束位置",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "范围",
+                        "name": "scope",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "起始位置",
+                        "name": "start",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求响应 (Code=0 成功)",
+                        "schema": {
+                            "$ref": "#/definitions/mcpserver.GetMCPServerListResp"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "注册一个新的 MCPServer 服务",
                 "consumes": [
@@ -184,74 +222,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/mcpservers/public": {
-            "get": {
-                "description": "获取所有公开的 MCPServer 列表",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "MCPServer管理"
-                ],
-                "summary": "获取公共 MCPServer 列表",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "结束位置",
-                        "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "起始位置",
-                        "name": "start",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求响应 (Code=0 成功)",
-                        "schema": {
-                            "$ref": "#/definitions/mcpserver.GetMCPServerListResp"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/mcpservers/self": {
-            "get": {
-                "description": "获取当前用户创建的 MCPServer 列表",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "MCPServer管理"
-                ],
-                "summary": "获取我的 MCPServer 列表",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "结束位置",
-                        "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "起始位置",
-                        "name": "start",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求响应 (Code=0 成功)",
-                        "schema": {
-                            "$ref": "#/definitions/mcpserver.GetMCPServerListResp"
-                        }
-                    }
-                }
-            }
-        },
         "/api/mcpservers/tokens": {
             "post": {
                 "description": "为 MCPServer 生成访问 Token",
@@ -325,7 +295,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "认证管理"
+                    "用户管理"
                 ],
                 "summary": "用户注册",
                 "parameters": [

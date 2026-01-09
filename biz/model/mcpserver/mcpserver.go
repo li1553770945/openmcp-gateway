@@ -2460,6 +2460,8 @@ type GetMCPServerListReq struct {
 	Start int64 `thrift:"start,1,required" form:"start,required" json:"start,required" query:"start,required"`
 	// 结束位置
 	End int64 `thrift:"end,2,required" form:"end,required" json:"end,required" query:"end,required"`
+	// 范围
+	Scope string `thrift:"scope,3,required" json:"scope,required" query:"scope,required"`
 }
 
 func NewGetMCPServerListReq() *GetMCPServerListReq {
@@ -2477,9 +2479,14 @@ func (p *GetMCPServerListReq) GetEnd() (v int64) {
 	return p.End
 }
 
+func (p *GetMCPServerListReq) GetScope() (v string) {
+	return p.Scope
+}
+
 var fieldIDToName_GetMCPServerListReq = map[int16]string{
 	1: "start",
 	2: "end",
+	3: "scope",
 }
 
 func (p *GetMCPServerListReq) Read(iprot thrift.TProtocol) (err error) {
@@ -2488,6 +2495,7 @@ func (p *GetMCPServerListReq) Read(iprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	var issetStart bool = false
 	var issetEnd bool = false
+	var issetScope bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
 		goto ReadStructBeginError
@@ -2521,6 +2529,15 @@ func (p *GetMCPServerListReq) Read(iprot thrift.TProtocol) (err error) {
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
+		case 3:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField3(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetScope = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
@@ -2541,6 +2558,11 @@ func (p *GetMCPServerListReq) Read(iprot thrift.TProtocol) (err error) {
 
 	if !issetEnd {
 		fieldId = 2
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetScope {
+		fieldId = 3
 		goto RequiredFieldNotSetError
 	}
 	return nil
@@ -2583,6 +2605,17 @@ func (p *GetMCPServerListReq) ReadField2(iprot thrift.TProtocol) error {
 	p.End = _field
 	return nil
 }
+func (p *GetMCPServerListReq) ReadField3(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.Scope = _field
+	return nil
+}
 
 func (p *GetMCPServerListReq) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
@@ -2596,6 +2629,10 @@ func (p *GetMCPServerListReq) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField2(oprot); err != nil {
 			fieldId = 2
+			goto WriteFieldError
+		}
+		if err = p.writeField3(oprot); err != nil {
+			fieldId = 3
 			goto WriteFieldError
 		}
 	}
@@ -2648,6 +2685,23 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+}
+
+func (p *GetMCPServerListReq) writeField3(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("scope", thrift.STRING, 3); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Scope); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
 }
 
 func (p *GetMCPServerListReq) String() string {
@@ -4784,14 +4838,12 @@ func (p *DeleteTokenResp) String() string {
 
 }
 
-type MCPServerService interface {
+type MCPServerController interface {
 	AddMCPServer(ctx context.Context, req *AddMCPServerReq) (r *AddMCPServerResp, err error)
 
 	GenerateToken(ctx context.Context, req *GenerateTokenReq) (r *GenerateTokenResp, err error)
 
-	GetSelfMCPServerList(ctx context.Context, req *GetMCPServerListReq) (r *GetMCPServerListResp, err error)
-
-	GetPublicMCPServerList(ctx context.Context, req *GetMCPServerListReq) (r *GetMCPServerListResp, err error)
+	GetMCPServerList(ctx context.Context, req *GetMCPServerListReq) (r *GetMCPServerListResp, err error)
 
 	UpdateMCPServer(ctx context.Context, req *UpdateMCPServerReq) (r *UpdateMCPServerResp, err error)
 
@@ -4802,136 +4854,126 @@ type MCPServerService interface {
 	DeleteToken(ctx context.Context, req *DeleteTokenReq) (r *DeleteTokenResp, err error)
 }
 
-type MCPServerServiceClient struct {
+type MCPServerControllerClient struct {
 	c thrift.TClient
 }
 
-func NewMCPServerServiceClientFactory(t thrift.TTransport, f thrift.TProtocolFactory) *MCPServerServiceClient {
-	return &MCPServerServiceClient{
+func NewMCPServerControllerClientFactory(t thrift.TTransport, f thrift.TProtocolFactory) *MCPServerControllerClient {
+	return &MCPServerControllerClient{
 		c: thrift.NewTStandardClient(f.GetProtocol(t), f.GetProtocol(t)),
 	}
 }
 
-func NewMCPServerServiceClientProtocol(t thrift.TTransport, iprot thrift.TProtocol, oprot thrift.TProtocol) *MCPServerServiceClient {
-	return &MCPServerServiceClient{
+func NewMCPServerControllerClientProtocol(t thrift.TTransport, iprot thrift.TProtocol, oprot thrift.TProtocol) *MCPServerControllerClient {
+	return &MCPServerControllerClient{
 		c: thrift.NewTStandardClient(iprot, oprot),
 	}
 }
 
-func NewMCPServerServiceClient(c thrift.TClient) *MCPServerServiceClient {
-	return &MCPServerServiceClient{
+func NewMCPServerControllerClient(c thrift.TClient) *MCPServerControllerClient {
+	return &MCPServerControllerClient{
 		c: c,
 	}
 }
 
-func (p *MCPServerServiceClient) Client_() thrift.TClient {
+func (p *MCPServerControllerClient) Client_() thrift.TClient {
 	return p.c
 }
 
-func (p *MCPServerServiceClient) AddMCPServer(ctx context.Context, req *AddMCPServerReq) (r *AddMCPServerResp, err error) {
-	var _args MCPServerServiceAddMCPServerArgs
+func (p *MCPServerControllerClient) AddMCPServer(ctx context.Context, req *AddMCPServerReq) (r *AddMCPServerResp, err error) {
+	var _args MCPServerControllerAddMCPServerArgs
 	_args.Req = req
-	var _result MCPServerServiceAddMCPServerResult
+	var _result MCPServerControllerAddMCPServerResult
 	if err = p.Client_().Call(ctx, "AddMCPServer", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *MCPServerServiceClient) GenerateToken(ctx context.Context, req *GenerateTokenReq) (r *GenerateTokenResp, err error) {
-	var _args MCPServerServiceGenerateTokenArgs
+func (p *MCPServerControllerClient) GenerateToken(ctx context.Context, req *GenerateTokenReq) (r *GenerateTokenResp, err error) {
+	var _args MCPServerControllerGenerateTokenArgs
 	_args.Req = req
-	var _result MCPServerServiceGenerateTokenResult
+	var _result MCPServerControllerGenerateTokenResult
 	if err = p.Client_().Call(ctx, "GenerateToken", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *MCPServerServiceClient) GetSelfMCPServerList(ctx context.Context, req *GetMCPServerListReq) (r *GetMCPServerListResp, err error) {
-	var _args MCPServerServiceGetSelfMCPServerListArgs
+func (p *MCPServerControllerClient) GetMCPServerList(ctx context.Context, req *GetMCPServerListReq) (r *GetMCPServerListResp, err error) {
+	var _args MCPServerControllerGetMCPServerListArgs
 	_args.Req = req
-	var _result MCPServerServiceGetSelfMCPServerListResult
-	if err = p.Client_().Call(ctx, "GetSelfMCPServerList", &_args, &_result); err != nil {
+	var _result MCPServerControllerGetMCPServerListResult
+	if err = p.Client_().Call(ctx, "GetMCPServerList", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *MCPServerServiceClient) GetPublicMCPServerList(ctx context.Context, req *GetMCPServerListReq) (r *GetMCPServerListResp, err error) {
-	var _args MCPServerServiceGetPublicMCPServerListArgs
+func (p *MCPServerControllerClient) UpdateMCPServer(ctx context.Context, req *UpdateMCPServerReq) (r *UpdateMCPServerResp, err error) {
+	var _args MCPServerControllerUpdateMCPServerArgs
 	_args.Req = req
-	var _result MCPServerServiceGetPublicMCPServerListResult
-	if err = p.Client_().Call(ctx, "GetPublicMCPServerList", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-func (p *MCPServerServiceClient) UpdateMCPServer(ctx context.Context, req *UpdateMCPServerReq) (r *UpdateMCPServerResp, err error) {
-	var _args MCPServerServiceUpdateMCPServerArgs
-	_args.Req = req
-	var _result MCPServerServiceUpdateMCPServerResult
+	var _result MCPServerControllerUpdateMCPServerResult
 	if err = p.Client_().Call(ctx, "UpdateMCPServer", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *MCPServerServiceClient) GetMCPServer(ctx context.Context, req *GetMCPServerReq) (r *GetMCPServerResp, err error) {
-	var _args MCPServerServiceGetMCPServerArgs
+func (p *MCPServerControllerClient) GetMCPServer(ctx context.Context, req *GetMCPServerReq) (r *GetMCPServerResp, err error) {
+	var _args MCPServerControllerGetMCPServerArgs
 	_args.Req = req
-	var _result MCPServerServiceGetMCPServerResult
+	var _result MCPServerControllerGetMCPServerResult
 	if err = p.Client_().Call(ctx, "GetMCPServer", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *MCPServerServiceClient) DeleteMCPServer(ctx context.Context, req *DeleteMCPServerReq) (r *DeleteMCPServerResp, err error) {
-	var _args MCPServerServiceDeleteMCPServerArgs
+func (p *MCPServerControllerClient) DeleteMCPServer(ctx context.Context, req *DeleteMCPServerReq) (r *DeleteMCPServerResp, err error) {
+	var _args MCPServerControllerDeleteMCPServerArgs
 	_args.Req = req
-	var _result MCPServerServiceDeleteMCPServerResult
+	var _result MCPServerControllerDeleteMCPServerResult
 	if err = p.Client_().Call(ctx, "DeleteMCPServer", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *MCPServerServiceClient) DeleteToken(ctx context.Context, req *DeleteTokenReq) (r *DeleteTokenResp, err error) {
-	var _args MCPServerServiceDeleteTokenArgs
+func (p *MCPServerControllerClient) DeleteToken(ctx context.Context, req *DeleteTokenReq) (r *DeleteTokenResp, err error) {
+	var _args MCPServerControllerDeleteTokenArgs
 	_args.Req = req
-	var _result MCPServerServiceDeleteTokenResult
+	var _result MCPServerControllerDeleteTokenResult
 	if err = p.Client_().Call(ctx, "DeleteToken", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-type MCPServerServiceProcessor struct {
+type MCPServerControllerProcessor struct {
 	processorMap map[string]thrift.TProcessorFunction
-	handler      MCPServerService
+	handler      MCPServerController
 }
 
-func (p *MCPServerServiceProcessor) AddToProcessorMap(key string, processor thrift.TProcessorFunction) {
+func (p *MCPServerControllerProcessor) AddToProcessorMap(key string, processor thrift.TProcessorFunction) {
 	p.processorMap[key] = processor
 }
 
-func (p *MCPServerServiceProcessor) GetProcessorFunction(key string) (processor thrift.TProcessorFunction, ok bool) {
+func (p *MCPServerControllerProcessor) GetProcessorFunction(key string) (processor thrift.TProcessorFunction, ok bool) {
 	processor, ok = p.processorMap[key]
 	return processor, ok
 }
 
-func (p *MCPServerServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
+func (p *MCPServerControllerProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
 	return p.processorMap
 }
 
-func NewMCPServerServiceProcessor(handler MCPServerService) *MCPServerServiceProcessor {
-	self := &MCPServerServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self.AddToProcessorMap("AddMCPServer", &mCPServerServiceProcessorAddMCPServer{handler: handler})
-	self.AddToProcessorMap("GenerateToken", &mCPServerServiceProcessorGenerateToken{handler: handler})
-	self.AddToProcessorMap("GetSelfMCPServerList", &mCPServerServiceProcessorGetSelfMCPServerList{handler: handler})
-	self.AddToProcessorMap("GetPublicMCPServerList", &mCPServerServiceProcessorGetPublicMCPServerList{handler: handler})
-	self.AddToProcessorMap("UpdateMCPServer", &mCPServerServiceProcessorUpdateMCPServer{handler: handler})
-	self.AddToProcessorMap("GetMCPServer", &mCPServerServiceProcessorGetMCPServer{handler: handler})
-	self.AddToProcessorMap("DeleteMCPServer", &mCPServerServiceProcessorDeleteMCPServer{handler: handler})
-	self.AddToProcessorMap("DeleteToken", &mCPServerServiceProcessorDeleteToken{handler: handler})
+func NewMCPServerControllerProcessor(handler MCPServerController) *MCPServerControllerProcessor {
+	self := &MCPServerControllerProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self.AddToProcessorMap("AddMCPServer", &mCPServerControllerProcessorAddMCPServer{handler: handler})
+	self.AddToProcessorMap("GenerateToken", &mCPServerControllerProcessorGenerateToken{handler: handler})
+	self.AddToProcessorMap("GetMCPServerList", &mCPServerControllerProcessorGetMCPServerList{handler: handler})
+	self.AddToProcessorMap("UpdateMCPServer", &mCPServerControllerProcessorUpdateMCPServer{handler: handler})
+	self.AddToProcessorMap("GetMCPServer", &mCPServerControllerProcessorGetMCPServer{handler: handler})
+	self.AddToProcessorMap("DeleteMCPServer", &mCPServerControllerProcessorDeleteMCPServer{handler: handler})
+	self.AddToProcessorMap("DeleteToken", &mCPServerControllerProcessorDeleteToken{handler: handler})
 	return self
 }
-func (p *MCPServerServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+func (p *MCPServerControllerProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
 	name, _, seqId, err := iprot.ReadMessageBegin()
 	if err != nil {
 		return false, err
@@ -4949,12 +4991,12 @@ func (p *MCPServerServiceProcessor) Process(ctx context.Context, iprot, oprot th
 	return false, x
 }
 
-type mCPServerServiceProcessorAddMCPServer struct {
-	handler MCPServerService
+type mCPServerControllerProcessorAddMCPServer struct {
+	handler MCPServerController
 }
 
-func (p *mCPServerServiceProcessorAddMCPServer) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MCPServerServiceAddMCPServerArgs{}
+func (p *mCPServerControllerProcessorAddMCPServer) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MCPServerControllerAddMCPServerArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
@@ -4967,7 +5009,7 @@ func (p *mCPServerServiceProcessorAddMCPServer) Process(ctx context.Context, seq
 
 	iprot.ReadMessageEnd()
 	var err2 error
-	result := MCPServerServiceAddMCPServerResult{}
+	result := MCPServerControllerAddMCPServerResult{}
 	var retval *AddMCPServerResp
 	if retval, err2 = p.handler.AddMCPServer(ctx, args.Req); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing AddMCPServer: "+err2.Error())
@@ -4997,12 +5039,12 @@ func (p *mCPServerServiceProcessorAddMCPServer) Process(ctx context.Context, seq
 	return true, err
 }
 
-type mCPServerServiceProcessorGenerateToken struct {
-	handler MCPServerService
+type mCPServerControllerProcessorGenerateToken struct {
+	handler MCPServerController
 }
 
-func (p *mCPServerServiceProcessorGenerateToken) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MCPServerServiceGenerateTokenArgs{}
+func (p *mCPServerControllerProcessorGenerateToken) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MCPServerControllerGenerateTokenArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
@@ -5015,7 +5057,7 @@ func (p *mCPServerServiceProcessorGenerateToken) Process(ctx context.Context, se
 
 	iprot.ReadMessageEnd()
 	var err2 error
-	result := MCPServerServiceGenerateTokenResult{}
+	result := MCPServerControllerGenerateTokenResult{}
 	var retval *GenerateTokenResp
 	if retval, err2 = p.handler.GenerateToken(ctx, args.Req); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GenerateToken: "+err2.Error())
@@ -5045,16 +5087,16 @@ func (p *mCPServerServiceProcessorGenerateToken) Process(ctx context.Context, se
 	return true, err
 }
 
-type mCPServerServiceProcessorGetSelfMCPServerList struct {
-	handler MCPServerService
+type mCPServerControllerProcessorGetMCPServerList struct {
+	handler MCPServerController
 }
 
-func (p *mCPServerServiceProcessorGetSelfMCPServerList) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MCPServerServiceGetSelfMCPServerListArgs{}
+func (p *mCPServerControllerProcessorGetMCPServerList) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MCPServerControllerGetMCPServerListArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("GetSelfMCPServerList", thrift.EXCEPTION, seqId)
+		oprot.WriteMessageBegin("GetMCPServerList", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -5063,11 +5105,11 @@ func (p *mCPServerServiceProcessorGetSelfMCPServerList) Process(ctx context.Cont
 
 	iprot.ReadMessageEnd()
 	var err2 error
-	result := MCPServerServiceGetSelfMCPServerListResult{}
+	result := MCPServerControllerGetMCPServerListResult{}
 	var retval *GetMCPServerListResp
-	if retval, err2 = p.handler.GetSelfMCPServerList(ctx, args.Req); err2 != nil {
-		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetSelfMCPServerList: "+err2.Error())
-		oprot.WriteMessageBegin("GetSelfMCPServerList", thrift.EXCEPTION, seqId)
+	if retval, err2 = p.handler.GetMCPServerList(ctx, args.Req); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetMCPServerList: "+err2.Error())
+		oprot.WriteMessageBegin("GetMCPServerList", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -5075,7 +5117,7 @@ func (p *mCPServerServiceProcessorGetSelfMCPServerList) Process(ctx context.Cont
 	} else {
 		result.Success = retval
 	}
-	if err2 = oprot.WriteMessageBegin("GetSelfMCPServerList", thrift.REPLY, seqId); err2 != nil {
+	if err2 = oprot.WriteMessageBegin("GetMCPServerList", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -5093,60 +5135,12 @@ func (p *mCPServerServiceProcessorGetSelfMCPServerList) Process(ctx context.Cont
 	return true, err
 }
 
-type mCPServerServiceProcessorGetPublicMCPServerList struct {
-	handler MCPServerService
+type mCPServerControllerProcessorUpdateMCPServer struct {
+	handler MCPServerController
 }
 
-func (p *mCPServerServiceProcessorGetPublicMCPServerList) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MCPServerServiceGetPublicMCPServerListArgs{}
-	if err = args.Read(iprot); err != nil {
-		iprot.ReadMessageEnd()
-		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("GetPublicMCPServerList", thrift.EXCEPTION, seqId)
-		x.Write(oprot)
-		oprot.WriteMessageEnd()
-		oprot.Flush(ctx)
-		return false, err
-	}
-
-	iprot.ReadMessageEnd()
-	var err2 error
-	result := MCPServerServiceGetPublicMCPServerListResult{}
-	var retval *GetMCPServerListResp
-	if retval, err2 = p.handler.GetPublicMCPServerList(ctx, args.Req); err2 != nil {
-		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetPublicMCPServerList: "+err2.Error())
-		oprot.WriteMessageBegin("GetPublicMCPServerList", thrift.EXCEPTION, seqId)
-		x.Write(oprot)
-		oprot.WriteMessageEnd()
-		oprot.Flush(ctx)
-		return true, err2
-	} else {
-		result.Success = retval
-	}
-	if err2 = oprot.WriteMessageBegin("GetPublicMCPServerList", thrift.REPLY, seqId); err2 != nil {
-		err = err2
-	}
-	if err2 = result.Write(oprot); err == nil && err2 != nil {
-		err = err2
-	}
-	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
-		err = err2
-	}
-	if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
-		err = err2
-	}
-	if err != nil {
-		return
-	}
-	return true, err
-}
-
-type mCPServerServiceProcessorUpdateMCPServer struct {
-	handler MCPServerService
-}
-
-func (p *mCPServerServiceProcessorUpdateMCPServer) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MCPServerServiceUpdateMCPServerArgs{}
+func (p *mCPServerControllerProcessorUpdateMCPServer) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MCPServerControllerUpdateMCPServerArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
@@ -5159,7 +5153,7 @@ func (p *mCPServerServiceProcessorUpdateMCPServer) Process(ctx context.Context, 
 
 	iprot.ReadMessageEnd()
 	var err2 error
-	result := MCPServerServiceUpdateMCPServerResult{}
+	result := MCPServerControllerUpdateMCPServerResult{}
 	var retval *UpdateMCPServerResp
 	if retval, err2 = p.handler.UpdateMCPServer(ctx, args.Req); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing UpdateMCPServer: "+err2.Error())
@@ -5189,12 +5183,12 @@ func (p *mCPServerServiceProcessorUpdateMCPServer) Process(ctx context.Context, 
 	return true, err
 }
 
-type mCPServerServiceProcessorGetMCPServer struct {
-	handler MCPServerService
+type mCPServerControllerProcessorGetMCPServer struct {
+	handler MCPServerController
 }
 
-func (p *mCPServerServiceProcessorGetMCPServer) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MCPServerServiceGetMCPServerArgs{}
+func (p *mCPServerControllerProcessorGetMCPServer) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MCPServerControllerGetMCPServerArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
@@ -5207,7 +5201,7 @@ func (p *mCPServerServiceProcessorGetMCPServer) Process(ctx context.Context, seq
 
 	iprot.ReadMessageEnd()
 	var err2 error
-	result := MCPServerServiceGetMCPServerResult{}
+	result := MCPServerControllerGetMCPServerResult{}
 	var retval *GetMCPServerResp
 	if retval, err2 = p.handler.GetMCPServer(ctx, args.Req); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetMCPServer: "+err2.Error())
@@ -5237,12 +5231,12 @@ func (p *mCPServerServiceProcessorGetMCPServer) Process(ctx context.Context, seq
 	return true, err
 }
 
-type mCPServerServiceProcessorDeleteMCPServer struct {
-	handler MCPServerService
+type mCPServerControllerProcessorDeleteMCPServer struct {
+	handler MCPServerController
 }
 
-func (p *mCPServerServiceProcessorDeleteMCPServer) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MCPServerServiceDeleteMCPServerArgs{}
+func (p *mCPServerControllerProcessorDeleteMCPServer) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MCPServerControllerDeleteMCPServerArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
@@ -5255,7 +5249,7 @@ func (p *mCPServerServiceProcessorDeleteMCPServer) Process(ctx context.Context, 
 
 	iprot.ReadMessageEnd()
 	var err2 error
-	result := MCPServerServiceDeleteMCPServerResult{}
+	result := MCPServerControllerDeleteMCPServerResult{}
 	var retval *DeleteMCPServerResp
 	if retval, err2 = p.handler.DeleteMCPServer(ctx, args.Req); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing DeleteMCPServer: "+err2.Error())
@@ -5285,12 +5279,12 @@ func (p *mCPServerServiceProcessorDeleteMCPServer) Process(ctx context.Context, 
 	return true, err
 }
 
-type mCPServerServiceProcessorDeleteToken struct {
-	handler MCPServerService
+type mCPServerControllerProcessorDeleteToken struct {
+	handler MCPServerController
 }
 
-func (p *mCPServerServiceProcessorDeleteToken) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MCPServerServiceDeleteTokenArgs{}
+func (p *mCPServerControllerProcessorDeleteToken) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MCPServerControllerDeleteTokenArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
@@ -5303,7 +5297,7 @@ func (p *mCPServerServiceProcessorDeleteToken) Process(ctx context.Context, seqI
 
 	iprot.ReadMessageEnd()
 	var err2 error
-	result := MCPServerServiceDeleteTokenResult{}
+	result := MCPServerControllerDeleteTokenResult{}
 	var retval *DeleteTokenResp
 	if retval, err2 = p.handler.DeleteToken(ctx, args.Req); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing DeleteToken: "+err2.Error())
@@ -5333,35 +5327,35 @@ func (p *mCPServerServiceProcessorDeleteToken) Process(ctx context.Context, seqI
 	return true, err
 }
 
-type MCPServerServiceAddMCPServerArgs struct {
+type MCPServerControllerAddMCPServerArgs struct {
 	Req *AddMCPServerReq `thrift:"req,1"`
 }
 
-func NewMCPServerServiceAddMCPServerArgs() *MCPServerServiceAddMCPServerArgs {
-	return &MCPServerServiceAddMCPServerArgs{}
+func NewMCPServerControllerAddMCPServerArgs() *MCPServerControllerAddMCPServerArgs {
+	return &MCPServerControllerAddMCPServerArgs{}
 }
 
-func (p *MCPServerServiceAddMCPServerArgs) InitDefault() {
+func (p *MCPServerControllerAddMCPServerArgs) InitDefault() {
 }
 
-var MCPServerServiceAddMCPServerArgs_Req_DEFAULT *AddMCPServerReq
+var MCPServerControllerAddMCPServerArgs_Req_DEFAULT *AddMCPServerReq
 
-func (p *MCPServerServiceAddMCPServerArgs) GetReq() (v *AddMCPServerReq) {
+func (p *MCPServerControllerAddMCPServerArgs) GetReq() (v *AddMCPServerReq) {
 	if !p.IsSetReq() {
-		return MCPServerServiceAddMCPServerArgs_Req_DEFAULT
+		return MCPServerControllerAddMCPServerArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-var fieldIDToName_MCPServerServiceAddMCPServerArgs = map[int16]string{
+var fieldIDToName_MCPServerControllerAddMCPServerArgs = map[int16]string{
 	1: "req",
 }
 
-func (p *MCPServerServiceAddMCPServerArgs) IsSetReq() bool {
+func (p *MCPServerControllerAddMCPServerArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *MCPServerServiceAddMCPServerArgs) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerAddMCPServerArgs) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -5407,7 +5401,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceAddMCPServerArgs[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerAddMCPServerArgs[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -5417,7 +5411,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceAddMCPServerArgs) ReadField1(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerAddMCPServerArgs) ReadField1(iprot thrift.TProtocol) error {
 	_field := NewAddMCPServerReq()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -5426,7 +5420,7 @@ func (p *MCPServerServiceAddMCPServerArgs) ReadField1(iprot thrift.TProtocol) er
 	return nil
 }
 
-func (p *MCPServerServiceAddMCPServerArgs) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerAddMCPServerArgs) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("AddMCPServer_args"); err != nil {
 		goto WriteStructBeginError
@@ -5454,7 +5448,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceAddMCPServerArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerAddMCPServerArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("req", thrift.STRUCT, 1); err != nil {
 		goto WriteFieldBeginError
 	}
@@ -5471,43 +5465,43 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
-func (p *MCPServerServiceAddMCPServerArgs) String() string {
+func (p *MCPServerControllerAddMCPServerArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceAddMCPServerArgs(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerAddMCPServerArgs(%+v)", *p)
 
 }
 
-type MCPServerServiceAddMCPServerResult struct {
+type MCPServerControllerAddMCPServerResult struct {
 	Success *AddMCPServerResp `thrift:"success,0,optional"`
 }
 
-func NewMCPServerServiceAddMCPServerResult() *MCPServerServiceAddMCPServerResult {
-	return &MCPServerServiceAddMCPServerResult{}
+func NewMCPServerControllerAddMCPServerResult() *MCPServerControllerAddMCPServerResult {
+	return &MCPServerControllerAddMCPServerResult{}
 }
 
-func (p *MCPServerServiceAddMCPServerResult) InitDefault() {
+func (p *MCPServerControllerAddMCPServerResult) InitDefault() {
 }
 
-var MCPServerServiceAddMCPServerResult_Success_DEFAULT *AddMCPServerResp
+var MCPServerControllerAddMCPServerResult_Success_DEFAULT *AddMCPServerResp
 
-func (p *MCPServerServiceAddMCPServerResult) GetSuccess() (v *AddMCPServerResp) {
+func (p *MCPServerControllerAddMCPServerResult) GetSuccess() (v *AddMCPServerResp) {
 	if !p.IsSetSuccess() {
-		return MCPServerServiceAddMCPServerResult_Success_DEFAULT
+		return MCPServerControllerAddMCPServerResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-var fieldIDToName_MCPServerServiceAddMCPServerResult = map[int16]string{
+var fieldIDToName_MCPServerControllerAddMCPServerResult = map[int16]string{
 	0: "success",
 }
 
-func (p *MCPServerServiceAddMCPServerResult) IsSetSuccess() bool {
+func (p *MCPServerControllerAddMCPServerResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MCPServerServiceAddMCPServerResult) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerAddMCPServerResult) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -5553,7 +5547,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceAddMCPServerResult[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerAddMCPServerResult[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -5563,7 +5557,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceAddMCPServerResult) ReadField0(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerAddMCPServerResult) ReadField0(iprot thrift.TProtocol) error {
 	_field := NewAddMCPServerResp()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -5572,7 +5566,7 @@ func (p *MCPServerServiceAddMCPServerResult) ReadField0(iprot thrift.TProtocol) 
 	return nil
 }
 
-func (p *MCPServerServiceAddMCPServerResult) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerAddMCPServerResult) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("AddMCPServer_result"); err != nil {
 		goto WriteStructBeginError
@@ -5600,7 +5594,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceAddMCPServerResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerAddMCPServerResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err = oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
 			goto WriteFieldBeginError
@@ -5619,43 +5613,43 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 0 end error: ", p), err)
 }
 
-func (p *MCPServerServiceAddMCPServerResult) String() string {
+func (p *MCPServerControllerAddMCPServerResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceAddMCPServerResult(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerAddMCPServerResult(%+v)", *p)
 
 }
 
-type MCPServerServiceGenerateTokenArgs struct {
+type MCPServerControllerGenerateTokenArgs struct {
 	Req *GenerateTokenReq `thrift:"req,1"`
 }
 
-func NewMCPServerServiceGenerateTokenArgs() *MCPServerServiceGenerateTokenArgs {
-	return &MCPServerServiceGenerateTokenArgs{}
+func NewMCPServerControllerGenerateTokenArgs() *MCPServerControllerGenerateTokenArgs {
+	return &MCPServerControllerGenerateTokenArgs{}
 }
 
-func (p *MCPServerServiceGenerateTokenArgs) InitDefault() {
+func (p *MCPServerControllerGenerateTokenArgs) InitDefault() {
 }
 
-var MCPServerServiceGenerateTokenArgs_Req_DEFAULT *GenerateTokenReq
+var MCPServerControllerGenerateTokenArgs_Req_DEFAULT *GenerateTokenReq
 
-func (p *MCPServerServiceGenerateTokenArgs) GetReq() (v *GenerateTokenReq) {
+func (p *MCPServerControllerGenerateTokenArgs) GetReq() (v *GenerateTokenReq) {
 	if !p.IsSetReq() {
-		return MCPServerServiceGenerateTokenArgs_Req_DEFAULT
+		return MCPServerControllerGenerateTokenArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-var fieldIDToName_MCPServerServiceGenerateTokenArgs = map[int16]string{
+var fieldIDToName_MCPServerControllerGenerateTokenArgs = map[int16]string{
 	1: "req",
 }
 
-func (p *MCPServerServiceGenerateTokenArgs) IsSetReq() bool {
+func (p *MCPServerControllerGenerateTokenArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *MCPServerServiceGenerateTokenArgs) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGenerateTokenArgs) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -5701,7 +5695,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceGenerateTokenArgs[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerGenerateTokenArgs[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -5711,7 +5705,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceGenerateTokenArgs) ReadField1(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerGenerateTokenArgs) ReadField1(iprot thrift.TProtocol) error {
 	_field := NewGenerateTokenReq()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -5720,7 +5714,7 @@ func (p *MCPServerServiceGenerateTokenArgs) ReadField1(iprot thrift.TProtocol) e
 	return nil
 }
 
-func (p *MCPServerServiceGenerateTokenArgs) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGenerateTokenArgs) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("GenerateToken_args"); err != nil {
 		goto WriteStructBeginError
@@ -5748,7 +5742,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceGenerateTokenArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGenerateTokenArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("req", thrift.STRUCT, 1); err != nil {
 		goto WriteFieldBeginError
 	}
@@ -5765,43 +5759,43 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
-func (p *MCPServerServiceGenerateTokenArgs) String() string {
+func (p *MCPServerControllerGenerateTokenArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceGenerateTokenArgs(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerGenerateTokenArgs(%+v)", *p)
 
 }
 
-type MCPServerServiceGenerateTokenResult struct {
+type MCPServerControllerGenerateTokenResult struct {
 	Success *GenerateTokenResp `thrift:"success,0,optional"`
 }
 
-func NewMCPServerServiceGenerateTokenResult() *MCPServerServiceGenerateTokenResult {
-	return &MCPServerServiceGenerateTokenResult{}
+func NewMCPServerControllerGenerateTokenResult() *MCPServerControllerGenerateTokenResult {
+	return &MCPServerControllerGenerateTokenResult{}
 }
 
-func (p *MCPServerServiceGenerateTokenResult) InitDefault() {
+func (p *MCPServerControllerGenerateTokenResult) InitDefault() {
 }
 
-var MCPServerServiceGenerateTokenResult_Success_DEFAULT *GenerateTokenResp
+var MCPServerControllerGenerateTokenResult_Success_DEFAULT *GenerateTokenResp
 
-func (p *MCPServerServiceGenerateTokenResult) GetSuccess() (v *GenerateTokenResp) {
+func (p *MCPServerControllerGenerateTokenResult) GetSuccess() (v *GenerateTokenResp) {
 	if !p.IsSetSuccess() {
-		return MCPServerServiceGenerateTokenResult_Success_DEFAULT
+		return MCPServerControllerGenerateTokenResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-var fieldIDToName_MCPServerServiceGenerateTokenResult = map[int16]string{
+var fieldIDToName_MCPServerControllerGenerateTokenResult = map[int16]string{
 	0: "success",
 }
 
-func (p *MCPServerServiceGenerateTokenResult) IsSetSuccess() bool {
+func (p *MCPServerControllerGenerateTokenResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MCPServerServiceGenerateTokenResult) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGenerateTokenResult) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -5847,7 +5841,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceGenerateTokenResult[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerGenerateTokenResult[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -5857,7 +5851,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceGenerateTokenResult) ReadField0(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerGenerateTokenResult) ReadField0(iprot thrift.TProtocol) error {
 	_field := NewGenerateTokenResp()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -5866,7 +5860,7 @@ func (p *MCPServerServiceGenerateTokenResult) ReadField0(iprot thrift.TProtocol)
 	return nil
 }
 
-func (p *MCPServerServiceGenerateTokenResult) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGenerateTokenResult) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("GenerateToken_result"); err != nil {
 		goto WriteStructBeginError
@@ -5894,7 +5888,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceGenerateTokenResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGenerateTokenResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err = oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
 			goto WriteFieldBeginError
@@ -5913,43 +5907,43 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 0 end error: ", p), err)
 }
 
-func (p *MCPServerServiceGenerateTokenResult) String() string {
+func (p *MCPServerControllerGenerateTokenResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceGenerateTokenResult(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerGenerateTokenResult(%+v)", *p)
 
 }
 
-type MCPServerServiceGetSelfMCPServerListArgs struct {
+type MCPServerControllerGetMCPServerListArgs struct {
 	Req *GetMCPServerListReq `thrift:"req,1"`
 }
 
-func NewMCPServerServiceGetSelfMCPServerListArgs() *MCPServerServiceGetSelfMCPServerListArgs {
-	return &MCPServerServiceGetSelfMCPServerListArgs{}
+func NewMCPServerControllerGetMCPServerListArgs() *MCPServerControllerGetMCPServerListArgs {
+	return &MCPServerControllerGetMCPServerListArgs{}
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListArgs) InitDefault() {
+func (p *MCPServerControllerGetMCPServerListArgs) InitDefault() {
 }
 
-var MCPServerServiceGetSelfMCPServerListArgs_Req_DEFAULT *GetMCPServerListReq
+var MCPServerControllerGetMCPServerListArgs_Req_DEFAULT *GetMCPServerListReq
 
-func (p *MCPServerServiceGetSelfMCPServerListArgs) GetReq() (v *GetMCPServerListReq) {
+func (p *MCPServerControllerGetMCPServerListArgs) GetReq() (v *GetMCPServerListReq) {
 	if !p.IsSetReq() {
-		return MCPServerServiceGetSelfMCPServerListArgs_Req_DEFAULT
+		return MCPServerControllerGetMCPServerListArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-var fieldIDToName_MCPServerServiceGetSelfMCPServerListArgs = map[int16]string{
+var fieldIDToName_MCPServerControllerGetMCPServerListArgs = map[int16]string{
 	1: "req",
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListArgs) IsSetReq() bool {
+func (p *MCPServerControllerGetMCPServerListArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListArgs) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGetMCPServerListArgs) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -5995,7 +5989,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceGetSelfMCPServerListArgs[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerGetMCPServerListArgs[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -6005,7 +5999,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListArgs) ReadField1(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerGetMCPServerListArgs) ReadField1(iprot thrift.TProtocol) error {
 	_field := NewGetMCPServerListReq()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -6014,9 +6008,9 @@ func (p *MCPServerServiceGetSelfMCPServerListArgs) ReadField1(iprot thrift.TProt
 	return nil
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListArgs) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGetMCPServerListArgs) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
-	if err = oprot.WriteStructBegin("GetSelfMCPServerList_args"); err != nil {
+	if err = oprot.WriteStructBegin("GetMCPServerList_args"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
@@ -6042,7 +6036,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGetMCPServerListArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("req", thrift.STRUCT, 1); err != nil {
 		goto WriteFieldBeginError
 	}
@@ -6059,43 +6053,43 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListArgs) String() string {
+func (p *MCPServerControllerGetMCPServerListArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceGetSelfMCPServerListArgs(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerGetMCPServerListArgs(%+v)", *p)
 
 }
 
-type MCPServerServiceGetSelfMCPServerListResult struct {
+type MCPServerControllerGetMCPServerListResult struct {
 	Success *GetMCPServerListResp `thrift:"success,0,optional"`
 }
 
-func NewMCPServerServiceGetSelfMCPServerListResult() *MCPServerServiceGetSelfMCPServerListResult {
-	return &MCPServerServiceGetSelfMCPServerListResult{}
+func NewMCPServerControllerGetMCPServerListResult() *MCPServerControllerGetMCPServerListResult {
+	return &MCPServerControllerGetMCPServerListResult{}
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListResult) InitDefault() {
+func (p *MCPServerControllerGetMCPServerListResult) InitDefault() {
 }
 
-var MCPServerServiceGetSelfMCPServerListResult_Success_DEFAULT *GetMCPServerListResp
+var MCPServerControllerGetMCPServerListResult_Success_DEFAULT *GetMCPServerListResp
 
-func (p *MCPServerServiceGetSelfMCPServerListResult) GetSuccess() (v *GetMCPServerListResp) {
+func (p *MCPServerControllerGetMCPServerListResult) GetSuccess() (v *GetMCPServerListResp) {
 	if !p.IsSetSuccess() {
-		return MCPServerServiceGetSelfMCPServerListResult_Success_DEFAULT
+		return MCPServerControllerGetMCPServerListResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-var fieldIDToName_MCPServerServiceGetSelfMCPServerListResult = map[int16]string{
+var fieldIDToName_MCPServerControllerGetMCPServerListResult = map[int16]string{
 	0: "success",
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListResult) IsSetSuccess() bool {
+func (p *MCPServerControllerGetMCPServerListResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListResult) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGetMCPServerListResult) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -6141,7 +6135,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceGetSelfMCPServerListResult[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerGetMCPServerListResult[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -6151,7 +6145,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListResult) ReadField0(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerGetMCPServerListResult) ReadField0(iprot thrift.TProtocol) error {
 	_field := NewGetMCPServerListResp()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -6160,9 +6154,9 @@ func (p *MCPServerServiceGetSelfMCPServerListResult) ReadField0(iprot thrift.TPr
 	return nil
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListResult) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGetMCPServerListResult) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
-	if err = oprot.WriteStructBegin("GetSelfMCPServerList_result"); err != nil {
+	if err = oprot.WriteStructBegin("GetMCPServerList_result"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
@@ -6188,7 +6182,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGetMCPServerListResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err = oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
 			goto WriteFieldBeginError
@@ -6207,337 +6201,43 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 0 end error: ", p), err)
 }
 
-func (p *MCPServerServiceGetSelfMCPServerListResult) String() string {
+func (p *MCPServerControllerGetMCPServerListResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceGetSelfMCPServerListResult(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerGetMCPServerListResult(%+v)", *p)
 
 }
 
-type MCPServerServiceGetPublicMCPServerListArgs struct {
-	Req *GetMCPServerListReq `thrift:"req,1"`
-}
-
-func NewMCPServerServiceGetPublicMCPServerListArgs() *MCPServerServiceGetPublicMCPServerListArgs {
-	return &MCPServerServiceGetPublicMCPServerListArgs{}
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListArgs) InitDefault() {
-}
-
-var MCPServerServiceGetPublicMCPServerListArgs_Req_DEFAULT *GetMCPServerListReq
-
-func (p *MCPServerServiceGetPublicMCPServerListArgs) GetReq() (v *GetMCPServerListReq) {
-	if !p.IsSetReq() {
-		return MCPServerServiceGetPublicMCPServerListArgs_Req_DEFAULT
-	}
-	return p.Req
-}
-
-var fieldIDToName_MCPServerServiceGetPublicMCPServerListArgs = map[int16]string{
-	1: "req",
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListArgs) Read(iprot thrift.TProtocol) (err error) {
-
-	var fieldTypeId thrift.TType
-	var fieldId int16
-
-	if _, err = iprot.ReadStructBegin(); err != nil {
-		goto ReadStructBeginError
-	}
-
-	for {
-		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
-		if err != nil {
-			goto ReadFieldBeginError
-		}
-		if fieldTypeId == thrift.STOP {
-			break
-		}
-
-		switch fieldId {
-		case 1:
-			if fieldTypeId == thrift.STRUCT {
-				if err = p.ReadField1(iprot); err != nil {
-					goto ReadFieldError
-				}
-			} else if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
-		default:
-			if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
-		}
-		if err = iprot.ReadFieldEnd(); err != nil {
-			goto ReadFieldEndError
-		}
-	}
-	if err = iprot.ReadStructEnd(); err != nil {
-		goto ReadStructEndError
-	}
-
-	return nil
-ReadStructBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
-ReadFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
-ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceGetPublicMCPServerListArgs[fieldId]), err)
-SkipFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
-
-ReadFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
-ReadStructEndError:
-	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListArgs) ReadField1(iprot thrift.TProtocol) error {
-	_field := NewGetMCPServerListReq()
-	if err := _field.Read(iprot); err != nil {
-		return err
-	}
-	p.Req = _field
-	return nil
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListArgs) Write(oprot thrift.TProtocol) (err error) {
-	var fieldId int16
-	if err = oprot.WriteStructBegin("GetPublicMCPServerList_args"); err != nil {
-		goto WriteStructBeginError
-	}
-	if p != nil {
-		if err = p.writeField1(oprot); err != nil {
-			fieldId = 1
-			goto WriteFieldError
-		}
-	}
-	if err = oprot.WriteFieldStop(); err != nil {
-		goto WriteFieldStopError
-	}
-	if err = oprot.WriteStructEnd(); err != nil {
-		goto WriteStructEndError
-	}
-	return nil
-WriteStructBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
-WriteFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
-WriteFieldStopError:
-	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
-WriteStructEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("req", thrift.STRUCT, 1); err != nil {
-		goto WriteFieldBeginError
-	}
-	if err := p.Req.Write(oprot); err != nil {
-		return err
-	}
-	if err = oprot.WriteFieldEnd(); err != nil {
-		goto WriteFieldEndError
-	}
-	return nil
-WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
-WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListArgs) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("MCPServerServiceGetPublicMCPServerListArgs(%+v)", *p)
-
-}
-
-type MCPServerServiceGetPublicMCPServerListResult struct {
-	Success *GetMCPServerListResp `thrift:"success,0,optional"`
-}
-
-func NewMCPServerServiceGetPublicMCPServerListResult() *MCPServerServiceGetPublicMCPServerListResult {
-	return &MCPServerServiceGetPublicMCPServerListResult{}
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListResult) InitDefault() {
-}
-
-var MCPServerServiceGetPublicMCPServerListResult_Success_DEFAULT *GetMCPServerListResp
-
-func (p *MCPServerServiceGetPublicMCPServerListResult) GetSuccess() (v *GetMCPServerListResp) {
-	if !p.IsSetSuccess() {
-		return MCPServerServiceGetPublicMCPServerListResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-var fieldIDToName_MCPServerServiceGetPublicMCPServerListResult = map[int16]string{
-	0: "success",
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListResult) Read(iprot thrift.TProtocol) (err error) {
-
-	var fieldTypeId thrift.TType
-	var fieldId int16
-
-	if _, err = iprot.ReadStructBegin(); err != nil {
-		goto ReadStructBeginError
-	}
-
-	for {
-		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
-		if err != nil {
-			goto ReadFieldBeginError
-		}
-		if fieldTypeId == thrift.STOP {
-			break
-		}
-
-		switch fieldId {
-		case 0:
-			if fieldTypeId == thrift.STRUCT {
-				if err = p.ReadField0(iprot); err != nil {
-					goto ReadFieldError
-				}
-			} else if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
-		default:
-			if err = iprot.Skip(fieldTypeId); err != nil {
-				goto SkipFieldError
-			}
-		}
-		if err = iprot.ReadFieldEnd(); err != nil {
-			goto ReadFieldEndError
-		}
-	}
-	if err = iprot.ReadStructEnd(); err != nil {
-		goto ReadStructEndError
-	}
-
-	return nil
-ReadStructBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
-ReadFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
-ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceGetPublicMCPServerListResult[fieldId]), err)
-SkipFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
-
-ReadFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
-ReadStructEndError:
-	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListResult) ReadField0(iprot thrift.TProtocol) error {
-	_field := NewGetMCPServerListResp()
-	if err := _field.Read(iprot); err != nil {
-		return err
-	}
-	p.Success = _field
-	return nil
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListResult) Write(oprot thrift.TProtocol) (err error) {
-	var fieldId int16
-	if err = oprot.WriteStructBegin("GetPublicMCPServerList_result"); err != nil {
-		goto WriteStructBeginError
-	}
-	if p != nil {
-		if err = p.writeField0(oprot); err != nil {
-			fieldId = 0
-			goto WriteFieldError
-		}
-	}
-	if err = oprot.WriteFieldStop(); err != nil {
-		goto WriteFieldStopError
-	}
-	if err = oprot.WriteStructEnd(); err != nil {
-		goto WriteStructEndError
-	}
-	return nil
-WriteStructBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
-WriteFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
-WriteFieldStopError:
-	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
-WriteStructEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListResult) writeField0(oprot thrift.TProtocol) (err error) {
-	if p.IsSetSuccess() {
-		if err = oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
-			goto WriteFieldBeginError
-		}
-		if err := p.Success.Write(oprot); err != nil {
-			return err
-		}
-		if err = oprot.WriteFieldEnd(); err != nil {
-			goto WriteFieldEndError
-		}
-	}
-	return nil
-WriteFieldBeginError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 0 begin error: ", p), err)
-WriteFieldEndError:
-	return thrift.PrependError(fmt.Sprintf("%T write field 0 end error: ", p), err)
-}
-
-func (p *MCPServerServiceGetPublicMCPServerListResult) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("MCPServerServiceGetPublicMCPServerListResult(%+v)", *p)
-
-}
-
-type MCPServerServiceUpdateMCPServerArgs struct {
+type MCPServerControllerUpdateMCPServerArgs struct {
 	Req *UpdateMCPServerReq `thrift:"req,1"`
 }
 
-func NewMCPServerServiceUpdateMCPServerArgs() *MCPServerServiceUpdateMCPServerArgs {
-	return &MCPServerServiceUpdateMCPServerArgs{}
+func NewMCPServerControllerUpdateMCPServerArgs() *MCPServerControllerUpdateMCPServerArgs {
+	return &MCPServerControllerUpdateMCPServerArgs{}
 }
 
-func (p *MCPServerServiceUpdateMCPServerArgs) InitDefault() {
+func (p *MCPServerControllerUpdateMCPServerArgs) InitDefault() {
 }
 
-var MCPServerServiceUpdateMCPServerArgs_Req_DEFAULT *UpdateMCPServerReq
+var MCPServerControllerUpdateMCPServerArgs_Req_DEFAULT *UpdateMCPServerReq
 
-func (p *MCPServerServiceUpdateMCPServerArgs) GetReq() (v *UpdateMCPServerReq) {
+func (p *MCPServerControllerUpdateMCPServerArgs) GetReq() (v *UpdateMCPServerReq) {
 	if !p.IsSetReq() {
-		return MCPServerServiceUpdateMCPServerArgs_Req_DEFAULT
+		return MCPServerControllerUpdateMCPServerArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-var fieldIDToName_MCPServerServiceUpdateMCPServerArgs = map[int16]string{
+var fieldIDToName_MCPServerControllerUpdateMCPServerArgs = map[int16]string{
 	1: "req",
 }
 
-func (p *MCPServerServiceUpdateMCPServerArgs) IsSetReq() bool {
+func (p *MCPServerControllerUpdateMCPServerArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *MCPServerServiceUpdateMCPServerArgs) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerUpdateMCPServerArgs) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -6583,7 +6283,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceUpdateMCPServerArgs[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerUpdateMCPServerArgs[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -6593,7 +6293,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceUpdateMCPServerArgs) ReadField1(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerUpdateMCPServerArgs) ReadField1(iprot thrift.TProtocol) error {
 	_field := NewUpdateMCPServerReq()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -6602,7 +6302,7 @@ func (p *MCPServerServiceUpdateMCPServerArgs) ReadField1(iprot thrift.TProtocol)
 	return nil
 }
 
-func (p *MCPServerServiceUpdateMCPServerArgs) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerUpdateMCPServerArgs) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("UpdateMCPServer_args"); err != nil {
 		goto WriteStructBeginError
@@ -6630,7 +6330,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceUpdateMCPServerArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerUpdateMCPServerArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("req", thrift.STRUCT, 1); err != nil {
 		goto WriteFieldBeginError
 	}
@@ -6647,43 +6347,43 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
-func (p *MCPServerServiceUpdateMCPServerArgs) String() string {
+func (p *MCPServerControllerUpdateMCPServerArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceUpdateMCPServerArgs(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerUpdateMCPServerArgs(%+v)", *p)
 
 }
 
-type MCPServerServiceUpdateMCPServerResult struct {
+type MCPServerControllerUpdateMCPServerResult struct {
 	Success *UpdateMCPServerResp `thrift:"success,0,optional"`
 }
 
-func NewMCPServerServiceUpdateMCPServerResult() *MCPServerServiceUpdateMCPServerResult {
-	return &MCPServerServiceUpdateMCPServerResult{}
+func NewMCPServerControllerUpdateMCPServerResult() *MCPServerControllerUpdateMCPServerResult {
+	return &MCPServerControllerUpdateMCPServerResult{}
 }
 
-func (p *MCPServerServiceUpdateMCPServerResult) InitDefault() {
+func (p *MCPServerControllerUpdateMCPServerResult) InitDefault() {
 }
 
-var MCPServerServiceUpdateMCPServerResult_Success_DEFAULT *UpdateMCPServerResp
+var MCPServerControllerUpdateMCPServerResult_Success_DEFAULT *UpdateMCPServerResp
 
-func (p *MCPServerServiceUpdateMCPServerResult) GetSuccess() (v *UpdateMCPServerResp) {
+func (p *MCPServerControllerUpdateMCPServerResult) GetSuccess() (v *UpdateMCPServerResp) {
 	if !p.IsSetSuccess() {
-		return MCPServerServiceUpdateMCPServerResult_Success_DEFAULT
+		return MCPServerControllerUpdateMCPServerResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-var fieldIDToName_MCPServerServiceUpdateMCPServerResult = map[int16]string{
+var fieldIDToName_MCPServerControllerUpdateMCPServerResult = map[int16]string{
 	0: "success",
 }
 
-func (p *MCPServerServiceUpdateMCPServerResult) IsSetSuccess() bool {
+func (p *MCPServerControllerUpdateMCPServerResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MCPServerServiceUpdateMCPServerResult) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerUpdateMCPServerResult) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -6729,7 +6429,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceUpdateMCPServerResult[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerUpdateMCPServerResult[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -6739,7 +6439,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceUpdateMCPServerResult) ReadField0(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerUpdateMCPServerResult) ReadField0(iprot thrift.TProtocol) error {
 	_field := NewUpdateMCPServerResp()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -6748,7 +6448,7 @@ func (p *MCPServerServiceUpdateMCPServerResult) ReadField0(iprot thrift.TProtoco
 	return nil
 }
 
-func (p *MCPServerServiceUpdateMCPServerResult) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerUpdateMCPServerResult) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("UpdateMCPServer_result"); err != nil {
 		goto WriteStructBeginError
@@ -6776,7 +6476,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceUpdateMCPServerResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerUpdateMCPServerResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err = oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
 			goto WriteFieldBeginError
@@ -6795,43 +6495,43 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 0 end error: ", p), err)
 }
 
-func (p *MCPServerServiceUpdateMCPServerResult) String() string {
+func (p *MCPServerControllerUpdateMCPServerResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceUpdateMCPServerResult(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerUpdateMCPServerResult(%+v)", *p)
 
 }
 
-type MCPServerServiceGetMCPServerArgs struct {
+type MCPServerControllerGetMCPServerArgs struct {
 	Req *GetMCPServerReq `thrift:"req,1"`
 }
 
-func NewMCPServerServiceGetMCPServerArgs() *MCPServerServiceGetMCPServerArgs {
-	return &MCPServerServiceGetMCPServerArgs{}
+func NewMCPServerControllerGetMCPServerArgs() *MCPServerControllerGetMCPServerArgs {
+	return &MCPServerControllerGetMCPServerArgs{}
 }
 
-func (p *MCPServerServiceGetMCPServerArgs) InitDefault() {
+func (p *MCPServerControllerGetMCPServerArgs) InitDefault() {
 }
 
-var MCPServerServiceGetMCPServerArgs_Req_DEFAULT *GetMCPServerReq
+var MCPServerControllerGetMCPServerArgs_Req_DEFAULT *GetMCPServerReq
 
-func (p *MCPServerServiceGetMCPServerArgs) GetReq() (v *GetMCPServerReq) {
+func (p *MCPServerControllerGetMCPServerArgs) GetReq() (v *GetMCPServerReq) {
 	if !p.IsSetReq() {
-		return MCPServerServiceGetMCPServerArgs_Req_DEFAULT
+		return MCPServerControllerGetMCPServerArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-var fieldIDToName_MCPServerServiceGetMCPServerArgs = map[int16]string{
+var fieldIDToName_MCPServerControllerGetMCPServerArgs = map[int16]string{
 	1: "req",
 }
 
-func (p *MCPServerServiceGetMCPServerArgs) IsSetReq() bool {
+func (p *MCPServerControllerGetMCPServerArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *MCPServerServiceGetMCPServerArgs) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGetMCPServerArgs) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -6877,7 +6577,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceGetMCPServerArgs[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerGetMCPServerArgs[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -6887,7 +6587,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceGetMCPServerArgs) ReadField1(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerGetMCPServerArgs) ReadField1(iprot thrift.TProtocol) error {
 	_field := NewGetMCPServerReq()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -6896,7 +6596,7 @@ func (p *MCPServerServiceGetMCPServerArgs) ReadField1(iprot thrift.TProtocol) er
 	return nil
 }
 
-func (p *MCPServerServiceGetMCPServerArgs) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGetMCPServerArgs) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("GetMCPServer_args"); err != nil {
 		goto WriteStructBeginError
@@ -6924,7 +6624,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceGetMCPServerArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGetMCPServerArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("req", thrift.STRUCT, 1); err != nil {
 		goto WriteFieldBeginError
 	}
@@ -6941,43 +6641,43 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
-func (p *MCPServerServiceGetMCPServerArgs) String() string {
+func (p *MCPServerControllerGetMCPServerArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceGetMCPServerArgs(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerGetMCPServerArgs(%+v)", *p)
 
 }
 
-type MCPServerServiceGetMCPServerResult struct {
+type MCPServerControllerGetMCPServerResult struct {
 	Success *GetMCPServerResp `thrift:"success,0,optional"`
 }
 
-func NewMCPServerServiceGetMCPServerResult() *MCPServerServiceGetMCPServerResult {
-	return &MCPServerServiceGetMCPServerResult{}
+func NewMCPServerControllerGetMCPServerResult() *MCPServerControllerGetMCPServerResult {
+	return &MCPServerControllerGetMCPServerResult{}
 }
 
-func (p *MCPServerServiceGetMCPServerResult) InitDefault() {
+func (p *MCPServerControllerGetMCPServerResult) InitDefault() {
 }
 
-var MCPServerServiceGetMCPServerResult_Success_DEFAULT *GetMCPServerResp
+var MCPServerControllerGetMCPServerResult_Success_DEFAULT *GetMCPServerResp
 
-func (p *MCPServerServiceGetMCPServerResult) GetSuccess() (v *GetMCPServerResp) {
+func (p *MCPServerControllerGetMCPServerResult) GetSuccess() (v *GetMCPServerResp) {
 	if !p.IsSetSuccess() {
-		return MCPServerServiceGetMCPServerResult_Success_DEFAULT
+		return MCPServerControllerGetMCPServerResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-var fieldIDToName_MCPServerServiceGetMCPServerResult = map[int16]string{
+var fieldIDToName_MCPServerControllerGetMCPServerResult = map[int16]string{
 	0: "success",
 }
 
-func (p *MCPServerServiceGetMCPServerResult) IsSetSuccess() bool {
+func (p *MCPServerControllerGetMCPServerResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MCPServerServiceGetMCPServerResult) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGetMCPServerResult) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -7023,7 +6723,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceGetMCPServerResult[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerGetMCPServerResult[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -7033,7 +6733,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceGetMCPServerResult) ReadField0(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerGetMCPServerResult) ReadField0(iprot thrift.TProtocol) error {
 	_field := NewGetMCPServerResp()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -7042,7 +6742,7 @@ func (p *MCPServerServiceGetMCPServerResult) ReadField0(iprot thrift.TProtocol) 
 	return nil
 }
 
-func (p *MCPServerServiceGetMCPServerResult) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGetMCPServerResult) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("GetMCPServer_result"); err != nil {
 		goto WriteStructBeginError
@@ -7070,7 +6770,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceGetMCPServerResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerGetMCPServerResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err = oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
 			goto WriteFieldBeginError
@@ -7089,43 +6789,43 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 0 end error: ", p), err)
 }
 
-func (p *MCPServerServiceGetMCPServerResult) String() string {
+func (p *MCPServerControllerGetMCPServerResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceGetMCPServerResult(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerGetMCPServerResult(%+v)", *p)
 
 }
 
-type MCPServerServiceDeleteMCPServerArgs struct {
+type MCPServerControllerDeleteMCPServerArgs struct {
 	Req *DeleteMCPServerReq `thrift:"req,1"`
 }
 
-func NewMCPServerServiceDeleteMCPServerArgs() *MCPServerServiceDeleteMCPServerArgs {
-	return &MCPServerServiceDeleteMCPServerArgs{}
+func NewMCPServerControllerDeleteMCPServerArgs() *MCPServerControllerDeleteMCPServerArgs {
+	return &MCPServerControllerDeleteMCPServerArgs{}
 }
 
-func (p *MCPServerServiceDeleteMCPServerArgs) InitDefault() {
+func (p *MCPServerControllerDeleteMCPServerArgs) InitDefault() {
 }
 
-var MCPServerServiceDeleteMCPServerArgs_Req_DEFAULT *DeleteMCPServerReq
+var MCPServerControllerDeleteMCPServerArgs_Req_DEFAULT *DeleteMCPServerReq
 
-func (p *MCPServerServiceDeleteMCPServerArgs) GetReq() (v *DeleteMCPServerReq) {
+func (p *MCPServerControllerDeleteMCPServerArgs) GetReq() (v *DeleteMCPServerReq) {
 	if !p.IsSetReq() {
-		return MCPServerServiceDeleteMCPServerArgs_Req_DEFAULT
+		return MCPServerControllerDeleteMCPServerArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-var fieldIDToName_MCPServerServiceDeleteMCPServerArgs = map[int16]string{
+var fieldIDToName_MCPServerControllerDeleteMCPServerArgs = map[int16]string{
 	1: "req",
 }
 
-func (p *MCPServerServiceDeleteMCPServerArgs) IsSetReq() bool {
+func (p *MCPServerControllerDeleteMCPServerArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *MCPServerServiceDeleteMCPServerArgs) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerDeleteMCPServerArgs) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -7171,7 +6871,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceDeleteMCPServerArgs[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerDeleteMCPServerArgs[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -7181,7 +6881,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceDeleteMCPServerArgs) ReadField1(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerDeleteMCPServerArgs) ReadField1(iprot thrift.TProtocol) error {
 	_field := NewDeleteMCPServerReq()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -7190,7 +6890,7 @@ func (p *MCPServerServiceDeleteMCPServerArgs) ReadField1(iprot thrift.TProtocol)
 	return nil
 }
 
-func (p *MCPServerServiceDeleteMCPServerArgs) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerDeleteMCPServerArgs) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("DeleteMCPServer_args"); err != nil {
 		goto WriteStructBeginError
@@ -7218,7 +6918,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceDeleteMCPServerArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerDeleteMCPServerArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("req", thrift.STRUCT, 1); err != nil {
 		goto WriteFieldBeginError
 	}
@@ -7235,43 +6935,43 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
-func (p *MCPServerServiceDeleteMCPServerArgs) String() string {
+func (p *MCPServerControllerDeleteMCPServerArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceDeleteMCPServerArgs(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerDeleteMCPServerArgs(%+v)", *p)
 
 }
 
-type MCPServerServiceDeleteMCPServerResult struct {
+type MCPServerControllerDeleteMCPServerResult struct {
 	Success *DeleteMCPServerResp `thrift:"success,0,optional"`
 }
 
-func NewMCPServerServiceDeleteMCPServerResult() *MCPServerServiceDeleteMCPServerResult {
-	return &MCPServerServiceDeleteMCPServerResult{}
+func NewMCPServerControllerDeleteMCPServerResult() *MCPServerControllerDeleteMCPServerResult {
+	return &MCPServerControllerDeleteMCPServerResult{}
 }
 
-func (p *MCPServerServiceDeleteMCPServerResult) InitDefault() {
+func (p *MCPServerControllerDeleteMCPServerResult) InitDefault() {
 }
 
-var MCPServerServiceDeleteMCPServerResult_Success_DEFAULT *DeleteMCPServerResp
+var MCPServerControllerDeleteMCPServerResult_Success_DEFAULT *DeleteMCPServerResp
 
-func (p *MCPServerServiceDeleteMCPServerResult) GetSuccess() (v *DeleteMCPServerResp) {
+func (p *MCPServerControllerDeleteMCPServerResult) GetSuccess() (v *DeleteMCPServerResp) {
 	if !p.IsSetSuccess() {
-		return MCPServerServiceDeleteMCPServerResult_Success_DEFAULT
+		return MCPServerControllerDeleteMCPServerResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-var fieldIDToName_MCPServerServiceDeleteMCPServerResult = map[int16]string{
+var fieldIDToName_MCPServerControllerDeleteMCPServerResult = map[int16]string{
 	0: "success",
 }
 
-func (p *MCPServerServiceDeleteMCPServerResult) IsSetSuccess() bool {
+func (p *MCPServerControllerDeleteMCPServerResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MCPServerServiceDeleteMCPServerResult) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerDeleteMCPServerResult) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -7317,7 +7017,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceDeleteMCPServerResult[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerDeleteMCPServerResult[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -7327,7 +7027,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceDeleteMCPServerResult) ReadField0(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerDeleteMCPServerResult) ReadField0(iprot thrift.TProtocol) error {
 	_field := NewDeleteMCPServerResp()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -7336,7 +7036,7 @@ func (p *MCPServerServiceDeleteMCPServerResult) ReadField0(iprot thrift.TProtoco
 	return nil
 }
 
-func (p *MCPServerServiceDeleteMCPServerResult) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerDeleteMCPServerResult) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("DeleteMCPServer_result"); err != nil {
 		goto WriteStructBeginError
@@ -7364,7 +7064,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceDeleteMCPServerResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerDeleteMCPServerResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err = oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
 			goto WriteFieldBeginError
@@ -7383,43 +7083,43 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 0 end error: ", p), err)
 }
 
-func (p *MCPServerServiceDeleteMCPServerResult) String() string {
+func (p *MCPServerControllerDeleteMCPServerResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceDeleteMCPServerResult(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerDeleteMCPServerResult(%+v)", *p)
 
 }
 
-type MCPServerServiceDeleteTokenArgs struct {
+type MCPServerControllerDeleteTokenArgs struct {
 	Req *DeleteTokenReq `thrift:"req,1"`
 }
 
-func NewMCPServerServiceDeleteTokenArgs() *MCPServerServiceDeleteTokenArgs {
-	return &MCPServerServiceDeleteTokenArgs{}
+func NewMCPServerControllerDeleteTokenArgs() *MCPServerControllerDeleteTokenArgs {
+	return &MCPServerControllerDeleteTokenArgs{}
 }
 
-func (p *MCPServerServiceDeleteTokenArgs) InitDefault() {
+func (p *MCPServerControllerDeleteTokenArgs) InitDefault() {
 }
 
-var MCPServerServiceDeleteTokenArgs_Req_DEFAULT *DeleteTokenReq
+var MCPServerControllerDeleteTokenArgs_Req_DEFAULT *DeleteTokenReq
 
-func (p *MCPServerServiceDeleteTokenArgs) GetReq() (v *DeleteTokenReq) {
+func (p *MCPServerControllerDeleteTokenArgs) GetReq() (v *DeleteTokenReq) {
 	if !p.IsSetReq() {
-		return MCPServerServiceDeleteTokenArgs_Req_DEFAULT
+		return MCPServerControllerDeleteTokenArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-var fieldIDToName_MCPServerServiceDeleteTokenArgs = map[int16]string{
+var fieldIDToName_MCPServerControllerDeleteTokenArgs = map[int16]string{
 	1: "req",
 }
 
-func (p *MCPServerServiceDeleteTokenArgs) IsSetReq() bool {
+func (p *MCPServerControllerDeleteTokenArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *MCPServerServiceDeleteTokenArgs) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerDeleteTokenArgs) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -7465,7 +7165,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceDeleteTokenArgs[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerDeleteTokenArgs[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -7475,7 +7175,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceDeleteTokenArgs) ReadField1(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerDeleteTokenArgs) ReadField1(iprot thrift.TProtocol) error {
 	_field := NewDeleteTokenReq()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -7484,7 +7184,7 @@ func (p *MCPServerServiceDeleteTokenArgs) ReadField1(iprot thrift.TProtocol) err
 	return nil
 }
 
-func (p *MCPServerServiceDeleteTokenArgs) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerDeleteTokenArgs) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("DeleteToken_args"); err != nil {
 		goto WriteStructBeginError
@@ -7512,7 +7212,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceDeleteTokenArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerDeleteTokenArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("req", thrift.STRUCT, 1); err != nil {
 		goto WriteFieldBeginError
 	}
@@ -7529,43 +7229,43 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
-func (p *MCPServerServiceDeleteTokenArgs) String() string {
+func (p *MCPServerControllerDeleteTokenArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceDeleteTokenArgs(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerDeleteTokenArgs(%+v)", *p)
 
 }
 
-type MCPServerServiceDeleteTokenResult struct {
+type MCPServerControllerDeleteTokenResult struct {
 	Success *DeleteTokenResp `thrift:"success,0,optional"`
 }
 
-func NewMCPServerServiceDeleteTokenResult() *MCPServerServiceDeleteTokenResult {
-	return &MCPServerServiceDeleteTokenResult{}
+func NewMCPServerControllerDeleteTokenResult() *MCPServerControllerDeleteTokenResult {
+	return &MCPServerControllerDeleteTokenResult{}
 }
 
-func (p *MCPServerServiceDeleteTokenResult) InitDefault() {
+func (p *MCPServerControllerDeleteTokenResult) InitDefault() {
 }
 
-var MCPServerServiceDeleteTokenResult_Success_DEFAULT *DeleteTokenResp
+var MCPServerControllerDeleteTokenResult_Success_DEFAULT *DeleteTokenResp
 
-func (p *MCPServerServiceDeleteTokenResult) GetSuccess() (v *DeleteTokenResp) {
+func (p *MCPServerControllerDeleteTokenResult) GetSuccess() (v *DeleteTokenResp) {
 	if !p.IsSetSuccess() {
-		return MCPServerServiceDeleteTokenResult_Success_DEFAULT
+		return MCPServerControllerDeleteTokenResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-var fieldIDToName_MCPServerServiceDeleteTokenResult = map[int16]string{
+var fieldIDToName_MCPServerControllerDeleteTokenResult = map[int16]string{
 	0: "success",
 }
 
-func (p *MCPServerServiceDeleteTokenResult) IsSetSuccess() bool {
+func (p *MCPServerControllerDeleteTokenResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MCPServerServiceDeleteTokenResult) Read(iprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerDeleteTokenResult) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -7611,7 +7311,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerServiceDeleteTokenResult[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_MCPServerControllerDeleteTokenResult[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -7621,7 +7321,7 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceDeleteTokenResult) ReadField0(iprot thrift.TProtocol) error {
+func (p *MCPServerControllerDeleteTokenResult) ReadField0(iprot thrift.TProtocol) error {
 	_field := NewDeleteTokenResp()
 	if err := _field.Read(iprot); err != nil {
 		return err
@@ -7630,7 +7330,7 @@ func (p *MCPServerServiceDeleteTokenResult) ReadField0(iprot thrift.TProtocol) e
 	return nil
 }
 
-func (p *MCPServerServiceDeleteTokenResult) Write(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerDeleteTokenResult) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
 	if err = oprot.WriteStructBegin("DeleteToken_result"); err != nil {
 		goto WriteStructBeginError
@@ -7658,7 +7358,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *MCPServerServiceDeleteTokenResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MCPServerControllerDeleteTokenResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err = oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
 			goto WriteFieldBeginError
@@ -7677,10 +7377,10 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 0 end error: ", p), err)
 }
 
-func (p *MCPServerServiceDeleteTokenResult) String() string {
+func (p *MCPServerControllerDeleteTokenResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MCPServerServiceDeleteTokenResult(%+v)", *p)
+	return fmt.Sprintf("MCPServerControllerDeleteTokenResult(%+v)", *p)
 
 }

@@ -19,15 +19,17 @@ func Register(r *server.Hertz) {
 	root := r.Group("/", rootMw()...)
 	{
 		_api := root.Group("/api", _apiMw()...)
-		_api.POST("/mcpservers", append(_addmcpserverMw(), mcpserver.AddMCPServer)...)
+		_api.GET("/mcpservers", append(_getmcpserverlistMw(), mcpserver.GetMCPServerList)...)
 		_mcpservers := _api.Group("/mcpservers", _mcpserversMw()...)
 		_mcpservers.DELETE("/:id", append(_deletemcpserverMw(), mcpserver.DeleteMCPServer)...)
 		_mcpservers.GET("/:id", append(_getmcpserverMw(), mcpserver.GetMCPServer)...)
 		_mcpservers.PUT("/:id", append(_updatemcpserverMw(), mcpserver.UpdateMCPServer)...)
-		_mcpservers.GET("/public", append(_getpublicmcpserverlistMw(), mcpserver.GetPublicMCPServerList)...)
-		_mcpservers.GET("/self", append(_getselfmcpserverlistMw(), mcpserver.GetSelfMCPServerList)...)
-		_mcpservers.POST("/tokens", append(_generatetokenMw(), mcpserver.GenerateToken)...)
-		_tokens := _mcpservers.Group("/tokens", _tokensMw()...)
-		_tokens.DELETE("/:id", append(_deletetokenMw(), mcpserver.DeleteToken)...)
+		{
+			_tokens := _mcpservers.Group("/tokens", _tokensMw()...)
+			_tokens.DELETE("/:id", append(_deletetokenMw(), mcpserver.DeleteToken)...)
+		}
+		_api.POST("/mcpservers", append(_addmcpserverMw(), mcpserver.AddMCPServer)...)
+		_mcpservers0 := _api.Group("/mcpservers", _mcpservers0Mw()...)
+		_mcpservers0.POST("/tokens", append(_generatetokenMw(), mcpserver.GenerateToken)...)
 	}
 }

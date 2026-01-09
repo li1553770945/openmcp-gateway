@@ -95,6 +95,8 @@ struct GetMCPServerListReq{
     1: required i64 start;
     // 结束位置
     2: required i64 end;
+    // 范围
+    3: required string scope (api.query="scope"); // "self" or "public"
 }
 
 struct GetMCPServerListRespData{
@@ -178,11 +180,10 @@ struct DeleteTokenResp {
 
 
 
-service MCPServerService {
+service MCPServerController {
     AddMCPServerResp AddMCPServer(1: AddMCPServerReq req)(api.post="/api/mcpservers");
     GenerateTokenResp GenerateToken(1: GenerateTokenReq req)(api.post="/api/mcpservers/tokens")
-    GetMCPServerListResp GetSelfMCPServerList(1: GetMCPServerListReq req)(api.get="/api/mcpservers/self")
-    GetMCPServerListResp GetPublicMCPServerList(1: GetMCPServerListReq req)(api.get="/api/mcpservers/public")
+    GetMCPServerListResp GetMCPServerList(1: GetMCPServerListReq req)(api.get="/api/mcpservers")
     UpdateMCPServerResp UpdateMCPServer(1: UpdateMCPServerReq req)(api.put="/api/mcpservers/:id")
 
     GetMCPServerResp GetMCPServer(1:GetMCPServerReq req)(api.get="/api/mcpservers/:id")

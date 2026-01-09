@@ -325,6 +325,31 @@ paths:
       tags:
       - 认证管理
   /api/mcpservers:
+    get:
+      description: 获取 MCPServer 列表，通过 scope 参数区分获取自己的还是公共的
+      parameters:
+      - description: 结束位置
+        in: query
+        name: end
+        type: integer
+      - description: 范围
+        in: query
+        name: scope
+        type: string
+      - description: 起始位置
+        in: query
+        name: start
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求响应 (Code=0 成功)
+          schema:
+            $ref: '#/definitions/mcpserver.GetMCPServerListResp'
+      summary: 获取 MCPServer 列表
+      tags:
+      - MCPServer管理
     post:
       consumes:
       - application/json
@@ -413,50 +438,6 @@ paths:
       summary: 更新 MCPServer
       tags:
       - MCPServer管理
-  /api/mcpservers/public:
-    get:
-      description: 获取所有公开的 MCPServer 列表
-      parameters:
-      - description: 结束位置
-        in: query
-        name: end
-        type: integer
-      - description: 起始位置
-        in: query
-        name: start
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求响应 (Code=0 成功)
-          schema:
-            $ref: '#/definitions/mcpserver.GetMCPServerListResp'
-      summary: 获取公共 MCPServer 列表
-      tags:
-      - MCPServer管理
-  /api/mcpservers/self:
-    get:
-      description: 获取当前用户创建的 MCPServer 列表
-      parameters:
-      - description: 结束位置
-        in: query
-        name: end
-        type: integer
-      - description: 起始位置
-        in: query
-        name: start
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求响应 (Code=0 成功)
-          schema:
-            $ref: '#/definitions/mcpserver.GetMCPServerListResp'
-      summary: 获取我的 MCPServer 列表
-      tags:
-      - MCPServer管理
   /api/mcpservers/tokens:
     post:
       consumes:
@@ -519,7 +500,7 @@ paths:
             $ref: '#/definitions/user.RegisterResp'
       summary: 用户注册
       tags:
-      - 认证管理
+      - 用户管理
   /api/users/:id:
     get:
       description: 根据用户 ID 获取用户详细信息

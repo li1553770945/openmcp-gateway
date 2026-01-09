@@ -2,6 +2,7 @@ package mcpserver
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
 	"strings"
 	"time"
@@ -111,30 +112,43 @@ func (s *MCPServerServiceImpl) GenerateToken(ctx context.Context, req *mcpserver
 	}
 }
 
-func (s *MCPServerServiceImpl) GetSelfMCPServerList(ctx context.Context, req *mcpserver.GetMCPServerListReq) (resp *mcpserver.GetMCPServerListResp) {
-	creatorID, _ := ctx.Value("user_id").(int64)
-
-	list, err := s.Repo.ListMCPServersByCreatorId(creatorID, req.Start, req.End)
-	if err != nil {
-		return &mcpserver.GetMCPServerListResp{Code: constant.SystemError, Message: "获取服务器列表失败"}
+func (s *MCPServerServiceImpl) GetMCPServerList(ctx context.Context, req *mcpserver.GetMCPServerListReq) (resp *mcpserver.GetMCPServerListResp) {
+	scope := strings.ToLower(req.Scope)
+	if scope != "self" && scope != "public" {
+		return &mcpserver.GetMCPServerListResp{
+			Code:    constant.InvalidInput,
+			Message: "scope 参数必须是 'self' 或 'public'",
+		}
+	}
+	if req.End <= req.Start || req.Start < 0 || req.End < 0 {
+		return &mcpserver.GetMCPServerListResp{
+			Code:    constant.InvalidInput,
+			Message: "分页参数错误",
+		}
 	}
 
-	data := make([]*mcpserver.GetMCPServerListRespData, 0)
-	for _, v := range list {
-		data = append(data, EntityToMCPServerListRespData(v))
+	if req.End-req.Start > constant.MaxMCPServerCountPerPage {
+		return &mcpserver.GetMCPServerListResp{
+			Code:    constant.InvalidInput,
+			Message: fmt.Sprintf("单次请求最多获取 %d 条记录", constant.MaxMCPServerCountPerPage),
+		}
 	}
 
-	return &mcpserver.GetMCPServerListResp{
-		Code:    constant.Success,
-		Message: "成功",
-		Data:    data,
-	}
-}
+	var list []*domain.MCPServerEntity
+	var err error
+	if scope == "public" {
+		list, err = s.Repo.ListPublicMCPServers(req.Start, req.End)
+		if err != nil {
+			return &mcpserver.GetMCPServerListResp{Code: constant.SystemError, Message: "获取公开服务器列表失败"}
+		}
 
-func (s *MCPServerServiceImpl) GetPublicMCPServerList(ctx context.Context, req *mcpserver.GetMCPServerListReq) (resp *mcpserver.GetMCPServerListResp) {
-	list, err := s.Repo.ListPublicMCPServers(req.Start, req.End)
-	if err != nil {
-		return &mcpserver.GetMCPServerListResp{Code: constant.SystemError, Message: "获取公开服务器列表失败"}
+	} else {
+		creatorID, _ := ctx.Value("user_id").(int64)
+
+		list, err = s.Repo.ListMCPServersByCreatorId(creatorID, req.Start, req.End)
+		if err != nil {
+			return &mcpserver.GetMCPServerListResp{Code: constant.SystemError, Message: "获取服务器列表失败"}
+		}
 	}
 
 	data := make([]*mcpserver.GetMCPServerListRespData, 0)
