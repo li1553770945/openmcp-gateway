@@ -24,7 +24,8 @@ import (
 func main() {
 	env := os.Getenv("ENV")
 	if env == "" {
-		panic("请通过`export ENV=development或production设置当前环境`")
+		env = "development"
+		println("警告: 未检测到ENV环境变量，默认使用 development 模式启动")
 	}
 	container.InitContainer(env)
 
