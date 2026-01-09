@@ -1,17 +1,17 @@
-package mcpserver
+package assembler
 
 import (
 	"github.com/li1553770945/openmcp-gateway/biz/internal/do"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/domain"
 )
 
-func DoToEntity(serverDO *do.MCPServerDO) *domain.MCPServerEntity {
+func MCPServerDoToEntity(serverDO *do.MCPServerDO) *domain.MCPServerEntity {
 	if serverDO == nil {
 		return nil
 	}
 	tokens := make([]domain.MCPServerTokenEntity, 0, len(serverDO.Tokens))
 	for _, tokenDO := range serverDO.Tokens {
-		tokens = append(tokens, *TokenDoToEntity(&tokenDO))
+		tokens = append(tokens, *MCPServerTokenDoToEntity(&tokenDO))
 	}
 
 	return &domain.MCPServerEntity{
@@ -25,16 +25,17 @@ func DoToEntity(serverDO *do.MCPServerDO) *domain.MCPServerEntity {
 		Tokens:      tokens,
 		CreatedAt:   serverDO.CreatedAt,
 		UpdatedAt:   serverDO.UpdatedAt,
+		Creator:     UserDoToEntity(serverDO.Creator),
 	}
 }
 
-func EntityToDo(serverEntity *domain.MCPServerEntity) *do.MCPServerDO {
+func MCPServerEntityToDo(serverEntity *domain.MCPServerEntity) *do.MCPServerDO {
 	if serverEntity == nil {
 		return nil
 	}
 	tokens := make([]do.MCPServerTokenDO, 0, len(serverEntity.Tokens))
 	for _, tokenEntity := range serverEntity.Tokens {
-		tokens = append(tokens, *TokenEntityToDo(&tokenEntity))
+		tokens = append(tokens, *MCPServerTokenEntityToDo(&tokenEntity))
 	}
 
 	return &do.MCPServerDO{
@@ -49,11 +50,12 @@ func EntityToDo(serverEntity *domain.MCPServerEntity) *do.MCPServerDO {
 		IsPublic:    serverEntity.IsPublic,
 		OpenProxy:   serverEntity.OpenProxy,
 		CreatorID:   serverEntity.CreatorID,
+		Creator:     UserEntityToDo(serverEntity.Creator),
 		Tokens:      tokens,
 	}
 }
 
-func TokenDoToEntity(tokenDO *do.MCPServerTokenDO) *domain.MCPServerTokenEntity {
+func MCPServerTokenDoToEntity(tokenDO *do.MCPServerTokenDO) *domain.MCPServerTokenEntity {
 	if tokenDO == nil {
 		return nil
 	}
@@ -65,7 +67,7 @@ func TokenDoToEntity(tokenDO *do.MCPServerTokenDO) *domain.MCPServerTokenEntity 
 	}
 }
 
-func TokenEntityToDo(tokenEntity *domain.MCPServerTokenEntity) *do.MCPServerTokenDO {
+func MCPServerTokenEntityToDo(tokenEntity *domain.MCPServerTokenEntity) *do.MCPServerTokenDO {
 	if tokenEntity == nil {
 		return nil
 	}

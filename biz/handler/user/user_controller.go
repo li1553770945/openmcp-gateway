@@ -72,7 +72,8 @@ func UpdateSelfInfo(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	resp := new(user.UpdateSelfInfoResp)
+	App := container.GetGlobalContainer()
+	resp := App.UserService.UpdateSelfInfo(ctx, &req)
 
 	c.JSON(consts.StatusOK, resp)
 }

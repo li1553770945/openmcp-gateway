@@ -1608,12 +1608,16 @@ type GetMCPServerRespData struct {
 	IsPublic bool `thrift:"isPublic,5,required" form:"isPublic,required" json:"isPublic,required" query:"isPublic,required"`
 	// 是否开启代理
 	OpenProxy bool `thrift:"openProxy,6,required" form:"openProxy,required" json:"openProxy,required" query:"openProxy,required"`
-	// Token列表
+	// Token列表,仅创建者可见
 	Token []*TokenData `thrift:"token,7,required,list<TokenData>" form:"token,required" json:"token,required" query:"token,required"`
 	// 创建时间
 	CreatedAt string `thrift:"createdAt,8,required" form:"createdAt,required" json:"createdAt,required" query:"createdAt,required"`
 	// 更新时间
 	UpdatedAt string `thrift:"updatedAt,9,required" form:"updatedAt,required" json:"updatedAt,required" query:"updatedAt,required"`
+	// 创建者ID
+	CreatorId int64 `thrift:"creatorId,10,required" form:"creatorId,required" json:"creatorId,required" query:"creatorId,required"`
+	// 创建者nickname
+	CreatorNickname string `thrift:"creatorNickname,11,required" form:"creatorNickname,required" json:"creatorNickname,required" query:"creatorNickname,required"`
 }
 
 func NewGetMCPServerRespData() *GetMCPServerRespData {
@@ -1659,16 +1663,26 @@ func (p *GetMCPServerRespData) GetUpdatedAt() (v string) {
 	return p.UpdatedAt
 }
 
+func (p *GetMCPServerRespData) GetCreatorId() (v int64) {
+	return p.CreatorId
+}
+
+func (p *GetMCPServerRespData) GetCreatorNickname() (v string) {
+	return p.CreatorNickname
+}
+
 var fieldIDToName_GetMCPServerRespData = map[int16]string{
-	1: "id",
-	2: "name",
-	3: "description",
-	4: "url",
-	5: "isPublic",
-	6: "openProxy",
-	7: "token",
-	8: "createdAt",
-	9: "updatedAt",
+	1:  "id",
+	2:  "name",
+	3:  "description",
+	4:  "url",
+	5:  "isPublic",
+	6:  "openProxy",
+	7:  "token",
+	8:  "createdAt",
+	9:  "updatedAt",
+	10: "creatorId",
+	11: "creatorNickname",
 }
 
 func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
@@ -1684,6 +1698,8 @@ func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
 	var issetToken bool = false
 	var issetCreatedAt bool = false
 	var issetUpdatedAt bool = false
+	var issetCreatorId bool = false
+	var issetCreatorNickname bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
 		goto ReadStructBeginError
@@ -1780,6 +1796,24 @@ func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
+		case 10:
+			if fieldTypeId == thrift.I64 {
+				if err = p.ReadField10(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetCreatorId = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 11:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField11(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetCreatorNickname = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
@@ -1835,6 +1869,16 @@ func (p *GetMCPServerRespData) Read(iprot thrift.TProtocol) (err error) {
 
 	if !issetUpdatedAt {
 		fieldId = 9
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetCreatorId {
+		fieldId = 10
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetCreatorNickname {
+		fieldId = 11
 		goto RequiredFieldNotSetError
 	}
 	return nil
@@ -1966,6 +2010,28 @@ func (p *GetMCPServerRespData) ReadField9(iprot thrift.TProtocol) error {
 	p.UpdatedAt = _field
 	return nil
 }
+func (p *GetMCPServerRespData) ReadField10(iprot thrift.TProtocol) error {
+
+	var _field int64
+	if v, err := iprot.ReadI64(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.CreatorId = _field
+	return nil
+}
+func (p *GetMCPServerRespData) ReadField11(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.CreatorNickname = _field
+	return nil
+}
 
 func (p *GetMCPServerRespData) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
@@ -2007,6 +2073,14 @@ func (p *GetMCPServerRespData) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField9(oprot); err != nil {
 			fieldId = 9
+			goto WriteFieldError
+		}
+		if err = p.writeField10(oprot); err != nil {
+			fieldId = 10
+			goto WriteFieldError
+		}
+		if err = p.writeField11(oprot); err != nil {
+			fieldId = 11
 			goto WriteFieldError
 		}
 	}
@@ -2186,6 +2260,40 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 9 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 9 end error: ", p), err)
+}
+
+func (p *GetMCPServerRespData) writeField10(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("creatorId", thrift.I64, 10); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI64(p.CreatorId); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 end error: ", p), err)
+}
+
+func (p *GetMCPServerRespData) writeField11(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("creatorNickname", thrift.STRING, 11); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.CreatorNickname); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 11 end error: ", p), err)
 }
 
 func (p *GetMCPServerRespData) String() string {
@@ -2729,6 +2837,10 @@ type GetMCPServerListRespData struct {
 	CreatedAt string `thrift:"createdAt,7,required" form:"createdAt,required" json:"createdAt,required" query:"createdAt,required"`
 	// 更新时间
 	UpdatedAt string `thrift:"updatedAt,8,required" form:"updatedAt,required" json:"updatedAt,required" query:"updatedAt,required"`
+	// 创建者ID
+	CreatorId int64 `thrift:"creatorId,9,required" form:"creatorId,required" json:"creatorId,required" query:"creatorId,required"`
+	// 创建者nickname
+	CreatorNickname string `thrift:"creatorNickname,10,required" form:"creatorNickname,required" json:"creatorNickname,required" query:"creatorNickname,required"`
 }
 
 func NewGetMCPServerListRespData() *GetMCPServerListRespData {
@@ -2770,15 +2882,25 @@ func (p *GetMCPServerListRespData) GetUpdatedAt() (v string) {
 	return p.UpdatedAt
 }
 
+func (p *GetMCPServerListRespData) GetCreatorId() (v int64) {
+	return p.CreatorId
+}
+
+func (p *GetMCPServerListRespData) GetCreatorNickname() (v string) {
+	return p.CreatorNickname
+}
+
 var fieldIDToName_GetMCPServerListRespData = map[int16]string{
-	1: "id",
-	2: "name",
-	3: "description",
-	4: "url",
-	5: "isPublic",
-	6: "openProxy",
-	7: "createdAt",
-	8: "updatedAt",
+	1:  "id",
+	2:  "name",
+	3:  "description",
+	4:  "url",
+	5:  "isPublic",
+	6:  "openProxy",
+	7:  "createdAt",
+	8:  "updatedAt",
+	9:  "creatorId",
+	10: "creatorNickname",
 }
 
 func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
@@ -2793,6 +2915,8 @@ func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
 	var issetOpenProxy bool = false
 	var issetCreatedAt bool = false
 	var issetUpdatedAt bool = false
+	var issetCreatorId bool = false
+	var issetCreatorNickname bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
 		goto ReadStructBeginError
@@ -2880,6 +3004,24 @@ func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
 			}
+		case 9:
+			if fieldTypeId == thrift.I64 {
+				if err = p.ReadField9(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetCreatorId = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 10:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField10(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetCreatorNickname = true
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
 		default:
 			if err = iprot.Skip(fieldTypeId); err != nil {
 				goto SkipFieldError
@@ -2930,6 +3072,16 @@ func (p *GetMCPServerListRespData) Read(iprot thrift.TProtocol) (err error) {
 
 	if !issetUpdatedAt {
 		fieldId = 8
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetCreatorId {
+		fieldId = 9
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetCreatorNickname {
+		fieldId = 10
 		goto RequiredFieldNotSetError
 	}
 	return nil
@@ -3038,6 +3190,28 @@ func (p *GetMCPServerListRespData) ReadField8(iprot thrift.TProtocol) error {
 	p.UpdatedAt = _field
 	return nil
 }
+func (p *GetMCPServerListRespData) ReadField9(iprot thrift.TProtocol) error {
+
+	var _field int64
+	if v, err := iprot.ReadI64(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.CreatorId = _field
+	return nil
+}
+func (p *GetMCPServerListRespData) ReadField10(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.CreatorNickname = _field
+	return nil
+}
 
 func (p *GetMCPServerListRespData) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
@@ -3075,6 +3249,14 @@ func (p *GetMCPServerListRespData) Write(oprot thrift.TProtocol) (err error) {
 		}
 		if err = p.writeField8(oprot); err != nil {
 			fieldId = 8
+			goto WriteFieldError
+		}
+		if err = p.writeField9(oprot); err != nil {
+			fieldId = 9
+			goto WriteFieldError
+		}
+		if err = p.writeField10(oprot); err != nil {
+			fieldId = 10
 			goto WriteFieldError
 		}
 	}
@@ -3229,6 +3411,40 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 8 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 8 end error: ", p), err)
+}
+
+func (p *GetMCPServerListRespData) writeField9(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("creatorId", thrift.I64, 9); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI64(p.CreatorId); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 9 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 9 end error: ", p), err)
+}
+
+func (p *GetMCPServerListRespData) writeField10(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("creatorNickname", thrift.STRING, 10); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.CreatorNickname); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 10 end error: ", p), err)
 }
 
 func (p *GetMCPServerListRespData) String() string {

@@ -228,10 +228,15 @@ func (s *MCPServerServiceImpl) GetMCPServer(ctx context.Context, req *mcpserver.
 		return &mcpserver.GetMCPServerResp{Code: constant.Unauthorized, Message: "您无权限查看该 MCPServer 详情"}
 	}
 
+	data := EntityToMCPServerRespData(server)
+	if server.CreatorID != creatorID {
+		data.Token = []*mcpserver.TokenData{}
+	}
+
 	return &mcpserver.GetMCPServerResp{
 		Code:    constant.Success,
 		Message: "成功",
-		Data:    EntityToMCPServerRespData(server),
+		Data:    data,
 	}
 }
 

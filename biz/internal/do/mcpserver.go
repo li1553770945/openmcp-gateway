@@ -9,6 +9,8 @@ type MCPServerDO struct {
 	OpenProxy   bool               `gorm:"default:false"`
 	CreatorID   int64              `gorm:"index"`
 	Tokens      []MCPServerTokenDO `gorm:"foreignKey:MCPServerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Creator     *UserDO            `gorm:"foreignKey:CreatorID"` // 新增关联字段
+
 }
 
 type MCPServerTokenDO struct {

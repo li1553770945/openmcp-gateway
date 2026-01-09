@@ -641,6 +641,14 @@ const docTemplate = `{
                     "description": "创建时间",
                     "type": "string"
                 },
+                "creatorId": {
+                    "description": "创建者ID",
+                    "type": "integer"
+                },
+                "creatorNickname": {
+                    "description": "创建者nickname",
+                    "type": "string"
+                },
                 "description": {
                     "description": "描述",
                     "type": "string"
@@ -699,6 +707,14 @@ const docTemplate = `{
                     "description": "创建时间",
                     "type": "string"
                 },
+                "creatorId": {
+                    "description": "创建者ID",
+                    "type": "integer"
+                },
+                "creatorNickname": {
+                    "description": "创建者nickname",
+                    "type": "string"
+                },
                 "description": {
                     "description": "描述",
                     "type": "string"
@@ -720,7 +736,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "token": {
-                    "description": "Token列表",
+                    "description": "Token列表,仅创建者可见",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/mcpserver.TokenData"

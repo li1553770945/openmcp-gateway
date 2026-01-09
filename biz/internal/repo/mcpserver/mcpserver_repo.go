@@ -3,6 +3,7 @@ package mcpserver
 import (
 	"errors"
 
+	"github.com/li1553770945/openmcp-gateway/biz/internal/assembler"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/do"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/domain"
 	"gorm.io/gorm"
@@ -23,7 +24,7 @@ func NewMCPServerRepository(db *gorm.DB) IMCPServerRepository {
 }
 
 func (r *MCPServerRepoImpl) SaveMCPServer(server *domain.MCPServerEntity) error {
-	serverDO := EntityToDo(server)
+	serverDO := assembler.MCPServerEntityToDo(server)
 	if serverDO.ID == 0 {
 		return r.DB.Create(serverDO).Error
 	} else {
@@ -40,7 +41,7 @@ func (r *MCPServerRepoImpl) FindMCPServerById(id int64) (*domain.MCPServerEntity
 		}
 		return nil, err
 	}
-	return DoToEntity(&serverDO), nil
+	return assembler.MCPServerDoToEntity(&serverDO), nil
 }
 
 func (r *MCPServerRepoImpl) ListMCPServersByCreatorId(creatorId int64, start, end int64) ([]*domain.MCPServerEntity, error) {
@@ -62,7 +63,7 @@ func (r *MCPServerRepoImpl) ListMCPServersByCreatorId(creatorId int64, start, en
 
 	results := make([]*domain.MCPServerEntity, len(serverDOs))
 	for i, s := range serverDOs {
-		results[i] = DoToEntity(&s)
+		results[i] = assembler.MCPServerDoToEntity(&s)
 	}
 	return results, nil
 }
@@ -76,6 +77,7 @@ func (r *MCPServerRepoImpl) ListPublicMCPServers(start, end int64) ([]*domain.MC
 	offset := int(start)
 
 	err := r.DB.Where("is_public = ?", true).
+		Preload("Creator").
 		Offset(offset).Limit(limit).
 		Order("id desc").
 		Find(&serverDOs).Error
@@ -86,13 +88,13 @@ func (r *MCPServerRepoImpl) ListPublicMCPServers(start, end int64) ([]*domain.MC
 
 	results := make([]*domain.MCPServerEntity, len(serverDOs))
 	for i, s := range serverDOs {
-		results[i] = DoToEntity(&s)
+		results[i] = assembler.MCPServerDoToEntity(&s)
 	}
 	return results, nil
 }
 
 func (r *MCPServerRepoImpl) SaveToken(token *domain.MCPServerTokenEntity) error {
-	tokenDO := TokenEntityToDo(token)
+	tokenDO := assembler.MCPServerTokenEntityToDo(token)
 	if tokenDO.ID == 0 {
 		return r.DB.Create(tokenDO).Error
 	}
@@ -108,7 +110,7 @@ func (r *MCPServerRepoImpl) FindTokenByToken(token string) (*domain.MCPServerTok
 		}
 		return nil, err
 	}
-	return TokenDoToEntity(&tokenDO), nil
+	return assembler.MCPServerTokenDoToEntity(&tokenDO), nil
 }
 
 func (r *MCPServerRepoImpl) FindTokenById(id int64) (*domain.MCPServerTokenEntity, error) {
@@ -120,7 +122,7 @@ func (r *MCPServerRepoImpl) FindTokenById(id int64) (*domain.MCPServerTokenEntit
 		}
 		return nil, err
 	}
-	return TokenDoToEntity(&tokenDO), nil
+	return assembler.MCPServerTokenDoToEntity(&tokenDO), nil
 }
 
 func (r *MCPServerRepoImpl) DeleteMCPServer(id int64) error {
@@ -149,7 +151,7 @@ func (r *MCPServerRepoImpl) FindTokensByMcpServerId(mcpServerId int64) ([]*domai
 	}
 	results := make([]*domain.MCPServerTokenEntity, len(tokenDOs))
 	for i, t := range tokenDOs {
-		results[i] = TokenDoToEntity(&t)
+		results[i] = assembler.MCPServerTokenDoToEntity(&t)
 	}
 	return results, nil
 }

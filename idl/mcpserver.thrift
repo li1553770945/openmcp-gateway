@@ -70,12 +70,16 @@ struct GetMCPServerRespData{
     5: required bool isPublic;
     // 是否开启代理
     6: required bool openProxy;
-    // Token列表
+    // Token列表,仅创建者可见
     7: required list<TokenData> token;
     // 创建时间
     8: required string createdAt;
     // 更新时间
     9: required string updatedAt;
+    // 创建者ID
+    10: required i64 creatorId;
+    // 创建者nickname
+    11: required string creatorNickname;
 }
 
 struct GetMCPServerResp{
@@ -116,6 +120,11 @@ struct GetMCPServerListRespData{
     7: required string createdAt;
     // 更新时间
     8: required string updatedAt;
+    // 创建者ID
+    9: required i64 creatorId;
+    // 创建者nickname
+    10: required string creatorNickname;
+
 }
 
 

@@ -10,6 +10,7 @@ type MCPServerEntity struct {
 	IsPublic    bool
 	OpenProxy   bool
 	CreatorID   int64
+	Creator     *UserEntity
 	Tokens      []MCPServerTokenEntity
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

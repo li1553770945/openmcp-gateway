@@ -42,11 +42,6 @@ func _updateselfinfoMw() []app.HandlerFunc {
 	}
 }
 
-func _authMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
 func _registerMw() []app.HandlerFunc {
 	// your code...
 	return nil

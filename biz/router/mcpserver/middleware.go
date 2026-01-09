@@ -39,16 +39,6 @@ func _getmcpserverMw() []app.HandlerFunc {
 	return nil
 }
 
-func _getpublicmcpserverlistMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
-func _getselfmcpserverlistMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
 func _updatemcpserverMw() []app.HandlerFunc {
 	// your code...
 	return nil
