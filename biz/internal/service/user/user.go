@@ -6,6 +6,7 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/li1553770945/openmcp-gateway/biz/constant"
+	"github.com/li1553770945/openmcp-gateway/biz/internal/assembler"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/domain"
 	userRepo "github.com/li1553770945/openmcp-gateway/biz/internal/repo/user"
 	"github.com/li1553770945/openmcp-gateway/biz/model/user"
@@ -34,7 +35,7 @@ func (s *UserServiceImpl) GetUserInfo(ctx context.Context, req *user.GetUserInfo
 	}
 	resp = &user.GetUserInfoResp{
 		Code: constant.Success,
-		Data: EntityToUserInfoData(findUser),
+		Data: assembler.EntityToUserInfoData(findUser),
 	}
 	return
 }
@@ -59,7 +60,7 @@ func (s *UserServiceImpl) GetSelfInfo(ctx context.Context) (resp *user.GetUserIn
 	}
 	resp = &user.GetUserInfoResp{
 		Code: constant.Success,
-		Data: EntityToUserInfoData(findUser),
+		Data: assembler.EntityToUserInfoData(findUser),
 	}
 	return
 }

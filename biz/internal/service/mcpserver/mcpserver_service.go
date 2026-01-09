@@ -10,6 +10,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/li1553770945/openmcp-gateway/biz/constant"
 	"github.com/li1553770945/openmcp-gateway/biz/infra/cache"
+	"github.com/li1553770945/openmcp-gateway/biz/internal/assembler"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/domain"
 	mcpserver_repo "github.com/li1553770945/openmcp-gateway/biz/internal/repo/mcpserver"
 	"github.com/li1553770945/openmcp-gateway/biz/model/mcpserver"
@@ -108,7 +109,7 @@ func (s *MCPServerServiceImpl) GenerateToken(ctx context.Context, req *mcpserver
 	return &mcpserver.GenerateTokenResp{
 		Code:    constant.Success,
 		Message: "成功",
-		Data:    TokenEntityToRespData(tokenEntity),
+		Data:    assembler.MCPServerTokenEntityToRespData(tokenEntity),
 	}
 }
 
@@ -144,7 +145,6 @@ func (s *MCPServerServiceImpl) GetMCPServerList(ctx context.Context, req *mcpser
 
 	} else {
 		creatorID, _ := ctx.Value("user_id").(int64)
-
 		list, err = s.Repo.ListMCPServersByCreatorId(creatorID, req.Start, req.End)
 		if err != nil {
 			return &mcpserver.GetMCPServerListResp{Code: constant.SystemError, Message: "获取服务器列表失败"}
@@ -153,7 +153,7 @@ func (s *MCPServerServiceImpl) GetMCPServerList(ctx context.Context, req *mcpser
 
 	data := make([]*mcpserver.GetMCPServerListRespData, 0)
 	for _, v := range list {
-		data = append(data, EntityToMCPServerListRespData(v))
+		data = append(data, assembler.MCPServerEntityToListRespData(v))
 	}
 
 	return &mcpserver.GetMCPServerListResp{
@@ -228,7 +228,7 @@ func (s *MCPServerServiceImpl) GetMCPServer(ctx context.Context, req *mcpserver.
 		return &mcpserver.GetMCPServerResp{Code: constant.Unauthorized, Message: "您无权限查看该 MCPServer 详情"}
 	}
 
-	data := EntityToMCPServerRespData(server)
+	data := assembler.MCPServerEntityToRespData(server)
 	if server.CreatorID != creatorID {
 		data.Token = []*mcpserver.TokenData{}
 	}

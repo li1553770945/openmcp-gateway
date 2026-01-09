@@ -26,12 +26,14 @@ struct GetUserInfoReq {
 }
 
 struct GetUserInfoRespData {
+    // 用户ID
+    1: required i64 id,
     // 用户名
-    1: required string username,
+    2: required string username,
     // 昵称
-    2: required string nickname,
+    3: required string nickname,
     // 角色
-    3: required string role,
+    4: required string role,
 }
 
 struct GetUserInfoResp {

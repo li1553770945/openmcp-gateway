@@ -835,6 +835,10 @@ const docTemplate = `{
         "user.GetUserInfoRespData": {
             "type": "object",
             "properties": {
+                "id": {
+                    "description": "用户ID",
+                    "type": "integer"
+                },
                 "nickname": {
                     "description": "昵称",
                     "type": "string"

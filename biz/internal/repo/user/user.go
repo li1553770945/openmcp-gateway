@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/li1553770945/openmcp-gateway/biz/internal/assembler"
+	"github.com/li1553770945/openmcp-gateway/biz/internal/converter"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/do"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/domain"
 	"gorm.io/gorm"
@@ -30,7 +30,7 @@ func (Repo *UserRepoImpl) FindUserByUsername(username string) (*domain.UserEntit
 	if user.ID == 0 {
 		return nil, nil
 	}
-	return assembler.UserDoToEntity(&user), nil
+	return converter.UserDoToEntity(&user), nil
 }
 
 func (Repo *UserRepoImpl) FindUserById(userId int64) (*domain.UserEntity, error) {
@@ -39,11 +39,11 @@ func (Repo *UserRepoImpl) FindUserById(userId int64) (*domain.UserEntity, error)
 	if err != nil {
 		return nil, err
 	}
-	return assembler.UserDoToEntity(&user), nil
+	return converter.UserDoToEntity(&user), nil
 }
 
 func (Repo *UserRepoImpl) SaveUser(userEntity *domain.UserEntity) error {
-	userDO := assembler.UserEntityToDo(userEntity)
+	userDO := converter.UserEntityToDo(userEntity)
 	if userDO.ID == 0 {
 		err := Repo.DB.Create(&userDO).Error
 		return err

@@ -30,46 +30,55 @@ func _mcpserversMw() []app.HandlerFunc {
 }
 
 func _generatetokenMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		container.GetGlobalContainer().AuthAndUserInfoMiddleware,
+	}
 }
 
 func _getmcpserverMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		container.GetGlobalContainer().AuthAndUserInfoMiddleware,
+	}
 }
 
 func _updatemcpserverMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		container.GetGlobalContainer().AuthAndUserInfoMiddleware,
+	}
 }
 
 func _deletemcpserverMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		container.GetGlobalContainer().AuthAndUserInfoMiddleware,
+	}
 }
 
 func _tokenMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		container.GetGlobalContainer().AuthAndUserInfoMiddleware,
+	}
 }
 
 func _deletetokenMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		container.GetGlobalContainer().AuthAndUserInfoMiddleware,
+	}
 }
 
 func _tokensMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		container.GetGlobalContainer().AuthAndUserInfoMiddleware,
+	}
 }
 
 func _getmcpserverlistMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		container.GetGlobalContainer().AuthAndUserInfoMiddleware,
+	}
 }
 
 func _mcpservers0Mw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{
+		container.GetGlobalContainer().AuthAndUserInfoMiddleware,
+	}
 }

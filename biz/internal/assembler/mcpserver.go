@@ -1,82 +1,71 @@
 package assembler
 
 import (
-	"github.com/li1553770945/openmcp-gateway/biz/internal/do"
+	"time"
+
 	"github.com/li1553770945/openmcp-gateway/biz/internal/domain"
+	"github.com/li1553770945/openmcp-gateway/biz/model/mcpserver"
 )
 
-func MCPServerDoToEntity(serverDO *do.MCPServerDO) *domain.MCPServerEntity {
-	if serverDO == nil {
+func MCPServerEntityToListRespData(entity *domain.MCPServerEntity) *mcpserver.GetMCPServerListRespData {
+	if entity == nil {
 		return nil
 	}
-	tokens := make([]domain.MCPServerTokenEntity, 0, len(serverDO.Tokens))
-	for _, tokenDO := range serverDO.Tokens {
-		tokens = append(tokens, *MCPServerTokenDoToEntity(&tokenDO))
+	var creatorNickname string
+	if entity.Creator != nil {
+		creatorNickname = entity.Creator.Nickname
 	}
-
-	return &domain.MCPServerEntity{
-		ID:          serverDO.ID,
-		Name:        serverDO.Name,
-		Description: serverDO.Description,
-		Url:         serverDO.Url,
-		IsPublic:    serverDO.IsPublic,
-		OpenProxy:   serverDO.OpenProxy,
-		CreatorID:   serverDO.CreatorID,
-		Tokens:      tokens,
-		CreatedAt:   serverDO.CreatedAt,
-		UpdatedAt:   serverDO.UpdatedAt,
-		Creator:     UserDoToEntity(serverDO.Creator),
+	return &mcpserver.GetMCPServerListRespData{
+		ID:              entity.ID,
+		Name:            entity.Name,
+		Description:     entity.Description,
+		URL:             entity.Url,
+		IsPublic:        entity.IsPublic,
+		OpenProxy:       entity.OpenProxy,
+		CreatedAt:       entity.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:       entity.UpdatedAt.Format(time.RFC3339),
+		CreatorId:       entity.CreatorID,
+		CreatorNickname: creatorNickname,
 	}
 }
 
-func MCPServerEntityToDo(serverEntity *domain.MCPServerEntity) *do.MCPServerDO {
-	if serverEntity == nil {
+func MCPServerEntityToRespData(entity *domain.MCPServerEntity) *mcpserver.GetMCPServerRespData {
+	if entity == nil {
 		return nil
 	}
-	tokens := make([]do.MCPServerTokenDO, 0, len(serverEntity.Tokens))
-	for _, tokenEntity := range serverEntity.Tokens {
-		tokens = append(tokens, *MCPServerTokenEntityToDo(&tokenEntity))
+	tokens := make([]*mcpserver.TokenData, 0, len(entity.Tokens))
+	for _, t := range entity.Tokens {
+		tokens = append(tokens, &mcpserver.TokenData{
+			ID:          t.ID,
+			Token:       t.Token,
+			Description: t.Description,
+		})
 	}
 
-	return &do.MCPServerDO{
-		BaseModel: do.BaseModel{
-			ID:        serverEntity.ID,
-			CreatedAt: serverEntity.CreatedAt,
-			UpdatedAt: serverEntity.UpdatedAt,
-		},
-		Name:        serverEntity.Name,
-		Description: serverEntity.Description,
-		Url:         serverEntity.Url,
-		IsPublic:    serverEntity.IsPublic,
-		OpenProxy:   serverEntity.OpenProxy,
-		CreatorID:   serverEntity.CreatorID,
-		Creator:     UserEntityToDo(serverEntity.Creator),
-		Tokens:      tokens,
+	var creatorNickname string
+	if entity.Creator != nil {
+		creatorNickname = entity.Creator.Nickname
+	}
+	return &mcpserver.GetMCPServerRespData{
+		ID:              entity.ID,
+		Name:            entity.Name,
+		Description:     entity.Description,
+		URL:             entity.Url,
+		IsPublic:        entity.IsPublic,
+		OpenProxy:       entity.OpenProxy,
+		Token:           tokens,
+		CreatedAt:       entity.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:       entity.UpdatedAt.Format(time.RFC3339),
+		CreatorId:       entity.CreatorID,
+		CreatorNickname: creatorNickname,
 	}
 }
 
-func MCPServerTokenDoToEntity(tokenDO *do.MCPServerTokenDO) *domain.MCPServerTokenEntity {
-	if tokenDO == nil {
+func MCPServerTokenEntityToRespData(entity *domain.MCPServerTokenEntity) *mcpserver.GenerateTokenRespData {
+	if entity == nil {
 		return nil
 	}
-	return &domain.MCPServerTokenEntity{
-		ID:          tokenDO.ID,
-		Token:       tokenDO.Token,
-		Description: tokenDO.Description,
-		MCPServerID: tokenDO.MCPServerID,
-	}
-}
-
-func MCPServerTokenEntityToDo(tokenEntity *domain.MCPServerTokenEntity) *do.MCPServerTokenDO {
-	if tokenEntity == nil {
-		return nil
-	}
-	return &do.MCPServerTokenDO{
-		BaseModel: do.BaseModel{
-			ID: tokenEntity.ID,
-		},
-		Token:       tokenEntity.Token,
-		Description: tokenEntity.Description,
-		MCPServerID: tokenEntity.MCPServerID,
+	return &mcpserver.GenerateTokenRespData{
+		Token: entity.Token,
 	}
 }

@@ -3,7 +3,7 @@ package mcpserver
 import (
 	"errors"
 
-	"github.com/li1553770945/openmcp-gateway/biz/internal/assembler"
+	assembler "github.com/li1553770945/openmcp-gateway/biz/internal/converter"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/do"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/domain"
 	"gorm.io/gorm"
@@ -34,7 +34,7 @@ func (r *MCPServerRepoImpl) SaveMCPServer(server *domain.MCPServerEntity) error 
 
 func (r *MCPServerRepoImpl) FindMCPServerById(id int64) (*domain.MCPServerEntity, error) {
 	var serverDO do.MCPServerDO
-	err := r.DB.Preload("Tokens").Where("id = ?", id).First(&serverDO).Error
+	err := r.DB.Preload("Tokens").Preload("Creator").Where("id = ?", id).First(&serverDO).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -53,6 +53,7 @@ func (r *MCPServerRepoImpl) ListMCPServersByCreatorId(creatorId int64, start, en
 	offset := int(start)
 
 	err := r.DB.Where("creator_id = ?", creatorId).
+		Preload("Creator").
 		Offset(offset).Limit(limit).
 		Order("id desc").
 		Find(&serverDOs).Error
