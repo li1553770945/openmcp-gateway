@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/li1553770945/openmcp-gateway/biz/infra/config"
+	"github.com/glebarez/sqlite"
 	"gorm.io/driver/mysql"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
