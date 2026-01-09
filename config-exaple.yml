@@ -1,6 +1,5 @@
 server:
   listen-address: 0.0.0.0:9000
-  proxy-listen-address: 0.0.0.0:9001
 
 database:
   username: your_db_username
@@ -12,3 +11,6 @@ database:
 
 auth:
   jwt-key: "your_jwt_key"
+
+proxy:
+  cache-expiration-seconds: 60

@@ -359,14 +359,6 @@ const docTemplate = `{
                     "用户管理"
                 ],
                 "summary": "获取当前用户信息",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "用户ID",
-                        "name": "userId",
-                        "in": "query"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "请求响应 (Code=0 成功)",
@@ -423,6 +415,48 @@ const docTemplate = `{
                         }
                     }
                 }
+            }
+        },
+        "/proxy": {
+            "get": {
+                "description": "转发客户端请求到目标服务,必须添加\"X-OpenMCP-Token\"请求头，即MCPServer生成的Token",
+                "tags": [
+                    "转发服务"
+                ],
+                "summary": "转发请求",
+                "responses": {}
+            },
+            "put": {
+                "description": "转发客户端请求到目标服务,必须添加\"X-OpenMCP-Token\"请求头，即MCPServer生成的Token",
+                "tags": [
+                    "转发服务"
+                ],
+                "summary": "转发请求",
+                "responses": {}
+            },
+            "post": {
+                "description": "转发客户端请求到目标服务,必须添加\"X-OpenMCP-Token\"请求头，即MCPServer生成的Token",
+                "tags": [
+                    "转发服务"
+                ],
+                "summary": "转发请求",
+                "responses": {}
+            },
+            "delete": {
+                "description": "转发客户端请求到目标服务,必须添加\"X-OpenMCP-Token\"请求头，即MCPServer生成的Token",
+                "tags": [
+                    "转发服务"
+                ],
+                "summary": "转发请求",
+                "responses": {}
+            },
+            "patch": {
+                "description": "转发客户端请求到目标服务,必须添加\"X-OpenMCP-Token\"请求头，即MCPServer生成的Token",
+                "tags": [
+                    "转发服务"
+                ],
+                "summary": "转发请求",
+                "responses": {}
             }
         }
     },

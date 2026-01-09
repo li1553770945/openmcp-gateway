@@ -140,3 +140,16 @@ func (r *MCPServerRepoImpl) DeleteMCPServer(id int64) error {
 func (r *MCPServerRepoImpl) DeleteToken(id int64) error {
 	return r.DB.Delete(&do.MCPServerTokenDO{}, id).Error
 }
+
+func (r *MCPServerRepoImpl) FindTokensByMcpServerId(mcpServerId int64) ([]*domain.MCPServerTokenEntity, error) {
+	var tokenDOs []do.MCPServerTokenDO
+	err := r.DB.Where("mcp_server_id = ?", mcpServerId).Find(&tokenDOs).Error
+	if err != nil {
+		return nil, err
+	}
+	results := make([]*domain.MCPServerTokenEntity, len(tokenDOs))
+	for i, t := range tokenDOs {
+		results[i] = TokenDoToEntity(&t)
+	}
+	return results, nil
+}

@@ -502,11 +502,6 @@ paths:
   /api/users/me:
     get:
       description: 获取当前登录用户的详细信息
-      parameters:
-      - description: 用户ID
-        in: query
-        name: userId
-        type: integer
       produces:
       - application/json
       responses:
@@ -548,4 +543,35 @@ paths:
       summary: 健康检查
       tags:
       - 基础接口
+  /proxy:
+    delete:
+      description: 转发客户端请求到目标服务,必须添加"X-OpenMCP-Token"请求头，即MCPServer生成的Token
+      responses: {}
+      summary: 转发请求
+      tags:
+      - 转发服务
+    get:
+      description: 转发客户端请求到目标服务,必须添加"X-OpenMCP-Token"请求头，即MCPServer生成的Token
+      responses: {}
+      summary: 转发请求
+      tags:
+      - 转发服务
+    patch:
+      description: 转发客户端请求到目标服务,必须添加"X-OpenMCP-Token"请求头，即MCPServer生成的Token
+      responses: {}
+      summary: 转发请求
+      tags:
+      - 转发服务
+    post:
+      description: 转发客户端请求到目标服务,必须添加"X-OpenMCP-Token"请求头，即MCPServer生成的Token
+      responses: {}
+      summary: 转发请求
+      tags:
+      - 转发服务
+    put:
+      description: 转发客户端请求到目标服务,必须添加"X-OpenMCP-Token"请求头，即MCPServer生成的Token
+      responses: {}
+      summary: 转发请求
+      tags:
+      - 转发服务
 swagger: "2.0"

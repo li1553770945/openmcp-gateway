@@ -45,23 +45,11 @@ func GetUserInfo(ctx context.Context, c *app.RequestContext) {
 // @Description 获取当前登录用户的详细信息
 // @Tags 用户管理
 // @Produce json
-// @Param request query user.GetUserInfoReq true "查询参数"
 // @Success 200 {object} user.GetUserInfoResp "请求响应 (Code=0 成功)"
 // @Router /api/users/me [GET]
 func GetSelfInfo(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req user.GetUserInfoReq
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		resp := user.GetUserInfoResp{
-			Code:    constant.InvalidInput,
-			Message: fmt.Sprintf("请求参数错误:%s", err.Error()),
-		}
-		c.JSON(consts.StatusOK, resp)
-		return
-	}
 
-	resp := new(user.GetUserInfoResp)
-
+	App := container.GetGlobalContainer()
+	resp := App.UserService.GetSelfInfo(ctx)
 	c.JSON(consts.StatusOK, resp)
 }

@@ -9,6 +9,7 @@ import (
 
 type IUserService interface {
 	GetUserInfo(ctx context.Context, req *user.GetUserInfoReq) (resp *user.GetUserInfoResp)
+	GetSelfInfo(ctx context.Context) (resp *user.GetUserInfoResp)
 	CheckUsernameAndPasswd(ctx context.Context, username string, password string) (*domain.UserEntity, error)
 	RegisterUser(ctx context.Context, username string, password string, email string) (*domain.UserEntity, error)
 }

@@ -13,6 +13,7 @@ type IMCPServerRepository interface {
 	SaveToken(token *domain.MCPServerTokenEntity) error
 	FindTokenByToken(token string) (*domain.MCPServerTokenEntity, error)
 	FindTokenById(id int64) (*domain.MCPServerTokenEntity, error)
+	FindTokensByMcpServerId(mcpServerId int64) ([]*domain.MCPServerTokenEntity, error)
 
 	DeleteMCPServer(id int64) error
 	DeleteToken(id int64) error

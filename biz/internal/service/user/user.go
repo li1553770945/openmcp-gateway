@@ -39,6 +39,31 @@ func (s *UserServiceImpl) GetUserInfo(ctx context.Context, req *user.GetUserInfo
 	return
 }
 
+func (s *UserServiceImpl) GetSelfInfo(ctx context.Context) (resp *user.GetUserInfoResp) {
+	userID, ok := ctx.Value("user_id").(int64)
+	if !ok {
+		resp = &user.GetUserInfoResp{
+			Code:    constant.Unauthorized,
+			Message: "未登录或登录状态已过期",
+		}
+		return
+	}
+	findUser, err := s.Repo.FindUserById(userID)
+	if err != nil {
+		hlog.Errorf("查询用户信息错误:%s", err.Error())
+		resp = &user.GetUserInfoResp{
+			Code:    constant.SystemError,
+			Message: "系统错误，查询用户信息失败",
+		}
+		return
+	}
+	resp = &user.GetUserInfoResp{
+		Code: constant.Success,
+		Data: EntityToUserInfoData(findUser),
+	}
+	return
+}
+
 func (s *UserServiceImpl) CheckUsernameAndPasswd(ctx context.Context, username string, password string) (*domain.UserEntity, error) {
 	user, err := s.Repo.FindUserByUsername(username)
 	if err != nil {

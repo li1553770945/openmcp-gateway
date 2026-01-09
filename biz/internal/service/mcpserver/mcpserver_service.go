@@ -3,26 +3,37 @@ package mcpserver
 import (
 	"context"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/li1553770945/openmcp-gateway/biz/constant"
+	"github.com/li1553770945/openmcp-gateway/biz/infra/cache"
 	"github.com/li1553770945/openmcp-gateway/biz/internal/domain"
 	mcpserver_repo "github.com/li1553770945/openmcp-gateway/biz/internal/repo/mcpserver"
 	"github.com/li1553770945/openmcp-gateway/biz/model/mcpserver"
 )
 
 type MCPServerServiceImpl struct {
-	Repo mcpserver_repo.IMCPServerRepository
+	Repo       mcpserver_repo.IMCPServerRepository
+	ProxyCache cache.IProxyCache
 }
 
-func NewMCPServerService(repo mcpserver_repo.IMCPServerRepository) IMCPServerService {
+func NewMCPServerService(repo mcpserver_repo.IMCPServerRepository, proxyCache cache.IProxyCache) IMCPServerService {
 	return &MCPServerServiceImpl{
-		Repo: repo,
+		Repo:       repo,
+		ProxyCache: proxyCache,
 	}
 }
 
 func (s *MCPServerServiceImpl) AddMCPServer(ctx context.Context, req *mcpserver.AddMCPServerReq) (resp *mcpserver.AddMCPServerResp) {
+	if !strings.HasPrefix(req.URL, "http://") && !strings.HasPrefix(req.URL, "https://") {
+		return &mcpserver.AddMCPServerResp{
+			Code:    constant.InvalidInput,
+			Message: "URL 必须以 http:// 或 https:// 开头",
+		}
+	}
+
 	creatorID, _ := ctx.Value("user_id").(int64)
 
 	entity := &domain.MCPServerEntity{
@@ -149,6 +160,15 @@ func (s *MCPServerServiceImpl) UpdateMCPServer(ctx context.Context, req *mcpserv
 		return &mcpserver.UpdateMCPServerResp{Code: constant.Unauthorized, Message: "您无权限更新该 MCPServer"}
 	}
 
+	if !strings.HasPrefix(req.URL, "http://") && !strings.HasPrefix(req.URL, "https://") {
+		return &mcpserver.UpdateMCPServerResp{
+			Code:    constant.InvalidInput,
+			Message: "URL 必须以 http:// 或 https:// 开头",
+		}
+	}
+	oldURL := server.Url
+	newURL := req.URL
+
 	server.Name = req.Name
 	server.Description = req.Description
 	server.Url = req.URL
@@ -160,6 +180,23 @@ func (s *MCPServerServiceImpl) UpdateMCPServer(ctx context.Context, req *mcpserv
 		return &mcpserver.UpdateMCPServerResp{Code: constant.SystemError, Message: "更新服务器失败"}
 	}
 
+	if oldURL != newURL {
+		tokens, err := s.Repo.FindTokensByMcpServerId(server.ID)
+		if err != nil {
+			hlog.Errorf("UpdateMCPServer: 通知 ProxyService 清理缓存失败: %v", err)
+			return &mcpserver.UpdateMCPServerResp{Code: constant.SystemError, Message: "更新服务器成功但缓存失败"}
+
+		}
+		// URL 变更，通知 ProxyService 清理缓存
+		for _, t := range tokens {
+			err = s.ProxyCache.InvalidateByToken(t.Token)
+			if err != nil {
+				hlog.Errorf("UpdateMCPServer: 通知 ProxyService 清理缓存失败: %v", err)
+				return &mcpserver.UpdateMCPServerResp{Code: constant.SystemError, Message: "更新服务器成功但缓存失败"}
+			}
+		}
+
+	}
 	return &mcpserver.UpdateMCPServerResp{Code: constant.Success, Message: "成功"}
 }
 
@@ -197,10 +234,27 @@ func (s *MCPServerServiceImpl) DeleteMCPServer(ctx context.Context, req *mcpserv
 	if server.CreatorID != creatorID {
 		return &mcpserver.DeleteMCPServerResp{Code: constant.Unauthorized, Message: "您无权限删除该 MCPServer"}
 	}
-
+	tokens, err := s.Repo.FindTokensByMcpServerId(server.ID)
+	if err != nil {
+		hlog.Errorf("DeleteMCPServer: 查询关联 Tokens 失败: %v", err)
+		return &mcpserver.DeleteMCPServerResp{Code: constant.SystemError, Message: "删除服务器失败"}
+	}
 	err = s.Repo.DeleteMCPServer(req.ID)
 	if err != nil {
+		hlog.Errorf("DeleteMCPServer: 删除 MCPServer 失败: %v", err)
 		return &mcpserver.DeleteMCPServerResp{Code: constant.SystemError, Message: "删除服务器失败"}
+	}
+
+	// Server 删除后，清理相关缓存
+	if s.ProxyCache != nil {
+		// MCPServer，通知 ProxyService 清理缓存
+		for _, t := range tokens {
+			err = s.ProxyCache.InvalidateByToken(t.Token)
+			if err != nil {
+				hlog.Errorf("DeleteMCPServer: 通知 ProxyService 清理缓存失败: %v", err)
+				return &mcpserver.DeleteMCPServerResp{Code: constant.SystemError, Message: "删除服务器成功但缓存清理失败"}
+			}
+		}
 	}
 
 	return &mcpserver.DeleteMCPServerResp{Code: constant.Success, Message: "删除成功"}
@@ -232,6 +286,11 @@ func (s *MCPServerServiceImpl) DeleteToken(ctx context.Context, req *mcpserver.D
 	err = s.Repo.DeleteToken(req.ID)
 	if err != nil {
 		return &mcpserver.DeleteTokenResp{Code: constant.SystemError, Message: "删除Token失败"}
+	}
+
+	// 清除 Token 缓存
+	if s.ProxyCache != nil {
+		s.ProxyCache.InvalidateByToken(token.Token)
 	}
 
 	return &mcpserver.DeleteTokenResp{Code: constant.Success, Message: "删除成功"}

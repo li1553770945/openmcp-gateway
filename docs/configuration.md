@@ -8,9 +8,7 @@
 
 | 字段 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `server.listen-address` | String | 是 | `0.0.0.0:9000` | 后端 API 服务的监听地址与端口。 |
-| `server.proxy-listen-address` | String | 是 | `0.0.0.0:9001` | 转发流量的代理入口地址。 |
-
+| `server.listen-address` | String | 是 | `0.0.0.0:9000` | 后端服务的监听地址与端口。 |
 ### 2. Database (数据库设置)
 
 | 字段 | 类型 | 必填 | 说明 |
@@ -26,6 +24,11 @@
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | `auth.jwt-key` | String | 是 | **核心密钥**。用于签发 Token，建议使用 32 位以上随机字符串。 |
+
+### 4. Proxy (代理设置)
+| 字段 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `proxy.cache-expiration-seconds` | Int | 否 | `60` | 代理缓存过期时间，单位为秒。如果您设置了缓存，将会提高转发性能，但可能导致配置变更后生效有几秒的略微延迟。 |
 
 ---
 
@@ -45,10 +48,8 @@
 # OpenMCP-Gateway 生产环境配置文件
 
 server:
-  # API 服务地址，0.0.0.0 表示监听所有网卡
+  # 服务地址，0.0.0.0 表示监听所有网卡
   listen-address: "0.0.0.0:9000"
-  # 转发流量入口
-  proxy-listen-address: "0.0.0.0:9001"
 
 database:
   username: "admin"
@@ -61,5 +62,8 @@ database:
 auth:
   # 建议生成方式: openssl rand -base64 32
   jwt-key: "GR9S8v8_EXAMPLE_KEY_DO_NOT_USE_IN_PROD"
+
+proxy:
+  cache-expiration-seconds: 60
 
 ```

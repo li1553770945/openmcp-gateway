@@ -11,7 +11,6 @@ import (
 
 type ServerConfig struct {
 	HttpServerListenAddress string `yaml:"listen-address"`
-	HttpProxyListenAddress  string `yaml:"proxy-listen-address"`
 }
 
 type DatabaseConfig struct {
@@ -26,11 +25,17 @@ type DatabaseConfig struct {
 type AuthConfig struct {
 	JWTKey string `yaml:"jwt-key"`
 }
+
+type ProxyConfig struct {
+	// 缓存过期时间
+	CacheExpirationSeconds int32 `yaml:"cache-expiration-seconds"`
+}
 type Config struct {
 	Env            string         `yaml:"-"`
 	ServerConfig   ServerConfig   `yaml:"server"`
 	DatabaseConfig DatabaseConfig `yaml:"database"`
 	AuthConfig     AuthConfig     `yaml:"auth"`
+	ProxyConfig    ProxyConfig    `yaml:"proxy"`
 }
 
 func GetConfig(env string) *Config {
