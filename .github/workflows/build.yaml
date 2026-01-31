@@ -29,25 +29,29 @@ jobs:
       - name: Create build directory
         run: mkdir -p build_artifacts
 
-      # 构建 Linux 版本
+      # 构建 Linux 版本（后端在 backend/ 目录）
       - name: Build Linux
+        working-directory: backend
         run: |
-          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o build_artifacts/openmcp-gateway-linux-amd64 .
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o ../build_artifacts/openmcp-gateway-linux-amd64 .
 
       # 构建 Windows 版本
       - name: Build Windows
+        working-directory: backend
         run: |
-          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -v -o build_artifacts/openmcp-gateway-windows-amd64.exe .
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -v -o ../build_artifacts/openmcp-gateway-windows-amd64.exe .
 
       # 构建 macOS (Intel) 版本
       - name: Build macOS (amd64)
+        working-directory: backend
         run: |
-          CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -v -o build_artifacts/openmcp-gateway-darwin-amd64 .
+          CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -v -o ../build_artifacts/openmcp-gateway-darwin-amd64 .
 
       # 构建 macOS (Apple Silicon) 版本
       - name: Build macOS (arm64)
+        working-directory: backend
         run: |
-          CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -v -o build_artifacts/openmcp-gateway-darwin-arm64 .
+          CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -v -o ../build_artifacts/openmcp-gateway-darwin-arm64 .
 
       # 上传构建产物
       - name: Upload artifacts
